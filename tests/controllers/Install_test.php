@@ -89,7 +89,7 @@ class Install_test extends KalkunTestCase {
 		$expected = '<h1>Requirements check</h1>';
 		$this->_assertStringContainsString($expected, $output);
 
-		$expected = '<input type="submit" name="submit" value="Next ›"  class="button" />';
+		$expected = '<input type="submit" name="submit" value="Next ›"  class="button">';
 		$this->_assertStringContainsString($expected, $output);
 
 		$this->assertValidHtml($output);
@@ -140,7 +140,7 @@ class Install_test extends KalkunTestCase {
 
 		$output = $this->request('GET', 'install/database_setup');
 		// TODO: really check the different output depending on the $config.
-		$expected = '<input type="submit" name="submit" value="‹ Previous"  class="button" />';
+		$expected = '<input type="submit" name="submit" value="‹ Previous"  class="button">';
 		$this->_assertStringContainsString($expected, $output);
 
 		$this->assertValidHtml($output);
@@ -223,7 +223,7 @@ class Install_test extends KalkunTestCase {
 		$dbsetup->setup_config($config);
 
 		$output = $this->request('POST', 'install/database_setup', ['action' => 'run_db_setup']);
-		$expected = '<input type="submit" name="submit" value="Continue ›"  class="button" />';
+		$expected = '<input type="submit" name="submit" value="Continue ›"  class="button">';
 		$this->_assertStringContainsString($expected, $output);
 	}
 
