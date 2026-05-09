@@ -1,0 +1,8 @@
+Need to copy /env to /.env and modify in /.env
+
+Need to enable mod_rewrite with `a2enmod rewrite`
+
+Change permissions of /writable/cache  to 777
+Same for the subfolders of /writable : otherwise debugbar won't work, logs etc...
+
+App is reachable at http://localhost/kalkun-git/ci4/public/#
