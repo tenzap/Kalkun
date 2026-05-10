@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+
 
 /**
  * Kalkun
@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 function tr($label, $context = NULL, ...$params)
 {
-	return htmlentities(call_user_func_array(array(get_instance()->lang, 'line'), func_get_args()), ENT_QUOTES);
+	return htmlentities(call_user_func_array(array(service('language'), 'line'), func_get_args()), ENT_QUOTES);
 }
 
 /**
@@ -39,7 +39,7 @@ function tr($label, $context = NULL, ...$params)
  */
 function tr_raw($label, $context = NULL, ...$params)
 {
-	return call_user_func_array(array(get_instance()->lang, 'line'), func_get_args());
+	return call_user_func_array(array(service('language'), 'line'), func_get_args());
 }
 
 /**
@@ -57,7 +57,7 @@ function tr_raw($label, $context = NULL, ...$params)
 function tr_addcslashes($chars_to_escape, $label, $context = NULL, ...$params)
 {
 	$args = array_slice(func_get_args(), 1);
-	$label = call_user_func_array(array(get_instance()->lang, 'line'), $args);
+	$label = call_user_func_array(array(service('language'), 'line'), $args);
 	return addcslashes($label, $chars_to_escape);
 }
 
@@ -73,7 +73,7 @@ function tr_addcslashes($chars_to_escape, $label, $context = NULL, ...$params)
  */
 function tr_js($label, $context = NULL, ...$params)
 {
-	$label = call_user_func_array(array(get_instance()->lang, 'line'), func_get_args());
+	$label = call_user_func_array(array(service('language'), 'line'), func_get_args());
 	$CI = &get_instance();
 	$CI->load->helper('kalkun');
 	return json_protect($label);
