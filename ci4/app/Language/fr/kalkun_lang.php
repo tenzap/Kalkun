@@ -433,3 +433,5 @@ $lang['Settings saved successfully (except username for kalkun user which can\'t
 $lang['Modification of username of "kalkun" user forbidden in demo mode. Username was restored.'] = 'Modification of username of "kalkun" user forbidden in demo mode. Username was restored.';
 $lang['Process incoming messages'] = 'Process incoming messages';
 $lang['Changing role of "kalkun" user forbidden in demo mode. Role was restored.'] = 'Changing role of "kalkun" user forbidden in demo mode. Role was restored.';
+
+return $lang;
