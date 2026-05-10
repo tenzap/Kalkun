@@ -11,6 +11,10 @@
 
 // ------------------------------------------------------------------------
 
+namespace App\Models;
+
+use CodeIgniter\Model;
+
 /**
  * Kalkun_model Class
  *
@@ -20,7 +24,19 @@
  * @subpackage	Base
  * @category	Models
  */
-class Kalkun_model extends CI_Model {
+class KalkunModel extends Model {
+
+	protected $table = '';
+	protected $allowedFields = [];
+	protected $request;
+	protected $session;
+	// --------------------------------------------------------------------
+    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+    {
+		parent::__construct($db, $validation);
+        $this->request = service('request');
+		$this->session = session();
+    }
 
 	// --------------------------------------------------------------------
 
@@ -33,25 +49,25 @@ class Kalkun_model extends CI_Model {
 	 */
 	function login()
 	{
-		$username = $this->input->post('username');
-		$this->db->from('user');
-		$this->db->where('username', $username);
-		$query = $this->db->get();
+		$username = $this->request->getPost('username');
+		$query = $this->builder('user')
+		  ->where('username', $username)
+		  ->get();
 
-		if ($query->num_rows() === 1 && password_verify($this->input->post('password'), $query->row('password')))
+		if ($query->getNumRows() === 1 && password_verify($this->request->getPost('password'), $query->getRow('password')))
 		{
-			$this->session->set_userdata('loggedin', 'TRUE');
-			$this->session->set_userdata('level', $query->row('level'));
-			$this->session->set_userdata('id_user', $query->row('id_user'));
-			$this->session->set_userdata('username', $query->row('username'));
-			if ($this->input->post('remember_me'))
+			$this->session->set('loggedin', 'TRUE');
+			$this->session->set('level', $query->getRow('level'));
+			$this->session->set('id_user', $query->getRow('id_user'));
+			$this->session->set('username', $query->getRow('username'));
+			if ($this->request->getPost('remember_me'))
 			{
-				$this->session->set_userdata('remember_me', TRUE);
+				$this->session->set('remember_me', TRUE);
 			}
 
-			if ($this->input->post('r_url'))
+			if ($this->request->getPost('r_url'))
 			{
-				redirect($this->input->post('r_url'));
+				redirect($this->request->getPost('r_url'));
 			}
 			else
 			{
@@ -60,7 +76,7 @@ class Kalkun_model extends CI_Model {
 		}
 		else
 		{
-			$this->session->set_flashdata('errorlogin', tr_raw('Username or password are incorrect.'));
+			$this->session->setFlashdata('errorlogin', tr_raw('Username or password are incorrect.'));
 		}
 	}
 
@@ -75,34 +91,34 @@ class Kalkun_model extends CI_Model {
 	 */
 	function forgot_password()
 	{
-		$username = $this->input->post('username');
-		$phone = $this->input->post('phone');
+		$username = $this->request->getPost('username');
+		$phone = $this->request->getPost('phone');
 		if ($phone)
 		{
-			$region = MY_LANG::idom_to_region($this->input->post('idiom'));
+			$region = service('language')::idom_to_region($this->request->getPost('idiom'));
 			$this->load->helper('kalkun');
 			$phone = phone_format_e164($phone, $region);
 		}
 
-		$this->db->from('user');
-		$this->db->where('username', $username);
-		$this->db->or_where('phone_number', $phone);
-		$query = $this->db->get();
+		$query = $this->builder('user')
+		  ->where('username', $username)
+		  ->or_where('phone_number', $phone)
+		  ->get();
 
-		if ($query->num_rows() === 1)
+		if ($query->getNumRows() === 1)
 		{
 			$this->db->from('user_forgot_password');
-			$this->db->where('id_user', $query->row('id_user'));
+			$this->db->where('id_user', $query->getRow('id_user'));
 			$user = $this->db->get();
 
-			if ($user->num_rows() === 1)
+			if ($user->getNumRows() === 1)
 			{
 				$valid_token = (strtotime('now') < strtotime($user->row('valid_until'))) ? TRUE : FALSE;
 
 				// Destroy invalid token
 				if ( ! $valid_token)
 				{
-					$this->Kalkun_model->delete_token($query->row('id_user'));
+					$this->Kalkun_model->delete_token($query->getRow('id_user'));
 				}
 				else
 				{
@@ -110,14 +126,14 @@ class Kalkun_model extends CI_Model {
 				}
 			}
 
-			if ($user->num_rows() === 0 OR ! $valid_token)
+			if ($user->getNumRows() === 0 OR ! $valid_token)
 			{
 				$token = bin2hex(random_bytes(16));
-				$this->db->set('id_user', $query->row('id_user'));
+				$this->db->set('id_user', $query->getRow('id_user'));
 				$this->db->set('token', $token);
 				$this->db->set('valid_until', date('Y-m-d H:i:s', mktime(date('H'), date('i') + 30, date('s'), date('m'), date('d'), date('Y'))));
 				$this->db->insert('user_forgot_password');
-				return array('phone' => $query->row('phone_number'), 'token' => $token);
+				return array('phone' => $query->getRow('phone_number'), 'token' => $token);
 			}
 		}
 		return FALSE;
@@ -135,11 +151,11 @@ class Kalkun_model extends CI_Model {
 	 */
 	function valid_token($token = NULL)
 	{
-		$this->db->from('user_forgot_password');
-		$this->db->where('token', $token);
-		$token_result = $this->db->get();
+		$token_result = $this->builder('user_forgot_password')
+		  ->where('token', $token)
+		  ->get();
 
-		if ($token_result->num_rows() === 1)
+		if ($token_result->getNumRows() === 1)
 		{
 			if (strtotime('now') < strtotime($token_result->row('valid_until')))
 			{
@@ -147,9 +163,9 @@ class Kalkun_model extends CI_Model {
 			}
 			else
 			{
-				$this->db->from('user_forgot_password');
-				$this->db->where('token', $token);
-				$this->db->delete();
+				$this->builder('user_forgot_password')
+				  ->where('token', $token)
+				  ->delete();
 			}
 		}
 		return FALSE;
@@ -167,9 +183,9 @@ class Kalkun_model extends CI_Model {
 	 */
 	function delete_token($id_user = NULL)
 	{
-		$this->db->from('user_forgot_password');
-		$this->db->where('id_user', $id_user);
-		return $this->db->delete();
+		return $this->builder('user_forgot_password')
+		->where('id_user', $id_user)
+		->delete();
 	}
 
 	// --------------------------------------------------------------------
@@ -222,7 +238,7 @@ class Kalkun_model extends CI_Model {
 	 */
 	function add_folder()
 	{
-		$data = array ('name' => $this->input->post('folder_name'), 'id_user' => $this->input->post('id_user'));
+		$data = array ('name' => $this->request->getPost('folder_name'), 'id_user' => $this->request->getPost('id_user'));
 		$this->db->insert('user_folders', $data);
 	}
 
@@ -237,8 +253,8 @@ class Kalkun_model extends CI_Model {
 	 */
 	function rename_folder()
 	{
-		$this->db->set('name', $this->input->post('edit_folder_name'));
-		$this->db->where('id_folder', $this->input->post('id_folder'));
+		$this->db->set('name', $this->request->getPost('edit_folder_name'));
+		$this->db->where('id_folder', $this->request->getPost('id_folder'));
 		$this->db->update('user_folders');
 	}
 
@@ -326,41 +342,41 @@ class Kalkun_model extends CI_Model {
 		switch ($option)
 		{
 			case 'general':
-				$this->db->set('language', $this->input->post('language'));
-				$this->db->set('paging', $this->input->post('paging'));
-				$this->db->set('permanent_delete', $this->input->post('permanent_delete'));
-				$this->db->set('delivery_report', $this->input->post('delivery_report'));
-				$this->db->set('conversation_sort', $this->input->post('conversation_sort'));
-				$this->db->set('country_code', $this->input->post('dial_code'));
+				$this->db->set('language', $this->request->getPost('language'));
+				$this->db->set('paging', $this->request->getPost('paging'));
+				$this->db->set('permanent_delete', $this->request->getPost('permanent_delete'));
+				$this->db->set('delivery_report', $this->request->getPost('delivery_report'));
+				$this->db->set('conversation_sort', $this->request->getPost('conversation_sort'));
+				$this->db->set('country_code', $this->request->getPost('dial_code'));
 				$this->db->where('id_user', $this->session->userdata('id_user'));
 				$this->db->update('user_settings');
 				// Refresh language before we display any message.
 				// Special case for when the user changes the language on this screen
-				$this->lang->load('kalkun', $this->input->post('language'));
+				$this->lang->load('kalkun', $this->request->getPost('language'));
 				break;
 
 			case 'personal':
-				$this->db->set('realname', $this->input->post('realname'));
+				$this->db->set('realname', $this->request->getPost('realname'));
 				if ( ! ($this->config->item('demo_mode')
 					&& intval($this->session->userdata('id_user')) === 1))
 				{
-					$this->db->set('username', $this->input->post('username'));
+					$this->db->set('username', $this->request->getPost('username'));
 				}
-				$this->_phone_number_validation($this->input->post('phone_number'));
+				$this->_phone_number_validation($this->request->getPost('phone_number'));
 				$this->load->helper('kalkun');
-				$this->db->set('phone_number', phone_format_e164($this->input->post('phone_number')));
+				$this->db->set('phone_number', phone_format_e164($this->request->getPost('phone_number')));
 				$this->db->where('id_user', $this->session->userdata('id_user'));
 				$this->db->update('user');
 
-				$sig_opt = $this->input->post('signatureoption');
-				$this->db->set('signature', $sig_opt.';'.$this->input->post('signature'));
+				$sig_opt = $this->request->getPost('signatureoption');
+				$this->db->set('signature', $sig_opt.';'.$this->request->getPost('signature'));
 				$this->db->where('id_user', $this->session->userdata('id_user'));
 				$this->db->update('user_settings');
 				break;
 
 			case 'appearance':
-				$this->db->set('theme', $this->input->post('theme'));
-				$this->db->set('bg_image', $this->input->post('bg_image_option').';background.jpg');
+				$this->db->set('theme', $this->request->getPost('theme'));
+				$this->db->set('bg_image', $this->request->getPost('bg_image_option').';background.jpg');
 				$this->db->where('id_user', $this->session->userdata('id_user'));
 				$this->db->update('user_settings');
 				break;
@@ -368,18 +384,18 @@ class Kalkun_model extends CI_Model {
 			case 'password':
 				if ( ! ($this->config->item('demo_mode') && intval($this->session->userdata('id_user')) === 1))
 				{
-					$this->db->set('password', password_hash($this->input->post('new_password'), PASSWORD_BCRYPT));
+					$this->db->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
 					$this->db->where('id_user', $this->session->userdata('id_user'));
 					$this->db->update('user');
 				}
 				break;
 
 			case 'filters':
-				$id_filter = $this->input->post('id_filter');
-				$this->db->set('from', $this->input->post('from'));
-				$this->db->set('has_the_words', $this->input->post('has_the_words'));
-				$this->db->set('id_folder', $this->input->post('id_folder'));
-				$this->db->set('id_user', $this->input->post('id_user'));
+				$id_filter = $this->request->getPost('id_filter');
+				$this->db->set('from', $this->request->getPost('from'));
+				$this->db->set('has_the_words', $this->request->getPost('has_the_words'));
+				$this->db->set('id_folder', $this->request->getPost('id_folder'));
+				$this->db->set('id_user', $this->request->getPost('id_user'));
 
 				if ( ! empty($id_filter))
 				{
@@ -405,7 +421,7 @@ class Kalkun_model extends CI_Model {
 	 */
 	function update_password($uid = NULL)
 	{
-		$this->db->set('password', password_hash($this->input->post('new_password'), PASSWORD_BCRYPT));
+		$this->db->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
 		$this->db->where('id_user', $uid);
 		$this->db->update('user');
 	}

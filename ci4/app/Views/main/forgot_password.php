@@ -1,5 +1,4 @@
 <?php
-$this->load->helper('html');
 echo doctype('html5');?>
 <html>
 
@@ -9,9 +8,9 @@ echo doctype('html5');?>
 	<meta name="generator" content="Geany 0.13">
 	<meta name="robots" content="noindex,nofollow">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<?php echo link_tag($this->config->item('img_path').'icon.ico', 'shortcut icon', 'image/ico');?>
-	<?php echo link_tag($this->config->item('css_path').'base.css');?>
-	<script src="<?php echo $this->config->item('js_path');?>jquery-3.7.1.min.js"></script>
+	<?php echo link_tag(config('Kalkun')->img_path.'icon.ico', 'shortcut icon', 'image/ico');?>
+	<?php echo link_tag(config('Kalkun')->css_path.'base.css');?>
+	<script src="<?php echo config('Kalkun')->js_path;?>jquery-3.7.1.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			$("#username").trigger('focus');
@@ -19,7 +18,7 @@ echo doctype('html5');?>
 
 	</script>
 	<style>
-		@import url("<?php echo $this->config->item('css_path');?>blue.css");
+		@import url("<?php echo config('Kalkun')->css_path;?>blue.css");
 
 	</style>
 </head>
@@ -27,12 +26,12 @@ echo doctype('html5');?>
 <body>
 	<div id="main_container">
 		<div class="login_loading_container">&nbsp;
-			<?php if ($this->session->flashdata('errorlogin')): ?>
-			<span class="loading_area"><?php echo htmlentities($this->session->flashdata('errorlogin'), ENT_QUOTES);?></span>
+			<?php if (session()->getFlashdata('errorlogin')): ?>
+			<span class="loading_area"><?php echo htmlentities(session()->getFlashdata('errorlogin'), ENT_QUOTES);?></span>
 			<?php endif; ?>
 		</div>
 
-		<div id="login_logo"><a href="<?php echo site_url().'?l='.$idiom ?>"><img src="<?php echo $this->config->item('img_path');?>logo.png" alt="Kalkun logo"></a></div>
+		<div id="login_logo"><a href="<?php echo site_url().'?l='.$idiom ?>"><img src="<?php echo config('Kalkun')->img_path;?>logo.png" alt="Kalkun logo"></a></div>
 		<div style="text-align: center;">
 			<?php
 				echo form_open('');
