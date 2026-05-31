@@ -34,6 +34,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'isLoggedInFilter' => \App\Filters\IsLoggedInFilter::class,
     ];
 
     /**
@@ -106,5 +107,16 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'isLoggedInFilter' => ['before' => [
+            // Should be all routes served by kalkun except "daemon/*, login/*, install/*"
+            '', // for route to '/'
+            'kalkun*',
+            'messages*',
+            'phonebook*',
+            'plugin*',
+            'settings*',
+            'users*',
+        ]],
+    ];
 }
