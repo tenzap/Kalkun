@@ -1,7 +1,5 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
-
 /**
  * Kalkun
  * An open source web based SMS Manager
@@ -237,32 +235,32 @@ function is_ajax()
 function get_database_property($driver)
 {
 	// valid and supported driver
-	$valid_driver = array('postgre', 'mysql', 'mysqli', 'sqlite3');
+	$valid_driver = array('Postgre', 'MySQLi', 'SQLite3');
 
 	if ( ! in_array($driver, $valid_driver))
 	{
 		show_error("Database driver you're using is not supported", 500);
 	}
 
-	$postgre['name'] = 'postgre';
-	$postgre['file'] = 'pgsql';
-	$postgre['human'] = 'PostgreSQL';
-	$postgre['driver'] = 'pgsql';
+	$Postgre['name'] = 'postgre';
+	$Postgre['file'] = 'pgsql';
+	$Postgre['human'] = 'PostgreSQL';
+	$Postgre['driver'] = 'pgsql';
 
 	$mysql['name'] = 'mysql';
 	$mysql['file'] = 'mysql';
 	$mysql['human'] = 'MySQL';
 	$mysql['driver'] = 'mysql';
 
-	$mysqli['name'] = 'mysqli';
-	$mysqli['file'] = 'mysql';
-	$mysqli['human'] = 'MySQLi';
-	$mysqli['driver'] = 'mysqli';
+	$MySQLi['name'] = 'mysqli';
+	$MySQLi['file'] = 'mysql';
+	$MySQLi['human'] = 'MySQLi';
+	$MySQLi['driver'] = 'mysqli';
 
-	$sqlite3['name'] = 'sqlite';
-	$sqlite3['file'] = 'sqlite';
-	$sqlite3['human'] = 'SQLite3';
-	$sqlite3['driver'] = 'sqlite3';
+	$SQLite3['name'] = 'sqlite';
+	$SQLite3['file'] = 'sqlite';
+	$SQLite3['human'] = 'SQLite3';
+	$SQLite3['driver'] = 'sqlite3';
 	return ${$driver};
 }
 
@@ -355,120 +353,6 @@ function is_null_loose($input)
 		return FALSE;
 	}
 	return empty($input);
-}
-
-/**
- * Convert a phone number as input by the user to E164 format
- * using the region of the user.
- * Done with libphonenumber
- *
- * @param string $phone
- * @return string
- */
-function phone_format_e164($phone, $input_region = NULL)
-{
-	$CI = &get_instance();
-
-	// Default value to '' for the case this is called through Daemon or API
-	// This way, we consider number is already in international format.
-	$region = '';
-	// If user is logged in, get the region from the settings
-	if (isset($CI->session) && $CI->session->userdata('loggedin') === 'TRUE')
-	{
-		$CI->load->model('Kalkun_model');
-		$region = $CI->Kalkun_model->get_setting()->row('country_code');
-	}
-	// region as function parameter has higher precedence
-	$region = ($input_region !== NULL) ? $input_region : $region;
-
-	// reformat phone number to E164
-	$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-	$phoneNumberObject = $phoneNumberUtil->parse($phone, $region);
-	$phone_number = $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::E164);
-	return $phone_number;
-}
-
-/**
- * Convert a phone number as input to human readable format
- * NATIONAL if same region as user, otherwise INTERNATIONAL
- * Done with libphonenumber
- *
- * @param string $phone
- * @return string
- */
-function phone_format_human($phone, $input_region = NULL)
-{
-	$CI = &get_instance();
-
-	try
-	{
-		$region = ($input_region !== NULL) ? $input_region : $CI->Kalkun_model->get_setting()->row('country_code');
-
-		$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-		$phoneNumberObject = $phoneNumberUtil->parse($phone, $region);
-
-		$phone_region = $phoneNumberUtil->getRegionCodeForNumber($phoneNumberObject);
-
-		if ($region === $phone_region)
-		{
-			$phone_number = $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::NATIONAL);
-		}
-		else
-		{
-			$phone_number = $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::INTERNATIONAL);
-		}
-		return $phone_number;
-	}
-	catch (Exception $e)
-	{
-		return $phone;
-	}
-}
-
-/**
- * Check phone number validity
- *
- * returns TRUE if valid, otherwise a String containing
- * an error message.
- *
- */
-function is_phone_number_valid($phone, $input_region = NULL)
-{
-	$CI = &get_instance();
-
-	$result = 'false'; // Default to "false"
-
-	try
-	{
-		// Check if is possible number
-		$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-		$region = ($input_region !== NULL) ? $input_region : $CI->Kalkun_model->get_setting()->row('country_code');
-		$phoneNumberObject = $phoneNumberUtil->parse($phone, $region);
-		$is_possible = $phoneNumberUtil->isPossibleNumber($phoneNumberObject);
-
-		// Check if is mobile number
-		$type = $phoneNumberUtil->getNumberType($phoneNumberObject);
-		$is_mobile = ($type === \libphonenumber\PhoneNumberType::MOBILE
-			|| $type === \libphonenumber\PhoneNumberType::FIXED_LINE_OR_MOBILE);
-
-		// Check if is possible short number
-		$shortNumberUtil = \libphonenumber\ShortNumberInfo::getInstance();
-		$is_possible_short = $shortNumberUtil->isPossibleShortNumber($phoneNumberObject);
-
-		if ($is_possible && $is_mobile || $is_possible_short)
-		{
-			$result = TRUE;
-		}
-		else
-		{
-			$result = tr_no_op('Please specify a valid mobile phone number');
-		}
-	}
-	catch (Exception $e)
-	{
-		$result = $e->getMessage();
-	}
-	return $result;
 }
 
 
