@@ -14,6 +14,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * Kalkun_model Class
@@ -25,6 +26,8 @@ use CodeIgniter\Model;
  * @category	Models
  */
 class KalkunModel extends Model {
+
+    use KalkunPhonenumberTrait;
 
 	protected $table = '';
 	protected $allowedFields = [];
@@ -96,8 +99,7 @@ class KalkunModel extends Model {
 		if ($phone)
 		{
 			$region = service('language')::idom_to_region($this->request->getPost('idiom'));
-			$this->load->helper('kalkun');
-			$phone = phone_format_e164($phone, $region);
+			$phone = $this->phone_format_e164($phone, $region);
 		}
 
 		$query = $this->builder('user')
@@ -363,8 +365,7 @@ class KalkunModel extends Model {
 					$this->db->set('username', $this->request->getPost('username'));
 				}
 				$this->_phone_number_validation($this->request->getPost('phone_number'));
-				$this->load->helper('kalkun');
-				$this->db->set('phone_number', phone_format_e164($this->request->getPost('phone_number')));
+				$this->db->set('phone_number', $this->phone_format_e164($this->request->getPost('phone_number')));
 				$this->db->where('id_user', $this->session->userdata('id_user'));
 				$this->db->update('user');
 
@@ -464,8 +465,7 @@ class KalkunModel extends Model {
 				break;
 
 			case 'phone_number':
-				$this->load->helper('kalkun');
-				$this->db->where('phone_number', phone_format_e164($param['phone_number']));
+				$this->db->where('phone_number', $this->phone_format_e164($param['phone_number']));
 				break;
 		}
 		return $this->db->get();
@@ -700,8 +700,7 @@ class KalkunModel extends Model {
 	 */
 	function _phone_number_validation($phone)
 	{
-		$this->load->helper('kalkun');
-		$result = is_phone_number_valid($phone);
+		$result = $this->is_phone_number_valid($phone);
 
 		if ($result !== TRUE)
 		{
