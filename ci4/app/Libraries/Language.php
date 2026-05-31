@@ -368,7 +368,7 @@ class Language extends MX_Lang {
 	{
 		if (extension_loaded('intl'))
 		{
-			return Locale::parseLocale($locale)['language'];
+			return \Locale::parseLocale($locale)['language'];
 		}
 		else
 		{
@@ -406,7 +406,7 @@ class Language extends MX_Lang {
 				$res = preg_match('/datepicker-(.*)\.js/', $filename, $matches);
 				array_push($datepicker_locales, $matches[1]);
 			}
-			$regional = Locale::lookup($datepicker_locales, $this->locale, FALSE, '');
+			$regional = \Locale::lookup($datepicker_locales, $this->locale, FALSE, '');
 			$this->jquery_datepicker_regional = $regional;
 		}
 		return $this->jquery_datepicker_regional;
@@ -435,11 +435,11 @@ class Language extends MX_Lang {
 		$locale = Language::$idiom_to_locale[$idiom];
 		if (strlen($locale) === 2)
 		{
-			return Locale::getRegion('-'.$locale);
+			return \Locale::getRegion('-'.$locale);
 		}
 		else
 		{
-			return Locale::getRegion($locale);
+			return \Locale::getRegion($locale);
 		}
 	}
 }
