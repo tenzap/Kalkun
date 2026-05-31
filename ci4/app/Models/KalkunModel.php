@@ -206,32 +206,32 @@ class KalkunModel extends Model {
 	 */
 	function get_folders($option = NULL, $id_folder = NULL, $id_user = NULL)
 	{
-		$this->db->from('user_folders');
+		$q  = $this->builder('user_folders');
 
 		switch ($option)
 		{
 			case 'all':
-				$this->db->where('id_folder >', '10');
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$q->where('id_folder >', '10');
+				$q->where('id_user', $this->session->get('id_user'));
 				break;
 
 			case 'exclude':
-				$this->db->where('id_folder >', '10');
-				$this->db->where('id_folder !=', $id_folder);
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$q->where('id_folder >', '10');
+				$q->where('id_folder !=', $id_folder);
+				$q->where('id_user', $this->session->get('id_user'));
 				break;
 
 			case 'name':
-				$this->db->where('id_folder', $id_folder);
+				$q->where('id_folder', $id_folder);
 				if ($id_folder !== '5' && $id_folder !== '6')
 				{
-					$this->db->where('id_user', $this->session->userdata('id_user'));
+					$q->where('id_user', $this->session->get('id_user'));
 				}
 				break;
 		}
 
-		$this->db->order_by('name');
-		return $this->db->get();
+		$q->orderBy('name');
+		return $q->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -276,7 +276,7 @@ class KalkunModel extends Model {
 	 */
 	function delete_folder($id_folder = NULL)
 	{
-		$id_user = $this->session->userdata('id_user');
+		$id_user = $this->session->get('id_user');
 
 		// get inbox
 		$this->db->select('inbox.ID', 'id_inbox');
@@ -355,7 +355,7 @@ class KalkunModel extends Model {
 				$this->db->set('delivery_report', $this->request->getPost('delivery_report'));
 				$this->db->set('conversation_sort', $this->request->getPost('conversation_sort'));
 				$this->db->set('country_code', $this->request->getPost('dial_code'));
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$this->db->where('id_user', $this->session->get('id_user'));
 				$this->db->update('user_settings');
 				// Refresh language before we display any message.
 				// Special case for when the user changes the language on this screen
@@ -365,33 +365,33 @@ class KalkunModel extends Model {
 			case 'personal':
 				$this->db->set('realname', $this->request->getPost('realname'));
 				if ( ! ($this->config->item('demo_mode')
-					&& intval($this->session->userdata('id_user')) === 1))
+					&& intval($this->session->get('id_user')) === 1))
 				{
 					$this->db->set('username', $this->request->getPost('username'));
 				}
 				$this->_phone_number_validation($this->request->getPost('phone_number'));
 				$this->db->set('phone_number', $this->phone_format_e164($this->request->getPost('phone_number')));
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$this->db->where('id_user', $this->session->get('id_user'));
 				$this->db->update('user');
 
 				$sig_opt = $this->request->getPost('signatureoption');
 				$this->db->set('signature', $sig_opt.';'.$this->request->getPost('signature'));
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$this->db->where('id_user', $this->session->get('id_user'));
 				$this->db->update('user_settings');
 				break;
 
 			case 'appearance':
 				$this->db->set('theme', $this->request->getPost('theme'));
 				$this->db->set('bg_image', $this->request->getPost('bg_image_option').';background.jpg');
-				$this->db->where('id_user', $this->session->userdata('id_user'));
+				$this->db->where('id_user', $this->session->get('id_user'));
 				$this->db->update('user_settings');
 				break;
 
 			case 'password':
-				if ( ! ($this->config->item('demo_mode') && intval($this->session->userdata('id_user')) === 1))
+				if ( ! ($this->config->item('demo_mode') && intval($this->session->get('id_user')) === 1))
 				{
 					$this->db->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
-					$this->db->where('id_user', $this->session->userdata('id_user'));
+					$this->db->where('id_user', $this->session->get('id_user'));
 					$this->db->update('user');
 				}
 				break;
@@ -445,11 +445,12 @@ class KalkunModel extends Model {
 	{
 		if ($id_user === '')
 		{
-			$id_user = $this->session->userdata('id_user');
+			$id_user = $this->session->get('id_user');
 		}
-		$this->db->where('user.id_user', $id_user);
-		$this->db->join('user', 'user.id_user = user_settings.id_user');
-		return $this->db->get('user_settings');
+		$q = $this->builder('user_settings')->where('user.id_user', $id_user)
+		->join('user', 'user.id_user = user_settings.id_user')
+		->get();
+		return $q;
 	}
 	// --------------------------------------------------------------------
 
@@ -487,49 +488,50 @@ class KalkunModel extends Model {
 	 */
 	function get_gammu_info($option)
 	{
+		$q = null;
 		switch ($option)
 		{
 			case 'gammu_version':
-				$this->db->from('phones');
-				$this->db->select('Client');
-				$this->db->order_by('UpdatedInDB', 'DESC');
-				$this->db->limit('1');
+				$q = $this->builder('phones')
+				->select('Client')
+				->orderBy('UpdatedInDB', 'DESC')
+				->limit('1');
 				break;
 
 			case 'db_version':
-				$this->db->from('gammu');
-				$this->db->select('Version');
+				$q = $this->builder('gammu')
+				->select('Version');
 				break;
 
 			case 'last_activity':
-				$this->db->from('phones');
-				$this->db->select('UpdatedInDB');
-				$this->db->order_by('UpdatedInDB', 'DESC');
-				$this->db->limit('1');
+				$q = $this->builder('phones')
+				->select('UpdatedInDB')
+				->orderBy('UpdatedInDB', 'DESC')
+				->limit('1');
 				break;
 
 			case 'phone_imei':
-				$this->db->from('phones');
-				$this->db->select('IMEI');
-				$this->db->order_by('UpdatedInDB', 'DESC');
-				$this->db->limit('1');
+				$q = $this->builder('phones')
+				->select('IMEI')
+				->orderBy('UpdatedInDB', 'DESC')
+				->limit('1');
 				break;
 
 			case 'phone_signal':
-				$this->db->from('phones');
-				$this->db->select('Signal');
-				$this->db->order_by('UpdatedInDB', 'DESC');
-				$this->db->limit('1');
+				$q = $this->builder('phones')
+				->select('Signal')
+				->orderBy('UpdatedInDB', 'DESC')
+				->limit('1');
 				break;
 
 			case 'phone_battery':
-				$this->db->from('phones');
-				$this->db->select('Battery');
-				$this->db->order_by('UpdatedInDB', 'DESC');
-				$this->db->limit('1');
+				$q = $this->builder('phones')
+				->select('Battery')
+				->orderBy('UpdatedInDB', 'DESC')
+				->limit('1');
 				break;
 		}
-		return $this->db->get();
+		return $q->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -592,37 +594,38 @@ class KalkunModel extends Model {
 			$user_id = (array) $user_id;
 		}
 
+		$q = $this->builder('sms_used');
+
 		foreach ($user_id as $uid)
 		{
 			$date = date('Y-m-d');
 			$count = $this->_check_sms_used($date, $uid, $type);
-			$this->db->where('sms_date', $date);
-			$this->db->where('id_user', $uid);
+			$q->where('sms_date', $date);
+			$q->where('id_user', $uid);
 
-			if ($this->db->count_all_results('sms_used') > 0)
+			if ($q->countAllResults('sms_used') > 0)
 			{
-				$this->db->set($type.'_sms_count', $count + 1);
-				$this->db->where('sms_date', $date);
-				$this->db->where('id_user', $uid);
-				$this->db->update('sms_used');
+				$q->set($type.'_sms_count', $count + 1);
+				$q->where('sms_date', $date);
+				$q->where('id_user', $uid);
+				$q->update();
 			}
 			else
 			{
-				$this->db->set($type.'_sms_count', '1');
-				$this->db->set('sms_date', $date);
-				$this->db->set('id_user', $uid);
-				$this->db->insert('sms_used');
+				$q->set($type.'_sms_count', '1');
+				$q->set('sms_date', $date);
+				$q->set('id_user', $uid);
+				$q->insert();
 			}
 		}
 	}
 
 	function _check_sms_used($date, $user_id, $type = 'out')
 	{
-		$this->db->select($type.'_sms_count');
-		$this->db->from('sms_used');
-		$this->db->where('sms_date', $date);
-		$this->db->where('id_user', $user_id);
-		$res = $this->db->get()->row($type.'_sms_count');
+		$res = $this->builder('sms_used')->select($type.'_sms_count')
+		->where('sms_date', $date)
+		->where('id_user', $user_id)
+		->get()->getRow($type.'_sms_count');
 		if ( ! $res)
 		{
 			return 0;
