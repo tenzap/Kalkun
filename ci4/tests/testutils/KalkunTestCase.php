@@ -9,11 +9,15 @@
  * @link https://kalkun.sourceforge.io/
  */
 
-require_once __DIR__.'/../../vendor-test_deps/autoload.php';
+namespace App\TestUtils;
+
+use CodeIgniter\Test\CIUnitTestCase;
+
+require_once __DIR__.'/../../vendor/autoload.php';
 require_once __DIR__.'/../testutils/Html4Validator.php';
 require_once __DIR__.'/../testutils/Html5Validator.php';
 
-class KalkunTestCase extends TestCase {
+class KalkunTestCase extends CIUnitTestCase {
 
 	protected static $phpunit_version;
 	public $request_http_method;
@@ -24,6 +28,7 @@ class KalkunTestCase extends TestCase {
 
 	public static function setUpBeforeClass() : void
 	{
+		parent::setUpBeforeClass();
 		// \PHPUnit\Runner\Version exists since 6.x, before there was PHPUnit_Runner_Version
 		self::$phpunit_version = class_exists('\PHPUnit\Runner\Version') ? \PHPUnit\Runner\Version::id() : PHPUnit_Runner_Version::id();
 	}

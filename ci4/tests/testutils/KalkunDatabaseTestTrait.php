@@ -9,12 +9,17 @@
  * @link		https://kalkun.sourceforge.io/
  */
 
+namespace App\TestUtils;
+
 require_once __DIR__.'/ConfigFile.php';
 require_once __DIR__.'/DBVars.php';
-require_once __DIR__.'/../controllers/Pluginss_test.php';
+//require_once __DIR__.'/../controllers/Pluginss_test.php'; // CI4-TODO
 
-class DBSetup {
+use CodeIgniter\Test\DatabaseTestTrait;
+use Config\Database;
 
+trait KalkunDatabaseTestTrait
+{
 	const BASE_MESSAGE_DATE = '2024-02-29 00:00:00';
 	private static $id_inbox_count = 0;
 	private static $id_outbox_sentitems_count = 0; // ID is incremented in outbox, and in sentitems the ID is the same as the one set in outbox. So the counter is shared for both tables.
@@ -50,7 +55,31 @@ class DBSetup {
 	];
 	private $records = [];
 
-	public function __construct($params)
+	// use DatabaseTestTrait {
+	// 	setUpDatabase as _setUpDatabase;
+	// }
+
+
+	public function tearDownKalkunDatabaseTestTrait()
+	{
+		if ($this->db)
+		{
+			$this->db->close();
+		}
+	}
+
+	public function setDBGroup(string $engine)
+	{
+		$this->DBGroup='tests_'.$engine;
+	}
+
+	public function DBConnect()
+	{
+		$this->db = Database::connect($this->DBGroup);
+		$this->db->initialize();
+	}
+
+	public function DBSetup($params)
 	{
 		$this->engine = array_key_exists('engine', $params) ? $params['engine'] : NULL;
 		$this->db_name = array_key_exists('database', $params) ? $params['database'] : DBVars::DATABASE;
@@ -60,7 +89,7 @@ class DBSetup {
 		switch ($this->get_engine())
 		{
 			case 'mysql':
-				$this->pwdFile = new ConfigFile(APPPATH . 'config/testing/mysql.cnf');
+				$this->pwdFile = new ConfigFile(APPPATH . 'Config/Boot/mysql.cnf');
 				$this->pwdFile->write('[client]
 password=' . $this->password);
 				break;
@@ -69,6 +98,8 @@ password=' . $this->password);
 			default:
 				break;
 		}
+
+		$this->setDBGroup($this->get_engine());
 
 		// Reset counter between each instance of DBSetup.
 		self::$id_inbox_count = 0;
@@ -132,6 +163,7 @@ password=' . $this->password);
 	public function get_db_path()
 	{
 		$dir = sys_get_temp_dir().'/'; // With sqlite3, there are issues if the file is put in a subdir of /tmp/
+		// $dir = '/home/fabien/tmp/kalkun_testing/'; // With sqlite3, there are issues if the file is put in a subdir of /tmp/
 		if ( ! file_exists($dir))
 		{
 			mkdir ($dir);
@@ -174,7 +206,7 @@ password=' . $this->password);
 			case 'mysql':
 				shell_exec(
 					'mysql'
-						. ' --defaults-extra-file=' . APPPATH . 'config/testing/mysql.cnf'
+						. ' --defaults-extra-file=' . APPPATH . 'Config/Boot/mysql.cnf'
 						. ' -u ' . escapeshellarg($this->user)
 						//. ' --password=' . escapeshellarg($this->password)
 						. ' --execute="create database if not exists ' . $this->db_name . '"'
@@ -229,7 +261,7 @@ password=' . $this->password);
 			case 'mysql':
 				shell_exec(
 					'mysql'
-						. ' --defaults-extra-file=' . APPPATH . 'config/testing/mysql.cnf'
+						. ' --defaults-extra-file=' . APPPATH . 'Config/Boot/mysql.cnf'
 						. ' -u ' . escapeshellarg($this->user)
 						//. ' --password=' . escapeshellarg($this->password)
 						. ' --execute="DROP DATABASE IF EXISTS ' . $this->db_name . '"'
@@ -266,7 +298,7 @@ password=' . $this->password);
 			case 'mysql':
 				shell_exec(
 					'mysql'
-						. ' --defaults-extra-file=' . APPPATH . 'config/testing/mysql.cnf'
+						. ' --defaults-extra-file=' . APPPATH . 'Config/Boot/mysql.cnf'
 						. ' -u ' . escapeshellarg($this->user)
 						//. ' --password=' . escapeshellarg($this->password)
 						. ' --host=localhost'
@@ -352,86 +384,37 @@ password=' . $this->password);
 		switch ($this->get_engine())
 		{
 			case 'pgsql':
-				$content = "<?php
-	\$active_group = 'kalkun_postgresql';
-	\$db['kalkun_postgresql'] = array(
-	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => '" . $this->get_user() . "',
-	'password' => '" . $this->get_password() . "',
-	'database' => '" . $this->get_db_name() . "',
-	'dbdriver' => 'postgre',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => '',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
-);";
+				$content = "
+testing.database.pgsql.username = {$this->get_user()}
+testing.database.pgsql.password = {$this->get_password()}
+testing.database.pgsql.database = {$this->get_db_name()}
+";
+$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 				break;
 			case 'mysql':
-				$content = "<?php
-	\$active_group = 'kalkun_mysql';
-	\$db['kalkun_mysql'] = array(
-	'dsn'	=> '',
-	'hostname' => '127.0.0.1',
-	'username' => '" . $this->get_user() . "',
-	'password' => '" . $this->get_password() . "',
-	'database' => '" . $this->get_db_name() . "',
-	'dbdriver' => 'mysqli',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8mb4',
-	'dbcollat' => 'utf8mb4_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
-);";
+				$content = "
+testing.database.mysql.username = {$this->get_user()}
+testing.database.mysql.password = {$this->get_password()}
+testing.database.mysql.database = {$this->get_db_name()}
+";
+$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 				break;
 			case 'sqlite':
-				$content = "<?php
-	\$active_group = 'kalkun_sqlite3';
-	\$db['kalkun_sqlite3'] = array(
-	'dsn'	=> '',
-	'hostname' => '',
-	'username' => '',
-	'password' => '',
-	'database' => '" . $this->get_db_path() . "',
-	'dbdriver' => 'sqlite3',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => '',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
-);";
+				$content = "
+testing.database.sqlite.username =
+testing.database.sqlite.password =
+testing.database.sqlite.database = {$this->get_db_path()}
+";
+$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 				break;
 			default:
 				break;
 		}
 
-		$this->configFile = new ConfigFile(APPPATH . 'config/testing/database.php');
+		$this->configFile = new ConfigFile(APPPATH . 'Config/Boot/testing_database.env');
 		$this->configFile->write($content);
+		$this->configFile2 = new ConfigFile(APPPATH . 'Config/Boot/testing_database.php');
+		$this->configFile2->write($content2);
 	}
 
 	public static function setup_db_kalkun_testing2($testcase)
@@ -921,46 +904,48 @@ password=' . $this->password);
 		};
 	}
 
-	public function execute($CI)
+	public function execute()
 	{
 		foreach ($this->records as $record)
 		{
 			if ( ! isset($record['statement']) || $record['statement'] === 'insert')
 			{
+				$q = $this->db->table($record['table']);
 				foreach ($record['data'] as $key => $value)
 				{
-					$CI->db->set($key, $value);
+					$q->set($key, $value);
 				}
-				$CI->db->insert($record['table']);
+				$q->insert();
 			}
 			if (isset($record['statement']) && $record['statement'] === 'update')
 			{
+				$q = $this->db->table($record['table']);
 				foreach ($record['where'] as $key => $value)
 				{
 					if (strpos($value, '%') === FALSE)
 					{
-						$CI->db->where($key, $value);
+						$q->where($key, $value);
 					}
 					else
 					{
-						$CI->db->like($key, str_replace('%', '', $value));
+						$q->like($key, str_replace('%', '', $value));
 					}
 				}
 				foreach ($record['set'] as $key => $value)
 				{
-					$CI->db->set($key, $value);
+					$q->set($key, $value);
 				}
-				$CI->db->update($record['table']);
+				$q->update();
 			}
 		}
 		if ($this->get_engine() === 'pgsql')
 		{
 			// refresh sequence (required for postgresql because we manually set the ID column)
 			// otherwise, on further insertion without setting ID it will complain. See: https://stackoverflow.com/a/24393132
-			//$CI->db->query('ALTER SEQUENCE "outbox_ID_seq" RESTART WITH ' . (self::$id_outbox_sentitems_count+1) . ';');
-			$CI->db->query('select setval(\'"outbox_ID_seq"\'::regclass, (select max("ID") from "outbox"))');
-			$CI->db->query('select setval(\'"inbox_ID_seq"\'::regclass, (select max("ID") from "inbox"))');
-			$CI->db->query('select setval(\'"sentitems_ID_seq"\'::regclass, (select max("ID") from "inbox"))');
+			//$this->db->query('ALTER SEQUENCE "outbox_ID_seq" RESTART WITH ' . (self::$id_outbox_sentitems_count+1) . ';');
+			$this->db->query('select setval(\'"outbox_ID_seq"\'::regclass, (select max("ID") from "outbox"))');
+			$this->db->query('select setval(\'"inbox_ID_seq"\'::regclass, (select max("ID") from "inbox"))');
+			$this->db->query('select setval(\'"sentitems_ID_seq"\'::regclass, (select max("ID") from "inbox"))');
 		}
 		$this->records = [];
 	}
@@ -988,7 +973,7 @@ password=' . $this->password);
 	{
 		// Reset static members in Plugins_lib_kalkun
 		// otherwise their value is not correct when we switch db_engine
-		Pluginss_test::reset_plugins_lib_static_members();
+		// CI4-TODO Pluginss_test::reset_plugins_lib_static_members();
 
 		// We need to have a session open to install plugins
 		$testcase->request->setCallablePreConstructor(
@@ -1971,4 +1956,5 @@ password=' . $this->password);
 		];
 		return $this;
 	}
+
 }

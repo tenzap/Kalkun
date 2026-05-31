@@ -8,6 +8,7 @@
  * @license		https://spdx.org/licenses/GPL-2.0-or-later.html
  * @link		https://kalkun.sourceforge.io/
  */
+namespace App\TestUtils;
 
 class HtmlValidator {
 
