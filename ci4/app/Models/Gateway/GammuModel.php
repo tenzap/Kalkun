@@ -10,6 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
+
+use CodeIgniter\Model;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * Gammu_model Class
@@ -20,8 +24,12 @@
  * @subpackage	Messages
  * @category	Models
  */
-class Gammu_model extends CI_Model {
+class GammuModel extends Model {
 
+    use KalkunPhonenumberTrait;
+
+	protected $table = 'DUMMY';
+	protected $allowedFields = [];
 	var $udh = '';
 
 	/**
@@ -29,19 +37,19 @@ class Gammu_model extends CI_Model {
 	 *
 	 * @access	public
 	 */
-	function __construct()
-	{
-		parent::__construct();
+    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+    {
+		parent::__construct($db, $validation);
 
 		// Set mb encoding
-		mb_internal_encoding($this->config->item('charset'));
+		mb_internal_encoding(config('App')->charset);
 	}
 
 	// --------------------------------------------------------------------
 
 	function _send_wap_link($data)
 	{
-		$this->load->helper(['kalkun', 'i18n']);
+		helper(['kalkun', 'i18n']);
 
 		$f_ret = array();
 
@@ -51,8 +59,8 @@ class Gammu_model extends CI_Model {
 				&& ! is_null_loose($data['message'])
 				&& $data['type'] === 'waplink')
 		{
-			$cmd = escapeshellarg($this->config->item('gammu_sms_inject'))
-					. ' -c ' .escapeshellarg($this->config->item('gammu_config'))
+			$cmd = escapeshellarg(config('Kalkun')->gammu_sms_inject)
+					. ' -c ' .escapeshellarg(config('Kalkun')->gammu_config)
 					. ' WAPINDICATOR '
 					. ' ' . escapeshellarg($data['dest'])
 					. ' ' . escapeshellarg($data['url'])
@@ -92,6 +100,7 @@ class Gammu_model extends CI_Model {
 							->set('id_user', $data['uid'])
 							->insert('user_outbox');
 				}
+				$this->Kalkun_model = model('KalkunModel');
 				$this->Kalkun_model->add_sms_used($this->session->userdata('id_user'));
 				$f_ret = array('status' => tr_raw('Message queued.'));
 			}
@@ -123,7 +132,7 @@ class Gammu_model extends CI_Model {
 	 */
 	function send_messages($data)
 	{
-		$this->load->helper('kalkun');
+		helper('kalkun');
 
 		// default values
 		$data = $this->_default(array('SenderID' => NULL, 'CreatorID' => '', 'validity' => '-1'), $data);
@@ -148,6 +157,7 @@ class Gammu_model extends CI_Model {
 			// Check message's length
 			$messagelength = $this->_get_message_length($data['message'], $coding);
 
+			$this->Kalkun_model = model('KalkunModel');
 			// Multipart message
 			if ($messagelength > $standar_length)
 			{
@@ -176,6 +186,7 @@ class Gammu_model extends CI_Model {
 				$data['message'] = $tmpmsg[0];
 				$data['part'] = $part;
 				$outboxid = $this->_send_message_route($data);
+
 				$this->Kalkun_model->add_sms_used($data['uid']);	// FIXME
 
 				// insert the rest part to Outbox Multipart
@@ -211,13 +222,12 @@ class Gammu_model extends CI_Model {
 	 */
 	function _send_message_route($tmp_data)
 	{
-		$this->load->helper('kalkun');
-		$this->load->config('kalkun_settings');
+		helper('kalkun');
 
 		$data = array (
 			'InsertIntoDB' => date('Y-m-d H:i:s'),
 			'SendingDateTime' => $tmp_data['date'],
-			'DestinationNumber' => phone_format_e164($tmp_data['dest']),
+			'DestinationNumber' => $this->phone_format_e164($tmp_data['dest']),
 			'Coding' => get_gammu_coding($tmp_data['message']),
 			'Class' => $tmp_data['class'],
 			'CreatorID' => $tmp_data['CreatorID'],
@@ -225,7 +235,7 @@ class Gammu_model extends CI_Model {
 			'TextDecoded' => $tmp_data['message'],
 			'RelativeValidity' => $tmp_data['validity'],
 			'DeliveryReport' => $tmp_data['delivery_report'],
-			'CreatorID' => '🦃 Kalkun '.$this->config->item('kalkun_version')
+			'CreatorID' => '🦃 Kalkun '.config('Kalkun')->kalkun_version
 		);
 
 		if ($tmp_data['option'] === 'multipart')
@@ -234,14 +244,14 @@ class Gammu_model extends CI_Model {
 			$data['UDH'] = $tmp_data['UDH'] . sprintf('%02X', $tmp_data['part']) . '01';
 		}
 
-		$this->db->insert('outbox', $data);
+		$this->builder('outbox')->insert($data);
 
-		$last_outbox_id = $this->db->insert_id();
+		$last_outbox_id = $this->db->insertId();
 		$user = array(
 			'id_outbox' => $last_outbox_id,
 			'id_user' => $tmp_data['uid']
 		);
-		$this->db->insert('user_outbox', $user);
+		$this->builder('user_outbox')->insert($user);
 
 		if ($tmp_data['option'] === 'multipart')
 		{
@@ -272,7 +282,7 @@ class Gammu_model extends CI_Model {
 			'Class' => $class,
 			'TextDecoded' => $message,
 		);
-		$this->db->insert('outbox_multipart', $data);
+		$this->builder('outbox_multipart')->insert($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -286,6 +296,7 @@ class Gammu_model extends CI_Model {
 			}
 		}
 
+		$this->Kalkun_model = model('KalkunModel');
 		$sort_option = $this->Kalkun_model->get_setting()->row('conversation_sort');
 
 		// Inbox
@@ -448,7 +459,7 @@ class Gammu_model extends CI_Model {
 		}
 
 		// sort data
-		$this->load->helper('kalkun');
+		helper('kalkun');
 		stable_usort($data['messages'], 'compare_date_'.$sort_option);
 
 		$return_data = array();
@@ -508,12 +519,12 @@ class Gammu_model extends CI_Model {
 		// if phone number is set
 		if (isset($options['number']) && $options['number'] !== 'sending_error')
 		{
-			$this->load->model('Phonebook_model');
+			$this->Phonebook_model = model('PhonebookModel');
 			$arr_number = $this->Phonebook_model->convert_phonenumber(array('number' => $options['number']));
 		}
 
 		$user_folder = 'user_'.$options['type'];
-		$this->db->from($options['type']);
+		$q = $this->builder($options['type']);
 
 		// set valid field name
 		if ($options['type'] === 'inbox')
@@ -521,10 +532,10 @@ class Gammu_model extends CI_Model {
 			$tmp_number = 'SenderNumber';
 			$tmp_order = 'ReceivingDateTime';
 
-			$this->db->group_start()
+			$q->groupStart()
 				->where('UDH', '')
-				->or_like('UDH', '01', 'before')
-				->group_end();
+				->orLike('UDH', '01', 'before')
+				->groupEnd();
 		}
 		else
 		{
@@ -532,27 +543,27 @@ class Gammu_model extends CI_Model {
 			$tmp_order = 'SendingDateTime';
 			if ($options['type'] === 'sentitems')
 			{
-				$this->db->where('SequencePosition', '1');
+				$q->where('SequencePosition', '1');
 			}
 		}
 
 		// if id message is set
 		if (isset($options['id_message']))
 		{
-			$this->db->where('ID', $options['id_message']);
+			$q->where('ID', $options['id_message']);
 		}
 		else
 		{
 			// if id folder is set, else use default value (inbox = 1, sentitems = 3)
 			if (isset($options['id_folder']))
 			{
-				$this->db->where('id_folder', $options['id_folder']);
+				$q->where('id_folder', $options['id_folder']);
 			}
 			else
 			{
 				if ($options['type'] !== 'outbox')
 				{
-					$this->db->where('id_folder', array_search($options['type'], $valid_type) + 1);
+					$q->where('id_folder', array_search($options['type'], $valid_type) + 1);
 				}
 			}
 		}
@@ -561,19 +572,19 @@ class Gammu_model extends CI_Model {
 		if (isset($options['search_string']))
 		{
 			$search_word = strtolower($options['search_string']);
-			$this->db->like('LOWER('.$this->db->protect_identifiers('TextDecoded').')', $search_word);
+			$q->like('LOWER('.$q->protect_identifiers('TextDecoded').')', $search_word);
 		}
 
 		// if phone number is set
 		if (isset($options['number']) && $options['number'] !== 'sending_error')
 		{
-			$this->db->where_in($tmp_number, $arr_number);
+			$q->whereIn($tmp_number, $arr_number);
 		}
 
 		// sentitems only error
 		if ($options['type'] === 'sentitems' && isset($options['number']) && $options['number'] === 'sending_error')
 		{
-			$this->db->where('Status', 'SendingError');
+			$q->where('Status', 'SendingError');
 		}
 
 		// if readed is set
@@ -583,7 +594,7 @@ class Gammu_model extends CI_Model {
 			if ($options['type'] === 'inbox')
 			{
 				$readed = ($options['readed']) ? 'true' : 'false';
-				$this->db->where('readed', $readed);
+				$q->where('readed', $readed);
 			}
 		}
 
@@ -594,38 +605,38 @@ class Gammu_model extends CI_Model {
 			if ($options['type'] === 'inbox')
 			{
 				$processed = ($options['processed']) ? 'true' : 'false';
-				$this->db->where('Processed', $processed);
+				$q->where('Processed', $processed);
 			}
 		}
 
 		// join user table
 		if (isset($options['uid']))
 		{
-			$this->db->join($user_folder, $user_folder.'.id_'.$options['type'].'='.$options['type'].'.ID');
-			$this->db->where($user_folder.'.id_user', $options['uid']);
+			$q->join($user_folder, $user_folder.'.id_'.$options['type'].'='.$options['type'].'.ID');
+			$q->where($user_folder.'.id_user', $options['uid']);
 
 			// if trash is set
 			if (isset($options['trash']) && is_bool($options['trash']))
 			{
-				$this->db->where($user_folder.'.trash', $options['trash']);
+				$q->where($user_folder.'.trash', $options['trash']);
 			}
 		}
 
 		if (isset($options['order_by']))
 		{
-			$this->db->order_by($options['order_by'], isset($options['order_by_type']) ? $options['order_by_type'] : 'DESC');
+			$q->orderBy($options['order_by'], isset($options['order_by_type']) ? $options['order_by_type'] : 'DESC');
 		}
 
 		if (isset($options['limit']) && isset($options['offset']))
 		{
-			$this->db->limit($options['limit'], $options['offset']);
+			$q->limit($options['limit'], $options['offset']);
 		}
 
 		// Normally we always have a order by clause, but not in tests
 		// So define a fallback sort order to have consistent results.
-		$this->db->order_by('ID', 'ASC');
+		$q->orderBy('ID', 'ASC');
 
-		$result = $this->db->get();
+		$result = $q->get();
 		return $result;
 	}
 
@@ -1349,7 +1360,7 @@ class Gammu_model extends CI_Model {
 					$this->db->select('MultiPart');
 					$this->db->where('ID', $param['id_message']);
 					$result = $this->db->get('outbox')->row('MultiPart');
-					$this->load->helper('kalkun_helper');
+					helper('kalkun_helper');
 					return db_boolean_to_php_bool($this->db->dbdriver, $result);
 				}
 				else
@@ -1439,8 +1450,7 @@ class Gammu_model extends CI_Model {
 
 	function get_user_outbox($user_id)
 	{
-		$this->db->where('id_user', $user_id);
-		return $this->db->get('user_outbox');
+		return $this->builder('user_outbox')->where('id_user', $user_id)->get();
 	}
 
 	function delete_user_outbox($id_message)

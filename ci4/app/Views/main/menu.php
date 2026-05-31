@@ -9,7 +9,8 @@
 					<?php echo anchor('messages/folder/inbox', tr('Inbox'));?>
 					<span class="unread_inbox_notif">
 						<?php
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'uid' => $this->session->userdata('id_user')))->num_rows();
+	$this->Message_model = model('MessageModel');
+	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
@@ -19,13 +20,13 @@
 				</li>
 				<li><?php echo anchor('messages/folder/outbox', tr('Outbox')); ?></li>
 				<li><?php echo anchor('messages/folder/sentitems', tr('Sent items')); ?> </li>
-				<?php if ($this->uri->segment(3) === 'sentitems' || $this->uri->segment(4) === 'sentitems') : ?>
+				<?php if ((service('uri')->getTotalSegments() >= 3 && service('uri')->getSegment(3) === 'sentitems') || (service('uri')->getTotalSegments() >= 4 && service('uri')->getSegment(4) === 'sentitems')) : ?>
 				<li style="list-style: none;"><?php echo anchor('messages/conversation/folder/sentitems/sending_error', tr('Sending error')); ?> </li>
 				<?php endif; ?>
 				<li><?php echo anchor('messages/my_folder/inbox/6', tr('Spam')); ?>
 					<span class="unread_spam_notif">
 						<?php
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => '6', 'uid' => $this->session->userdata('id_user')))->num_rows();
+	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => '6', 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
@@ -44,10 +45,10 @@
 		<div class="clear">&nbsp;</div>
 		<div id="mf_child_menu">
 			<ul>
-				<?php foreach ($this->Kalkun_model->get_folders('all')->result() as $folder):?>
+				<?php foreach (model('KalkunModel')->get_folders('all')->getResult() as $folder):?>
 				<li>
 					<?php echo anchor('messages/my_folder/inbox/'.$folder->id_folder, htmlentities($folder->name, ENT_QUOTES));
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => $folder->id_folder, 'uid' => $this->session->userdata('id_user')))->num_rows();
+	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => $folder->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
@@ -59,10 +60,10 @@
 	</li>
 	<li><?php echo  anchor('phonebook', tr('Phonebook')); ?></li>
 	<?php
-$level = $this->session->userdata('level');
+$level = session()->get('level');
 if ($level === 'admin'):?>
 	<li><?php echo anchor('users', tr('Users')); ?></li>
-	<?php if ($this->config->item('sms_content')): ?>
+	<?php if (false): // if (config('Kalkun')->sms_content): // CI4-TODO. Check the meaning. This didn't exist in kalkun 0.8 anyway. Probably something from the past... ?>
 	<li id="bottom"><?php echo anchor('member', tr('Member')); ?></li>
 	<?php endif; ?>
 	<li><?php echo anchor('pluginss', tr('Plugins')); ?></li>

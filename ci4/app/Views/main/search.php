@@ -1,6 +1,6 @@
 <?php
-$this->load->helper('form');
-if ($this->uri->segment(1) === 'phonebook') :
+helper('form');
+if (service('uri')->getSegment(1) === 'phonebook') :
 echo form_open('phonebook', array('class' => 'sms_search_form')); ?>
 <table>
 	<tr style="vertical-align: top">

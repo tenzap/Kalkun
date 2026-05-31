@@ -10,7 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models;
 
+use CodeIgniter\Model;
+use CodeIgniter\Config\Factories;
 /**
  * Message_model Class
  *
@@ -20,8 +23,10 @@
  * @subpackage	Messages
  * @category	Models
  */
-class Message_model extends CI_Model {
+class MessageModel extends Model {
 
+	protected $table = '';
+	protected $allowedFields = [];
 	private $gateway = '';
 
 	/**
@@ -29,14 +34,13 @@ class Message_model extends CI_Model {
 	 *
 	 * @access	public
 	 */
-	function __construct()
-	{
-		parent::__construct();
-		$gateway_config = $this->config->item('gateway');
-		$gateway_class = $gateway_config['engine'].'_model';
+    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+    {
+		parent::__construct($db, $validation);
+		$gateway_config = config('Kalkun')->gateway;
+		$gateway_class = ucwords($gateway_config['engine']).'Model';
 		//require_once('gateway/'.$gateway_config['engine'].'_model.php');
-		$this->load->model('gateway/'.$gateway_class, 'gate');
-		$this->gateway = $this->gate;
+		$this->gateway = model('Gateway/'.$gateway_class);
 	}
 
 	public function __call($name, $arguments)

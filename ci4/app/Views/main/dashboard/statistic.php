@@ -1,7 +1,7 @@
-<?php $this->load->view('js_init/js_dashboard');?>
+<?php echo view('js_init/js_dashboard');?>
 
-<!--base href="<?= $this->config->item('base_url') ?>" /-->
-<script src="<?php echo $this->config->item('js_path');?>chart.umd.js"></script>
+<!--base href="<?= config('App')->baseURL ?>" /-->
+<script src="<?php echo config('Kalkun')->js_path;?>chart.umd.js"></script>
 
 <div style="text-align: right;">
 	<a href="<?php echo site_url('kalkun/get_statistic/days');?>" class="stats-toggle"><?php echo tr('date_day');?></a>&nbsp; &nbsp;
@@ -80,12 +80,13 @@
 </script>
 
 <?php
-$uid = $this->session->userdata('id_user');
-$inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'uid' => $uid))->num_rows();
-$outbox = $this->Message_model->get_messages(array('type' => 'outbox', 'uid' => $uid))->num_rows();
-$sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'uid' => $uid))->num_rows();
-$trash_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => '5', 'uid' => $uid))->num_rows();
-$trash_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => '5', 'uid' => $uid))->num_rows();
+$uid = session()->get('id_user');
+$this->Message_model = model('MessageModel');
+$inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'uid' => $uid))->getNumRows();
+$outbox = $this->Message_model->get_messages(array('type' => 'outbox', 'uid' => $uid))->getNumRows();
+$sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'uid' => $uid))->getNumRows();
+$trash_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
+$trash_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
 $trash = $trash_inbox + $trash_sentitems;
 ?>
 
@@ -100,9 +101,10 @@ $trash = $trash_inbox + $trash_sentitems;
 <div style="float: left; width: 250px;">
 	<h1><?php echo tr('My folders');?>: </h1>
 	<?php
-foreach ($this->Kalkun_model->get_folders('all')->result() as $val):
-$folder_count_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => $val->id_folder, 'uid' => $this->session->userdata('id_user')))->num_rows();
-$folder_count_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => $val->id_folder, 'uid' => $this->session->userdata('id_user')))->num_rows();
+$this->Kalkun_model = model('KalkunModel');
+foreach ($this->Kalkun_model->get_folders('all')->getResult() as $val):
+$folder_count_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
+$folder_count_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
 $folder_count = $folder_count_inbox + $folder_count_sentitems;
 echo '<p><span>'.htmlentities($val->name, ENT_QUOTES).': </span>'.$folder_count.'</p>';
 endforeach;
@@ -110,11 +112,13 @@ endforeach;
 </div>
 
 <div style="float: left; width: 200px;">
-	<h1><?php echo tr('Phonebook');?>: </h1>
+	<h1><?php echo tr('Phonebook');
+	$this->Phonebook_model = model('PhonebookModel');
+?>: </h1>
 	<p><span><?php echo tr('Contact');?>: </span>
-		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'all'))->num_rows();?></p>
+		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'all'))->getNumRows();?></p>
 	<p><span><?php echo tr('Groups');?>: </span>
-		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'group'))->num_rows();?></p>
+		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'group'))->getNumRows();?></p>
 </div>
 
 <div style="clear: both;">&nbsp;</div>

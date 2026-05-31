@@ -1,12 +1,12 @@
 <!-- About dialog -->
 <div id="about" title="<?php echo tr('About {0}', NULL, 'Kalkun');?>" class="dialog">
 	<div class="mascot" style="float: left;">
-		<img src="<?php echo $this->config->item('img_path');?>mascot.png" alt="Kalkun mascot">
+		<img src="<?php echo config('Kalkun')->img_path;?>mascot.png" alt="Kalkun mascot">
 	</div>
 
 	<div class="detail" style="float: left">
 		<div style="text-align: center">
-			<div class="base_bg rounded" style="text-align: center;"><img src="<?php echo $this->config->item('img_path');?>logo.png" alt="Kalkun logo"></div>
+			<div class="base_bg rounded" style="text-align: center;"><img src="<?php echo config('Kalkun')->img_path;?>logo.png" alt="Kalkun logo"></div>
 			<h1><?php echo tr('PHP Frontend for gammu-smsd'); ?></h1>
 		</div>
 		<table>
@@ -18,12 +18,12 @@
 			<tr>
 				<td><b><?php echo tr('Version'); ?>:</b></td>
 				<td>&nbsp;</td>
-				<td><?php echo $this->config->item('kalkun_version').' ('.$this->config->item('kalkun_codename').')';?></td>
+				<td><?php echo config('Kalkun')->kalkun_version.' ('.config('Kalkun')->kalkun_codename.')';?></td>
 			</tr>
 			<tr>
 				<td><b><?php echo tr('Released'); ?>:</b></td>
 				<td>&nbsp;</td>
-				<td><?php echo $this->config->item('kalkun_release_date');?></td>
+				<td><?php echo config('Kalkun')->kalkun_release_date;?></td>
 			</tr>
 			<tr>
 				<td><b><?php echo tr('License'); ?>:</b></td>
@@ -44,28 +44,28 @@
 		<p>If you find an issue, please report it on the <a class="base_color underline_link" href="https://github.com/kalkun-sms/Kalkun/issues" target="_blank">issue page of the project</a> and add the information below:</p>
 		<p>
 			<b>* Kalkun version:</b>
-			`<?php echo $this->config->item('kalkun_version');?> [Lang: <?php echo htmlentities(strval($this->Kalkun_model->get_setting()->row('language')), ENT_QUOTES);?>] [CountryCode: <?php echo htmlentities(strval($this->Kalkun_model->get_setting()->row('country_code')), ENT_QUOTES);?>]`
+			`<?php echo config('Kalkun')->kalkun_version;?> [Lang: <?php echo htmlentities(strval(model('KalkunModel')->get_setting()->getRow('language')), ENT_QUOTES);?>] [CountryCode: <?php echo htmlentities(strval(model('KalkunModel')->get_setting()->getRow('country_code')), ENT_QUOTES);?>]`
 			<br><b>* Operating system:</b>
 			`<?php echo htmlentities(php_uname(), ENT_QUOTES); ?>`
 			<br><b>* PHP Version:</b>
 			`<?php echo htmlentities(phpversion(), ENT_QUOTES); ?>`
 			<br><b>* DB Backend:</b>
 			`<?php
-				$this->load->helper('kalkun_helper');
-				$db_name_human = get_database_property($this->db->platform())['human'];
-				echo $db_name_human, ' ', $this->db->version(), ' (', $this->db->platform(), ')'; ?>`
+				helper('kalkun_helper');
+				$db = db_connect();
+				$db_name_human = get_database_property($db->getPlatform())['human'];
+				echo $db_name_human, ' ', $db->getVersion(), ' (', $db->getPlatform(), ')'; ?>`
 			<br><b>* Gammu version:</b>
-			`<?php echo  filter_data(htmlentities(strval($this->Kalkun_model->get_gammu_info('gammu_version')->row('Client')), ENT_QUOTES)); ?>`
+			`<?php echo  filter_data(htmlentities(strval(model('KalkunModel')->get_gammu_info('gammu_version')->getRow('Client')), ENT_QUOTES)); ?>`
 			<br><b>* Gammu DB schema:</b>
-			`<?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('db_version')->row('Version'), ENT_QUOTES)); ?>`
+			`<?php echo  filter_data(htmlentities(model('KalkunModel')->get_gammu_info('db_version')->getRow('Version'), ENT_QUOTES)); ?>`
 			<br><b>* Browser:</b>
 			`<?php
-					$this->load->library('user_agent');
-					echo htmlentities($this->agent->browser(), ENT_QUOTES), ' ', htmlentities($this->agent->version(), ENT_QUOTES) ; ?>`
+					echo htmlentities($agent->getBrowser(), ENT_QUOTES), ' ', htmlentities($agent->getVersion(), ENT_QUOTES) ; ?>`
 			<br><b>* Plugins:</b>
 			`<?php
-					$this->load->library('Plugins_lib_kalkun');
-					echo htmlentities(implode(', ', array_keys($this->plugins_lib_kalkun->get_enabled_plugins())), ENT_QUOTES);
+					//CI4-TODO $this->load->library('Plugins_lib_kalkun');
+					//CI4-TODO echo htmlentities(implode(', ', array_keys($this->plugins_lib_kalkun->get_enabled_plugins())), ENT_QUOTES);
 					?>`
 		</p>
 	</div>
@@ -74,12 +74,12 @@
 <!-- Add Folder Dialog -->
 <div id="addfolderdialog" title="<?php echo tr('Add folder');?>" class="dialog">
 	<?php
-	$this->load->helper('form');
+	helper('form');
 	echo form_open('kalkun/add_folder', array('class' => 'addfolderform'));
 ?>
 	<label for="folder_name"><?php echo tr('Folder name');?></label>
-	<input type="hidden" name="id_user" value="<?php echo $this->session->userdata('id_user');?>">
-	<input type="hidden" name="source_url" value="<?php echo htmlentities($this->uri->uri_string(), ENT_QUOTES);?>">
+	<input type="hidden" name="id_user" value="<?php echo session()->get('id_user');?>">
+	<input type="hidden" name="source_url" value="<?php echo htmlentities(current_url(), ENT_QUOTES);?>">
 	<input type="text" name="folder_name" id="folder_name" class="text ui-widget-content ui-corner-all">
 	<?php echo form_close(); ?>
 </div>
@@ -222,9 +222,9 @@
 <!-- Advanced Search Dialog -->
 <div id="a_search_dialog" title="<?php echo tr('Advanced search');?>" class="dialog">
 	<?php
-	$this->load->helper('form');
+	helper('form');
 	echo form_open('messages/query', array('id' => 'a_search_form'));
-	echo form_hidden('a_search_trigger', TRUE);
+	echo form_hidden('a_search_trigger', 'TRUE'); // CI4-TODO change default value from boolean TRUE to string. Adapt controllers/Messages.php consequently.
 	?>
 	<table style="width: 100%;">
 		<tr>
@@ -245,8 +245,8 @@
 					<option value="6"><?php echo tr('Spam');?></option>
 					<option value="5"><?php echo tr('Trash');?></option>
 					<?php
-					$my_folders = $this->Kalkun_model->get_folders('all');
-					foreach ($my_folders->result() as $my_folder): ?>
+					$my_folders = model('KalkunModel')->get_folders('all');
+					foreach ($my_folders->getResult() as $my_folder): ?>
 					<option value="<?php echo htmlentities($my_folder->id_folder, ENT_QUOTES); ?>"><?php echo htmlentities($my_folder->name, ENT_QUOTES); ?></option>
 					<?php
 					endforeach; ?>
@@ -297,21 +297,21 @@
 	<!-- POST or GET data container -->
 	<div id="post_get_data" style="display: none;">
 		<?php
-	if ($this->input->post())
+	if (service('request')->is('POST'))
 	{
-		echo htmlentities(json_protect($this->input->post(), ENT_QUOTES));
+		echo htmlentities(json_protect(service('request')->getPost(), ENT_QUOTES));
 	}
 	else
 	{
-		if ($this->session->flashdata('bef_login_post_data'))
+		if (session()->getFlashdata('bef_login_post_data'))
 		{
-			echo htmlentities(json_protect($this->session->flashdata('bef_login_post_data'), ENT_QUOTES));
+			echo htmlentities(json_protect(session()->getFlashdata('bef_login_post_data'), ENT_QUOTES));
 		}
 		else
 		{
-			if ($this->input->get())
+			if (service('request')->is('GET'))
 			{
-				echo htmlentities(json_protect($this->input->get(), ENT_QUOTES));
+				echo htmlentities(json_protect(service('request')->getGet(), ENT_QUOTES));
 			}
 			else
 			{

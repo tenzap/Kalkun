@@ -1,12 +1,12 @@
 <script id="js_layout">
 	// Initial value for inbox unread cound
-	unread_in_count = <?php echo $this->Message_model->get_messages([
+	unread_in_count = <?php echo model('MessageModel')->get_messages([
 		'readed' => FALSE,
-		'uid' => $this->session->userdata('id_user'),
-	])->num_rows(); ?>;
+		'uid' => session()->get('id_user'),
+	])->getNumRows(); ?>;
 
-	csrf_name = "<?php echo $this->security->get_csrf_token_name(); ?>";
-	csrf_hash = "<?php echo $this->security->get_csrf_hash() ?>";
+	csrf_name = "<?php echo csrf_token(); ?>";
+	csrf_hash = "<?php echo csrf_hash(); ?>";
 
 	let cntdwnId, timeoutIdAutoRefr;
 
@@ -54,7 +54,7 @@
 
 	function play_notification_sound() {
 		// Use HTMLAudioElement: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
-		var audioElement = new Audio('<?php echo $this->config->item('sound_path').$this->config->item('new_incoming_message_sound')?>');
+		var audioElement = new Audio('<?php echo config('Kalkun')->sound_path.config('Kalkun')->new_incoming_message_sound?>');
 		audioElement.play();
 	}
 
@@ -96,7 +96,7 @@
 				}
 			});
 
-		<?php if ($this->uri->segment(2) === 'folder' || $this->uri->segment(2) === 'my_folder'): ?>
+		<?php if (service('uri')->getTotalSegments() >= 2 && (service('uri')->getSegment(2) === 'folder' || service('uri')->getSegment(2) === 'my_folder')): ?>
 
 		function auto_refresh() {
 			$.get("<?php echo site_url('messages').'/'.$folder.'/'.$type.'/'.$id_folder ?>")
@@ -244,7 +244,7 @@
 						$('.ui-dialog-buttonpane :button').each(function() {
 							if ($(this).text() == <?php echo tr_js('Send message'); ?>) {
 								var sending_html = <?php echo tr_js('Sending'); ?>;
-								sending_html += " <img src=\"<?php echo $this->config->item('img_path').'processing.gif' ?>\" height=\"12\" style=\"margin:0px; padding:0px;\" alt=\"wheel\">";
+								sending_html += " <img src=\"<?php echo config('Kalkun')->img_path.'processing.gif' ?>\" height=\"12\" style=\"margin:0px; padding:0px;\" alt=\"wheel\">";
 								$(this).html(sending_html);
 							}
 
@@ -439,7 +439,7 @@
 			return false;
 		});
 
-		<?php if ($this->uri->segment(2) !== 'folder' AND $this->uri->segment(2) !== 'my_folder'): ?>
+		<?php if (service('uri')->getTotalSegments() >= 2 && (service('uri')->getSegment(2) !== 'folder' AND service('uri')->getSegment(2) !== 'my_folder')): ?>
 		// logo click 
 		$('div#logo a').on("click", function() {
 			new_notification('false');

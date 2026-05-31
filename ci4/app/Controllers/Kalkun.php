@@ -10,6 +10,9 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
 
 /**
  * Kalkun Class
@@ -18,14 +21,14 @@
  * @subpackage	Base
  * @category	Controllers
  */
-class Kalkun extends MY_Controller {
 
+class Kalkun extends MYController {
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}
@@ -39,16 +42,18 @@ class Kalkun extends MY_Controller {
 	 *
 	 * @access	public
 	 */
-	function index()
+	public function getIndex()
 	{
-		$this->load->model('Phonebook_model');
+		helper('i18n');
+		$this->Phonebook_model = model('PhonebookModel');
 		$data['main'] = 'main/dashboard/home';
 		$data['title'] = 'Dashboard';
-		if ($this->config->item('disable_outgoing'))
+		$data['agent'] = $this->request->getUserAgent();
+		if (config('Kalkun')->disable_outgoing)
 		{
 			$data['alerts'][] = tr_raw('Outgoing SMS disabled. Contact system administrator.');
 		}
-		$this->load->view('main/layout', $data);
+		return view('main/layout', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -340,8 +345,9 @@ class Kalkun extends MY_Controller {
 		$data['main'] = 'main/settings/setting';
 		$data['settings'] = $this->Kalkun_model->get_setting();
 		$data['type'] = 'main/settings/'.$type;
+		$data['agent'] = $this->request->getUserAgent();
 
-		$this->load->view('main/layout', $data);
+		return view('main/layout', $data);
 	}
 
 	// --------------------------------------------------------------------

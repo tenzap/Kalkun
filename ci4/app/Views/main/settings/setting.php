@@ -24,14 +24,14 @@
 		<?php if ($type !== 'main/settings/filters'):?>
 		<?php
 echo form_open('settings/save', array('id' => 'settingsForm'));
-$this->load->view($type);
+echo view($type);
 ?>
 		<br>
 		<div style="text-align: center"><input type="submit" id="submitBtn" value="<?php echo tr('Save'); ?>"></div>
 		<?php echo form_close();?>
 
 		<?php else:?>
-		<?php $this->load->view($type);?>
+		<?php echo view($type);?>
 		<?php endif;?>
 	</div>
 </div>

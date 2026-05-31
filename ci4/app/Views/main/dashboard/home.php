@@ -1,4 +1,4 @@
-<?php $this->load->helper('kalkun'); ?>
+<?php helper('kalkun'); ?>
 <div id="space_area">
 
 	<?php if (isset($alerts) && count($alerts) > 0): ?>
@@ -15,11 +15,11 @@ endforeach;
 
 	<div class="dash_box_titlebar"><?php echo tr('Statistics');?></div>
 	<div class="dash_box">
-		<?php $this->load->view('main/dashboard/statistic');?>
+		<?php echo view('main/dashboard/statistic');?>
 	</div>
 	<br>
 
-	<?php if ($this->session->userdata('level') === 'admin'): ?>
+	<?php if (session()->get('level') === 'admin'): ?>
 	<div class="dash_box_titlebar"><?php echo tr('System information');?></div>
 	<div class="dash_box">
 		<table class="sysinfo">
@@ -31,17 +31,19 @@ endforeach;
 			<tr>
 				<td><?php echo tr('Gammu version');?></td>
 				<td>:</td>
-				<td><?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('gammu_version')->row('Client') !== NULL ? $this->Kalkun_model->get_gammu_info('gammu_version')->row('Client') : '', ENT_QUOTES)); ?></td>
+				<td><?php
+				$this->Kalkun_model = model('KalkunModel');
+				echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('gammu_version')->getRow('Client') !== NULL ? $this->Kalkun_model->get_gammu_info('gammu_version')->getRow('Client') : '', ENT_QUOTES)); ?></td>
 			</tr>
 			<tr>
 				<td><?php echo tr('Gammu DB schema');?></td>
 				<td>:</td>
-				<td><?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('db_version')->row('Version'), ENT_QUOTES)); ?></td>
+				<td><?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('db_version')->getRow('Version')), ENT_QUOTES); ?></td>
 			</tr>
 			<tr>
 				<td><?php echo tr('Modem IMEI');?></td>
 				<td>:</td>
-				<td><?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('phone_imei')->row('IMEI') !== NULL ? $this->Kalkun_model->get_gammu_info('phone_imei')->row('IMEI') : '', ENT_QUOTES)); ?></td>
+				<td><?php echo  filter_data(htmlentities($this->Kalkun_model->get_gammu_info('phone_imei')->getRow('IMEI') !== NULL ? $this->Kalkun_model->get_gammu_info('phone_imei')->getRow('IMEI') : '', ENT_QUOTES)); ?></td>
 			</tr>
 		</table>
 	</div>

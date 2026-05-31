@@ -3,7 +3,7 @@
 		<td><?php echo tr('Language'); ?></td>
 		<td>
 			<?php
-$lang = $this->lang->kalkun_supported_languages();
+$lang = service('Language')->kalkun_supported_languages();
 $lang_act = $this->Kalkun_model->get_setting()->row('language');
 echo form_dropdown('language', $lang, $lang_act);
 ?>
