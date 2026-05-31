@@ -70,11 +70,11 @@ class KalkunModel extends Model {
 
 			if ($this->request->getPost('r_url'))
 			{
-				redirect($this->request->getPost('r_url'));
+				return redirect()->to($this->request->getPost('r_url'));
 			}
 			else
 			{
-				redirect('kalkun');
+				return redirect()->to('kalkun');
 			}
 		}
 		else
@@ -104,14 +104,14 @@ class KalkunModel extends Model {
 
 		$query = $this->builder('user')
 		  ->where('username', $username)
-		  ->or_where('phone_number', $phone)
+		  ->orWhere('phone_number', $phone)
 		  ->get();
 
 		if ($query->getNumRows() === 1)
 		{
-			$this->db->from('user_forgot_password');
-			$this->db->where('id_user', $query->getRow('id_user'));
-			$user = $this->db->get();
+			/*$this->db->from('user_forgot_password');
+			$this->db->where('id_user', $query->getRow('id_user'));*/
+			$user = $this->builder('user_forgot_password')->where('id_user', $query->getRow('id_user'))->get();
 
 			if ($user->getNumRows() === 1)
 			{
@@ -120,6 +120,7 @@ class KalkunModel extends Model {
 				// Destroy invalid token
 				if ( ! $valid_token)
 				{
+					//$this->Kalkun_model = model('KalkunModel');
 					$this->Kalkun_model->delete_token($query->getRow('id_user'));
 				}
 				else
@@ -131,10 +132,14 @@ class KalkunModel extends Model {
 			if ($user->getNumRows() === 0 OR ! $valid_token)
 			{
 				$token = bin2hex(random_bytes(16));
-				$this->db->set('id_user', $query->getRow('id_user'));
-				$this->db->set('token', $token);
-				$this->db->set('valid_until', date('Y-m-d H:i:s', mktime(date('H'), date('i') + 30, date('s'), date('m'), date('d'), date('Y'))));
-				$this->db->insert('user_forgot_password');
+				// $this->db->set('id_user', $query->getRow('id_user'));
+				// $this->db->set('token', $token);
+				// $this->db->set('valid_until', date('Y-m-d H:i:s', mktime(date('H'), date('i') + 30, date('s'), date('m'), date('d'), date('Y'))));
+				$this->builder('user_forgot_password')
+				->set('id_user', $query->getRow('id_user'))
+				->set('token', $token)
+				->set('valid_until', date('Y-m-d H:i:s', mktime(date('H'), date('i') + 30, date('s'), date('m'), date('d'), date('Y'))))
+				->insert();
 				return array('phone' => $query->getRow('phone_number'), 'token' => $token);
 			}
 		}
@@ -159,9 +164,9 @@ class KalkunModel extends Model {
 
 		if ($token_result->getNumRows() === 1)
 		{
-			if (strtotime('now') < strtotime($token_result->row('valid_until')))
+			if (strtotime('now') < strtotime($token_result->getRow('valid_until')))
 			{
-				return $token_result->row_array();
+				return $token_result->getRowArray();
 			}
 			else
 			{
@@ -422,9 +427,9 @@ class KalkunModel extends Model {
 	 */
 	function update_password($uid = NULL)
 	{
-		$this->db->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
-		$this->db->where('id_user', $uid);
-		$this->db->update('user');
+		$this->builder('user')->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT))
+		->where('id_user', $uid)
+		->update();
 	}
 
 	// --------------------------------------------------------------------

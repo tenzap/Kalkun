@@ -65,7 +65,7 @@ class Login extends BaseController {
 	 *
 	 * @access	public
 	 */
-	public function getIndex(): string
+	public function getIndex()
 	{
 		helper(['html', 'form']);
 		//helper('form');
@@ -75,7 +75,7 @@ class Login extends BaseController {
 		);
 		if ($this->request->is('post') && empty($this->request->getPost('change_language')))
 		{
-			$this->Kalkun_model->login();
+			return $this->Kalkun_model->login();
 		}
 
 		$data['idiom'] = $this->idiom;
@@ -84,7 +84,7 @@ class Login extends BaseController {
 		return view('main/login', $data);
 	}
 
-	public function postIndex(): string
+	public function postIndex()
 	{
 		return $this->getIndex();
 	}
@@ -101,7 +101,8 @@ class Login extends BaseController {
 	function getLogout()
 	{
 		$this->session->destroy();
-		redirect('login');
+		$_SESSION = array();
+		return redirect()->to('login');
 	}
 
 	// --------------------------------------------------------------------
@@ -115,10 +116,18 @@ class Login extends BaseController {
 	 */
 	function getForgot_password()
 	{
-		//$this->load->model('Message_model'); //TODO
-		helper(['html', 'form']);
 
-		if ($_POST && empty($this->request->getPost('change_language')))
+		$data['language_list'] = service('language')->kalkun_supported_languages();
+		$data['idiom'] = $this->idiom;
+		helper(['html', 'form']);
+		return view('main/forgot_password', $data);
+	}
+
+	function postForgot_password()
+	{
+		//$this->load->model('Message_model'); // CI4-TODO
+
+		if (empty($this->request->getPost('change_language')))
 		{
 			$token = $this->Kalkun_model->forgot_password();
 
@@ -135,17 +144,21 @@ class Login extends BaseController {
 				$data['message'] = tr_raw('To reset your Kalkun password please visit {0}', NULL, site_url('login/password_reset/'.$token['token']).'?l='.$this->idiom);
 				$data['delivery_report'] = 'default';
 				$data['uid'] = 1;
-				//$this->Message_model->send_messages($data); //TODO
+				//$this->Message_model->send_messages($data); // CI4-TODO
 			}
 			if (empty($this->session->setFlashdata('errorlogin')))
 			{
 				$this->session->setFlashdata('errorlogin', tr_raw('If you are a registered user, a SMS has been sent to you.'));
 			}
-			redirect('login/forgot_password?l='.$this->idiom);
+			return redirect()->to('login/forgot_password?l='.$this->idiom);
 		}
-		$data['language_list'] = service('language')->kalkun_supported_languages();
-		$data['idiom'] = $this->idiom;
-		view('main/forgot_password', $data);
+		else
+		{
+			$data['language_list'] = service('language')->kalkun_supported_languages();
+			$data['idiom'] = $this->idiom;
+			helper(['html', 'form']);
+			return view('main/forgot_password', $data);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -161,6 +174,27 @@ class Login extends BaseController {
 	{
 		helper(['html', 'form']);
 
+		$user_token = $this->Kalkun_model->valid_token($token);
+
+		if ($user_token === FALSE)
+		{
+			$this->session->setFlashdata('errorlogin', tr_raw('Token invalid.'));
+			return redirect()->to('login/forgot_password?l='.$this->idiom);
+		}
+		else
+		{
+			$data['token'] = $token;
+			$data['idiom'] = $this->idiom;
+			$data['language_list'] = service('language')->kalkun_supported_languages();
+			$data['idiom'] = $this->idiom;
+			return view('main/password_reset', $data);
+		}
+	}
+
+	function postPassword_reset()
+	{
+		helper(['html', 'form']);
+
 		$password_submitted = ($_POST && empty($this->request->getPost('change_language')));
 
 		if ($password_submitted)
@@ -173,7 +207,7 @@ class Login extends BaseController {
 		if ($user_token === FALSE)
 		{
 			$this->session->setFlashdata('errorlogin', tr_raw('Token invalid.'));
-			redirect('login/forgot_password?l='.$this->idiom);
+			return redirect()->to('login/forgot_password?l='.$this->idiom);
 		}
 		else
 		{
@@ -182,15 +216,15 @@ class Login extends BaseController {
 				$this->Kalkun_model->update_password($user_token['id_user']);
 				$this->Kalkun_model->delete_token($user_token['id_user']);
 				$this->session->setFlashdata('errorlogin', tr_raw('Password changed successfully.'));
-				redirect('login?l='.$this->idiom);
+				return redirect()->to('login?l='.$this->idiom);
 			}
 			else
 			{
 				$data['token'] = $token;
 				$data['idiom'] = $this->idiom;
-				$data['language_list'] = $this->lang->kalkun_supported_languages();
+				$data['language_list'] = service('language')->kalkun_supported_languages();
 				$data['idiom'] = $this->idiom;
-				view('main/password_reset', $data);
+				return view('main/password_reset', $data);
 			}
 		}
 	}
