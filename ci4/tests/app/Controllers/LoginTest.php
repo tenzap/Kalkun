@@ -68,7 +68,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login', ['username' => 'kalkun', 'password' => 'kalkun', 'idiom' => 'english']);
+		$result = $this->call('POST', 'login', ['username' => 'kalkun', 'password' => 'kalkun', 'idiom' => 'english', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertRedirectTo('kalkun');
 		$result->assertStatus(302);
@@ -83,7 +83,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login', ['username' => 'kalkun', 'password' => 'wrong_password', 'idiom' => 'english']);
+		$result = $this->call('POST', 'login', ['username' => 'kalkun', 'password' => 'wrong_password', 'idiom' => 'english', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertSessionHas('errorlogin', 'Username or password are incorrect.');
 	}
@@ -103,7 +103,7 @@ class LoginTest extends KalkunTestCase {
 			'level' => 'admin',
 			'username' => 'kalkun',
 		];
-		$result = $this->withSession($session)->call('GET', 'login/logout');
+		$result = $this->withSession($session)->call('GET', 'logout');
 		$data = $result->response()->getBody();
 
 		// Check that session is closed
@@ -138,7 +138,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login/forgot_password', ['username' => 'kalkun', 'idiom' => 'english']);
+		$result = $this->call('POST', 'login/forgot_password', ['username' => 'kalkun', 'idiom' => 'english', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$expected = 'If you are a registered user, a SMS has been sent to you.';
 		$result->assertSessionHas('errorlogin', $expected);
@@ -153,7 +153,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login/forgot_password', ['phone' => '+123456', 'idiom' => 'english']);
+		$result = $this->call('POST', 'login/forgot_password', ['phone' => '+123456', 'idiom' => 'english', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertRedirectTo('login/forgot_password?l=english');
 		$result->assertStatus(302);
@@ -173,7 +173,7 @@ class LoginTest extends KalkunTestCase {
 		$token = 'my_token';
 		$this->insert('user_forgot_password', ['token' => $token])->execute();
 
-		$result = $this->call('POST', 'login/password_reset', ['token' => $token, 'new_password' => 'my_new_password']);
+		$result = $this->call('POST', 'login/password_reset', ['token' => $token, 'new_password' => 'my_new_password', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertRedirectTo('login?l=english');
 		$result->assertStatus(302);
@@ -194,7 +194,7 @@ class LoginTest extends KalkunTestCase {
 		$token = 'my_token';
 		$this->insert('user_forgot_password', ['token' => $token])->execute();
 
-		$result = $this->call('GET', 'login/password_reset/'.$token);
+		$result = $this->call('GET', 'login/password_reset', ['token' => $token]);
 		$data = $result->response()->getBody();
 		$expected = '<title>Kalkun - Password reset</title>';
 		$this->_assertStringContainsString($expected, $data);
@@ -216,7 +216,7 @@ class LoginTest extends KalkunTestCase {
 			'valid_until' => date('Y-m-d H:i:s', mktime(date('H'), date('i') - 30, date('s'), date('m'), date('d'), date('Y'))),
 		])->execute();
 
-		$result = $this->call('GET', 'login/password_reset/'.$token);
+		$result = $this->call('GET', 'login/password_reset', ['token' => $token]);
 		$data = $result->response()->getBody();
 		$result->assertSessionHas('errorlogin', 'Token invalid.');
 		$result->assertRedirectTo('login/forgot_password?l=english');
@@ -232,7 +232,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('GET', 'login/password_reset/invalid_token');
+		$result = $this->call('GET', 'login/password_reset', ['token' => 'invalid_token']);
 		$data = $result->response()->getBody();
 		$result->assertSessionHas('errorlogin', 'Token invalid.');
 		$result->assertRedirectTo('login/forgot_password?l=english');
@@ -248,7 +248,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login/password_reset', ['token' => 'invalid_token', 'new_password' => 'my_new_password']);
+		$result = $this->call('POST', 'login/password_reset', ['token' => 'invalid_token', 'new_password' => 'my_new_password', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertSessionHas('errorlogin', 'Token invalid.');
 		$result->assertRedirectTo('login/forgot_password?l=english');
@@ -264,7 +264,7 @@ class LoginTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$result = $this->call('POST', 'login/password_reset', ['token' => 'invalid_token']);
+		$result = $this->call('POST', 'login/password_reset', ['token' => 'invalid_token', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$result->assertSessionHas('errorlogin', 'Token invalid.');
 		$result->assertRedirectTo('login/forgot_password?l=english');

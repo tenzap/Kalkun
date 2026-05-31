@@ -65,7 +65,7 @@ class Login extends BaseController {
 	 *
 	 * @access	public
 	 */
-	public function getIndex()
+	public function index()
 	{
 		helper(['html', 'form']);
 		//helper('form');
@@ -84,11 +84,6 @@ class Login extends BaseController {
 		return view('main/login', $data);
 	}
 
-	public function postIndex()
-	{
-		return $this->getIndex();
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -98,7 +93,7 @@ class Login extends BaseController {
 	 *
 	 * @access	public
 	 */
-	function getLogout()
+	function logout()
 	{
 		$this->session->destroy();
 		$_SESSION = array();
@@ -114,20 +109,11 @@ class Login extends BaseController {
 	 *
 	 * @access	public
 	 */
-	function getForgot_password()
+	public function forgot_password()
 	{
+		$this->Message_model = model('MessageModel');
 
-		$data['language_list'] = service('language')->kalkun_supported_languages();
-		$data['idiom'] = $this->idiom;
-		helper(['html', 'form']);
-		return view('main/forgot_password', $data);
-	}
-
-	function postForgot_password()
-	{
-		//$this->load->model('Message_model'); // CI4-TODO
-
-		if (empty($this->request->getPost('change_language')))
+		if ($this->request->is('POST') && empty($this->request->getPost('change_language')))
 		{
 			$token = $this->Kalkun_model->forgot_password();
 
@@ -141,10 +127,10 @@ class Login extends BaseController {
 				$data['class'] = '1';
 				$data['dest'] = $token['phone'];
 				$data['date'] = date('Y-m-d H:i:s');
-				$data['message'] = tr_raw('To reset your Kalkun password please visit {0}', NULL, site_url('login/password_reset/'.$token['token']).'?l='.$this->idiom);
+				$data['message'] = tr_raw('To reset your Kalkun password please visit {0}', NULL, site_url('login/password_reset?token='.$token['token']).'&l='.$this->idiom);
 				$data['delivery_report'] = 'default';
 				$data['uid'] = 1;
-				//$this->Message_model->send_messages($data); // CI4-TODO
+				$this->Message_model->send_messages($data);
 			}
 			if (empty($this->session->setFlashdata('errorlogin')))
 			{
@@ -152,13 +138,10 @@ class Login extends BaseController {
 			}
 			return redirect()->to('login/forgot_password?l='.$this->idiom);
 		}
-		else
-		{
-			$data['language_list'] = service('language')->kalkun_supported_languages();
-			$data['idiom'] = $this->idiom;
-			helper(['html', 'form']);
-			return view('main/forgot_password', $data);
-		}
+		$data['language_list'] = service('language')->kalkun_supported_languages();
+		$data['idiom'] = $this->idiom;
+		helper(['html', 'form']);
+		return view('main/forgot_password', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -170,36 +153,19 @@ class Login extends BaseController {
 	 *
 	 * @access	public
 	 */
-	function getPassword_reset($token = NULL)
+	function password_reset()
 	{
 		helper(['html', 'form']);
 
-		$user_token = $this->Kalkun_model->valid_token($token);
+		$password_submitted = FALSE;
 
-		if ($user_token === FALSE)
-		{
-			$this->session->setFlashdata('errorlogin', tr_raw('Token invalid.'));
-			return redirect()->to('login/forgot_password?l='.$this->idiom);
+		if ($this->request->is('GET')) {
+			$token = $this->request->getGet('token');
 		}
-		else
-		{
-			$data['token'] = $token;
-			$data['idiom'] = $this->idiom;
-			$data['language_list'] = service('language')->kalkun_supported_languages();
-			$data['idiom'] = $this->idiom;
-			return view('main/password_reset', $data);
-		}
-	}
 
-	function postPassword_reset()
-	{
-		helper(['html', 'form']);
-
-		$password_submitted = ($_POST && empty($this->request->getPost('change_language')));
-
-		if ($password_submitted)
-		{
+		if ($this->request->is('POST')) {
 			$token = $this->request->getPost('token');
+			$password_submitted = empty($this->request->getPost('change_language'));
 		}
 
 		$user_token = $this->Kalkun_model->valid_token($token);
