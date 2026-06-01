@@ -276,7 +276,6 @@ class Database extends Config
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
             (new DotEnv(__DIR__.'/Boot/', 'testing_database.env'))->load();
-            require(__DIR__.'/Boot/testing_database.php');
             $engines = ['pgsql', 'mysql', 'sqlite'];
             foreach ($engines as $engine)
             {
@@ -287,7 +286,15 @@ class Database extends Config
             }
 
             // Fallback
-            $this->defaultGroup = 'tests_'.$TESTING_DB_ENGINE;
+            if (file_exists(__DIR__.'/Boot/testing_database.php'))
+            {
+                require(__DIR__.'/Boot/testing_database.php');
+                $this->defaultGroup = 'tests_'.$TESTING_DB_ENGINE;
+            }
+            else
+            {
+                $this->defaultGroup = 'tests_';
+            }
             if (! str_starts_with($this->defaultGroup, 'tests_'))
             {
                 die($this->defaultGroup);
