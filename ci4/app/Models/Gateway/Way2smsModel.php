@@ -10,6 +10,7 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
 
 /**
  * Way2sms_model Class
@@ -21,18 +22,18 @@
  * @subpackage	Messages
  * @category	Models
  */
-require_once('Gammu_model.php');
+// require_once('Gammu_model.php');
 
-class Way2sms_model extends Gammu_model {
+class Way2smsModel extends GammuModel {
 
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 	}
 
 	// --------------------------------------------------------------------

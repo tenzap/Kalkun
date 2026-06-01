@@ -10,6 +10,7 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
 
 /**
  * nongammu_model Class
@@ -23,18 +24,18 @@
  * @subpackage	Messages
  * @category	Models
  */
-require_once('Gammu_model.php');
+// require_once('Gammu_model.php');
 
-class Nongammu_model extends Gammu_model {
+class NongammuModel extends GammuModel {
 
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 		$this->load->model('Kalkun_model');
 		log_message('debug', 'NonGammu Class Initialized');
 	}

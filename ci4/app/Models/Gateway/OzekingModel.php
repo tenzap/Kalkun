@@ -10,43 +10,44 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
 
 /**
- * Kannel_model Class
+ * Ozeking_model Class
  *
  * Handle all messages database activity
- * for Kannel <http://www.kannel.org/>
+ * for Ozeki NG <http://ozekisms.com>
  *
  * @package		Kalkun
  * @subpackage	Messages
  * @category	Models
  */
-require_once('Nongammu_model.php');
+// require_once('Nongammu_model.php');
 
-class Kannel_model extends Nongammu_model {
+class OzekingModel extends NongammuModel {
 
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
 	 * Send Messages (Still POC)
-	 *
+	 * Using HTTP API <http://ozekisms.com/index.php?ow_page_number=413>
 	 *
 	 * @return void
 	 */
 	function really_send_messages($data)
 	{
 		$gateway = $this->config->item('gateway');
-		file_get_contents($gateway['url'].'/cgi-bin/sendsms?username='.$gateway['username'].
-			'&password='.$gateway['password'].'&to='.$data['dest'].'&text='.urlencode($data['message']));
+		file_get_contents($gateway['url'].'/api?action=sendmessage&username='.$gateway['username'].
+			'&password='.$gateway['password'].'&messagetype=SMS:TEXT&recipient='.$data['dest'].'&messagedata='.urlencode($data['message']));
 	}
 }

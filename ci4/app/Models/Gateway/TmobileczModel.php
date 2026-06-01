@@ -10,6 +10,7 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
 
 /**
  * Tmobilecz_model Class
@@ -22,18 +23,18 @@
  * @subpackage	Messages
  * @category	Models
  */
-require_once('Nongammu_model.php');
+// require_once('Nongammu_model.php');
 
-class Tmobilecz_model extends Nongammu_model {
+class TmobileczModel extends NongammuModel {
 
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 		log_message('debug', 'TMCZ> Direct Gateway TMobileCZ Class Initialized');
 	}
 

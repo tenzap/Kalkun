@@ -37,8 +37,8 @@ class GammuModel extends Model {
 	 *
 	 * @access	public
 	 */
-    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
-    {
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
 		parent::__construct($db, $validation);
 
 		// Set mb encoding

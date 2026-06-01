@@ -10,6 +10,7 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models\Gateway;
 
 /**
  * Clickatell_model Class
@@ -21,9 +22,9 @@
  * @subpackage	Messages
  * @category	Models
  */
-require_once('Nongammu_model.php');
+// require_once('Nongammu_model.php');
 
-class Clickatell_model extends Nongammu_model {
+class ClickatellModel extends NongammuModel {
 
 	private $gateway;
 	/**
@@ -31,9 +32,9 @@ class Clickatell_model extends Nongammu_model {
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 		$this->gateway = $this->config->item('gateway');
 
 		if (empty($this->gateway['url']))
