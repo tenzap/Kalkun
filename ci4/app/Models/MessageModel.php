@@ -25,7 +25,7 @@ use CodeIgniter\Config\Factories;
  */
 class MessageModel extends Model {
 
-	protected $table = '';
+	protected $table = 'DUMMY';
 	protected $allowedFields = [];
 	private $gateway = '';
 
@@ -34,8 +34,8 @@ class MessageModel extends Model {
 	 *
 	 * @access	public
 	 */
-    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
-    {
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
 		parent::__construct($db, $validation);
 		$gateway_config = config('Kalkun')->gateway;
 		$gateway_class = ucwords($gateway_config['engine']).'Model';
