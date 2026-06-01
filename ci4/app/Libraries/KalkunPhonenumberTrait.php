@@ -123,4 +123,18 @@ trait KalkunPhonenumberTrait {
 		}
 		return $result;
 	}
+
+	/**
+	 * Check if submitted phone number is valid
+	 *
+	 */
+	function _phone_number_validation($phone)
+	{
+		$result = $this->is_phone_number_valid($phone);
+
+		if ($result !== TRUE)
+		{
+			show_error(tr($result), 400);
+		}
+	}
 }
