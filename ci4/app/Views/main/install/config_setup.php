@@ -287,7 +287,7 @@
 		<td>
 			<?php if (file_exists($install_realpath)): ?>
 			<strong class="red">Present</strong>
-			<?php if ($needs_manual_install_file_deletion || $this->input->post('remove_install_file') === 'remove'): ?>
+			<?php if ($needs_manual_install_file_deletion || service('request')->getPost('remove_install_file') === 'remove'): ?>
 			<br><small>You must remove the file manually.</small>
 			<?php endif; ?>
 			<?php else: ?>
@@ -295,7 +295,7 @@
 			<?php endif; ?>
 		</td>
 	</tr>
-	<?php if ( ! $needs_manual_install_file_deletion && ($this->input->post('remove_install_file') !== 'remove')): ?>
+	<?php if ( ! $needs_manual_install_file_deletion && (service('request')->getPost('remove_install_file') !== 'remove')): ?>
 	<tr>
 		<td colspan="2">
 			<?php

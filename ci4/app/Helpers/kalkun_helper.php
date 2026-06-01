@@ -271,8 +271,8 @@ function get_database_property($driver)
  */
 function execute_sql($sqlfile)
 {
-	$CI = &get_instance();
-	$CI->load->model('Kalkun_model');
+	$db = db_connect();
+	$db->initialize();
 
 	$error = 0;
 	if ($lines = @file($sqlfile, FILE_SKIP_EMPTY_LINES))
@@ -292,7 +292,7 @@ function execute_sql($sqlfile)
 				{
 					$buff .= ' END;';
 				}
-				$query = $CI->Kalkun_model->db->query($buff);
+				$query = $db->query($buff);
 				if ( ! $query)
 				{
 					$error++;

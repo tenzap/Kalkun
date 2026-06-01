@@ -1,6 +1,4 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
 /**
  * Kalkun
  * An open source web based SMS Manager
@@ -10,8 +8,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @license <https://spdx.org/licenses/GPL-2.0-or-later.html> GPL-2.0-or-later
  * @link https://kalkun.sourceforge.io/
  */
+namespace App\Libraries;
 
-class Install_info {
+class InstallInfo {
 
 	public function get_CI_ENV()
 	{

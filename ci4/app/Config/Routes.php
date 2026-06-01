@@ -29,4 +29,12 @@ $routes->match(['GET', 'POST'], 'settings/(:any)', 'Kalkun::settings/$1');
 $routes->get('kalkun/get_statistic/(:any)', 'Kalkun::get_statistic/$1');
 $routes->get('kalkun/get_statistic', 'Kalkun::get_statistic');
 
+
+$routes->match(['GET', 'POST'], 'install', 'Install::index');
+$routes->match(['GET', 'POST'], 'install/requirement_check', 'Install::requirement_check');
+$routes->match(['GET', 'POST'], 'install/database_setup', 'Install::database_setup');
+$routes->match(['GET', 'POST'], 'install/config_setup', 'Install::config_setup');
+$routes->match(['GET', 'POST'], 'install', 'Install::index');
+
+
 #$route['plugin/(.+)'] = '$1'; // CI4-TODO

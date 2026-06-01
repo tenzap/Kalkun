@@ -147,7 +147,7 @@
 		}?></td>
 	</tr>
 
-	<?php if (extension_loaded('session') && $this->config->item('sess_driver') === 'files'): ?>
+	<?php if (extension_loaded('session') && config('Session')->driver === \CodeIgniter\Session\Handlers\FileHandler::class): ?>
 	<tr>
 		<td colspan="3" class="bottom">Session save path: <code><?php echo $sess_save_path; ?></code><br>
 			<?php if ( ! is_writable($sess_save_path)): ?>

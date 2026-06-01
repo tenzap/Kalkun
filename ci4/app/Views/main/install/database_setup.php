@@ -25,7 +25,7 @@
 	<?php if ($has_smsd_database): ?>
 	<tr>
 		<td>Gammu DB version</td>
-		<td><strong><?php echo htmlentities($this->Kalkun_model->get_gammu_info('db_version')->row('Version'), ENT_QUOTES); ?></strong>
+		<td><strong><?php echo htmlentities(model('KalkunModel')->get_gammu_info('db_version')->getRow('Version'), ENT_QUOTES); ?></strong>
 			<br><small>As per the version stored in gammu database.</small>
 		</td>
 	</tr>
@@ -105,7 +105,7 @@ else:
 endif; ?>
 </div>
 
-<?php if ($this->input->post('action') === 'run_db_setup'): ?>
+<?php if (service('request')->getPost('action') === 'run_db_setup'): ?>
 <h2 class="section"><?php echo tr('Database setup'); ?></h2>
 <?php  if ($error === 0): ?>
 <p><?php echo tr('Status'); ?>: <span class="green"><?php echo tr('Successful'); ?></span></p>

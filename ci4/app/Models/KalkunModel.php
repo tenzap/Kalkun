@@ -34,12 +34,12 @@ class KalkunModel extends Model {
 	protected $request;
 	protected $session;
 	// --------------------------------------------------------------------
-    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
-    {
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
 		parent::__construct($db, $validation);
-        $this->request = service('request');
+		$this->request = service('request');
 		$this->session = session();
-    }
+	}
 
 	// --------------------------------------------------------------------
 
@@ -683,55 +683,40 @@ class KalkunModel extends Model {
 
 	function has_table_plugins()
 	{
-		return $this->db->table_exists('plugins');
+		return $this->db->tableExists('plugins');
 	}
 
 	function has_table_user_forgot_password()
 	{
-		return $this->db->table_exists('user_forgot_password');
+		return $this->db->tableExists('user_forgot_password');
 	}
 
 	function has_table_user_filters()
 	{
-		return $this->db->table_exists('user_filters');
+		return $this->db->tableExists('user_filters');
 	}
 
 	function has_table_ci_sessions()
 	{
-		return $this->db->table_exists('ci_sessions');
+		return $this->db->tableExists('ci_sessions');
 	}
 
 	function has_table_pbk()
 	{
-		return $this->db->table_exists('pbk');
+		return $this->db->tableExists('pbk');
 	}
 
 	function has_table_pbk_with_kalkun_fields()
 	{
-		return $this->db->field_exists('id_user', 'pbk');
-	}
-
-	/**
-	 * Check if submitted phone number is valid
-	 *
-	 * @access	public
-	 */
-	function _phone_number_validation($phone)
-	{
-		$result = $this->is_phone_number_valid($phone);
-
-		if ($result !== TRUE)
-		{
-			show_error(tr($result), 400);
-		}
+		return $this->db->fieldExists('id_user', 'pbk');
 	}
 
 	function plugins_table_has_status_column()
 	{
-		if ( ! $this->db->table_exists('plugins'))
+		if ( ! $this->db->tableExists('plugins'))
 		{
 			return FALSE;
 		}
-		return $this->db->field_exists('status', 'plugins');
+		return $this->db->fieldExists('status', 'plugins');
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-$this->load->helper('html');
+helper('html');
 echo doctype('html5');?>
 <html>
 
@@ -7,9 +7,9 @@ echo doctype('html5');?>
 	<title>Kalkun &rsaquo; <?php echo tr('Installation'); ?></title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
 	<meta name="generator" content="Geany 0.13">
-	<link rel="shortcut icon" href="<?php echo $this->config->item('img_path');?>icon.ico" type="image/x-icon">
-	<link type="text/css" rel="stylesheet" href="<?php echo $this->config->item('css_path');?>install.css">
-	<script src="<?php echo $this->config->item('js_path');?>jquery-3.7.1.min.js"></script>
+	<link rel="shortcut icon" href="<?php echo config('Kalkun')->img_path;?>icon.ico" type="image/x-icon">
+	<link type="text/css" rel="stylesheet" href="<?php echo config('Kalkun')->css_path;?>install.css">
+	<script src="<?php echo config('Kalkun')->js_path;?>jquery-3.7.1.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			var left = $('div#left-container').height();
@@ -20,7 +20,7 @@ echo doctype('html5');?>
 			}
 
 			// Step highlight
-			var step = '<?php echo $this->uri->segment(2);?>';
+			var step = '<?php echo service('uri')->getSegment(2);?>';
 			if (step == '') {
 				$('li#step1').addClass("active");
 			} else if (step == 'requirement_check') {
@@ -39,10 +39,10 @@ echo doctype('html5');?>
 </head>
 
 <body>
-	<div id="logo_only"><img src="<?php echo $this->config->item('img_path');?>logo.png" alt="Kalkun logo"> </div>
+	<div id="logo_only"><img src="<?php echo config('Kalkun')->img_path;?>logo.png" alt="Kalkun logo"> </div>
 	<div id="arrow">&nbsp;</div>
 	<div id="container">
-		<div id="left-container"><?php $this->load->view($main);?></div>
+		<div id="left-container"><?php echo view($main);?></div>
 		<div id="right-container">
 			<h2 style="padding-left: 20px"><?php echo tr('Installation steps'); ?></h2>
 			<ul>
@@ -53,7 +53,7 @@ echo doctype('html5');?>
 			</ul>
 		</div>
 	</div>
-	<div id="footer">Powered by Kalkun <?php echo $this->config->item('kalkun_version');?></div>
+	<div id="footer">Powered by Kalkun <?php echo config('Kalkun')->kalkun_version;?></div>
 </body>
 
 </html>

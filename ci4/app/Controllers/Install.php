@@ -10,6 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
+
 
 /**
  * Install Class
@@ -18,12 +22,13 @@
  * @subpackage	Install
  * @category	Controllers
  */
-class Install extends CI_Controller {
+class Install extends BaseController {
 
 	public $idiom = 'english';
 	private $db_prop = [];
 	private $db_engine = '';
 
+	private $db = null;
 	/**
 	 * Constructor
 	 *
@@ -31,46 +36,53 @@ class Install extends CI_Controller {
 	 */
 	function __construct()
 	{
-		parent::__construct();
-
 		// language
-		$this->load->helper('i18n');
-		$i18n = new MY_Lang();
-		if ($this->input->post('idiom') !== NULL)
+		helper('i18n');
+		$this->request = service('request');
+		if ($this->request->getPost('idiom') !== NULL)
 		{
-			$this->idiom = $this->input->post('idiom');
+			$this->idiom = $this->request->getPost('idiom');
 		}
 		else
 		{
-			$this->idiom = $i18n->get_idiom();
+			$this->idiom = service('language')->get_idiom();
 		}
-		$this->lang->load('kalkun', $this->idiom);
+
+		// $i18n = new MY_Lang();
+		// if ($this->request->getPost('idiom') !== NULL)
+		// {
+		// 	$this->idiom = $this->request->getPost('idiom');
+		// }
+		// else
+		// {
+		// 	$this->idiom = $i18n->get_idiom();
+		// }
+		service('language')->load('kalkun_lang', service('language')::$idiom_to_locale[$this->idiom]);
 
 		if ( ! file_exists(FCPATH.'install'))
 		{
-			show_error(
-				nl2br(tr_raw(
+			throw new \App\Exceptions\KalkunException(
+			  nl2br(tr_raw(
 					"Installation has been disabled by the administrator.\nTo enable access to it, create a file named {0} in this directory of the server: {1}.\nOtherwise you may log-in at {2}.",
 					NULL,
 					'<strong>install</strong>',
 					'<strong>'.realpath(FCPATH).'</strong>',
-					'<a href="'.$this->config->item('base_url').'">'.$this->config->item('base_url').'</a>'
-				)),
-				403,
-				tr('403 Forbidden')
-			);
+					'<a href="'.config('App')->baseURL.'">'.config('App')->baseURL.'</a>'
+				))
+			  , 403);
+			// CI4-TODO
+			// show_error(
+			// 	nl2br(tr_raw(
+			// 		"Installation has been disabled by the administrator.\nTo enable access to it, create a file named {0} in this directory of the server: {1}.\nOtherwise you may log-in at {2}.",
+			// 		NULL,
+			// 		'<strong>install</strong>',
+			// 		'<strong>'.realpath(FCPATH).'</strong>',
+			// 		'<a href="'.config('App')->baseURL.'">'.config('App')->baseURL.'</a>'
+			// 	)),
+			// 	403,
+			// 	tr('403 Forbidden')
+			// );
 		}
-
-		require(APPPATH.'config/database.php');
-		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/database.php'))
-		{
-			require(APPPATH.'config/'.ENVIRONMENT.'/database.php');
-		}
-		$this->db_config = $db[$active_group];
-
-		$this->load->helper('kalkun');
-		$this->db_prop = get_database_property($this->db_config['dbdriver']);
-		$this->db_engine = $this->db_prop['file'];
 	}
 
 	// --------------------------------------------------------------------
@@ -86,11 +98,22 @@ class Install extends CI_Controller {
 	{
 		$data['main'] = 'main/install/welcome';
 		$data['idiom'] = $this->idiom;
-		$data['language_list'] = $this->lang->kalkun_supported_languages();
-		$this->load->helper('form');
-		$this->load->view('main/install/layout', $data);
+		$data['language_list'] = service('language')->kalkun_supported_languages();
+		helper('form');
+		return view('main/install/layout', $data);
 	}
 
+	// --------------------------------------------------------------------
+
+	private function _fill_db_info()
+	{
+		$defaultGroup = config('Database')->defaultGroup;
+		$this->db_config = config('Database')->{$defaultGroup};
+
+		helper('kalkun');
+		$this->db_prop = get_database_property($this->db_config['DBDriver']);
+		$this->db_engine = $this->db_prop['file'];
+	}
 	// --------------------------------------------------------------------
 
 	/**
@@ -102,18 +125,20 @@ class Install extends CI_Controller {
 	 */
 	function requirement_check()
 	{
-		$this->load->helper(array('form'));
+		helper(array('form'));
+
+		$this->_fill_db_info();
 
 		$data['main'] = 'main/install/requirement_check';
 		$data['idiom'] = $this->idiom;
-		$data['database_driver'] = $this->db_config['dbdriver'];
+		$data['database_driver'] = $this->db_config['DBDriver'];
 		$data['db_property'] = $this->db_prop;
-		$data['sess_save_path'] = $this->config->item('sess_save_path');
+		$data['sess_save_path'] = config('Session')->savePath;
 		if (is_null($data['sess_save_path']))
 		{
 			$data['sess_save_path'] = session_save_path();
 		}
-		$this->load->view('main/install/layout', $data);
+		return view('main/install/layout', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -127,7 +152,9 @@ class Install extends CI_Controller {
 	 */
 	function database_setup()
 	{
-		$this->load->helper(array('form'));
+		helper(array('form'));
+
+		$this->_fill_db_info();
 
 		$data['main'] = 'main/install/database_setup';
 		$data['idiom'] = $this->idiom;
@@ -140,33 +167,33 @@ class Install extends CI_Controller {
 		$data['exception'] = NULL;
 		try
 		{
-			$this->load->database();
+			$this->db = db_connect();
+			$this->db->initialize(); // This will throw an exception if we can't connect to the database
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$data['exception'] = $e->getMessage();
-			$this->load->view('main/install/layout', $data);
-			return;
+			return view('main/install/layout', $data);
 		}
 
-		$this->load->model('Kalkun_model');
+		$this->Kalkun_model = model('KalkunModel');
 		// Replace the values set in constructor now that we know that the
 		// configuration of the database is correct.
-		$this->db_prop = get_database_property($this->db->platform());
+		$this->db_prop = get_database_property($this->db->getPlatform());
 		$this->db_engine = $this->db_prop['file'];
 		$data['db_property'] = $this->db_prop;
 
 		$data['error'] = 0;
 
-		if ($this->input->post('action') === 'run_db_setup')
+		if ($this->request->getPost('action') === 'run_db_setup')
 		{
 			$data['error'] = $this->_run_db_setup();
 		}
 
-		$data['database_driver'] = $this->db->platform();
-		$data['has_smsd_database'] = $this->db->table_exists('gammu') ? TRUE : FALSE;
+		$data['database_driver'] = $this->db->getPlatform();
+		$data['has_smsd_database'] = $this->db->tableExists('gammu') ? TRUE : FALSE;
 		$data['has_table_pbk'] = $this->Kalkun_model->has_table_pbk() ? TRUE : FALSE;
-		$data['has_gammu_database'] = $this->db->table_exists('user') ? TRUE : FALSE;
+		$data['has_gammu_database'] = $this->db->tableExists('user') ? TRUE : FALSE;
 
 		// Now check if it is installed, and which version it is.
 		// plugins table appeared in 0.4
@@ -202,7 +229,7 @@ class Install extends CI_Controller {
 
 		$data['detected_db_version'] = $detected_db_version;
 
-		$this->load->view('main/install/layout', $data);
+		return view('main/install/layout', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -216,13 +243,13 @@ class Install extends CI_Controller {
 	 */
 	function config_setup()
 	{
-		$this->load->helper(array('form'));
-		$this->load->library('Install_info');
+		helper(array('form'));
+		$this->install_info = new \App\Libraries\InstallInfo();
 
 		// install file
 		if (file_exists(FCPATH.'install') && is_writable(dirname(FCPATH.'install')))
 		{
-			if ($this->input->post('remove_install_file') === 'remove')
+			if ($this->request->getPost('remove_install_file') === 'remove')
 			{
 				$rm = unlink(FCPATH.'install');
 			}
@@ -244,7 +271,7 @@ class Install extends CI_Controller {
 		$data['daemon_daemon_path'] = $this->install_info->get_daemon_var_path('daemon', 'DAEMON');
 		$data['daemon_daemon_path_exists'] = $this->install_info->daemon_var_path_exists($data['daemon_daemon_path']);
 		$data['daemon_url'] = $this->install_info->get_daemon_url($data['daemon_daemon_path']);
-		$data['daemon_url_matches_config'] = (trim($data['daemon_url'], '/') === trim($this->config->item('base_url'), '/')) ? TRUE : FALSE;
+		$data['daemon_url_matches_config'] = (trim($data['daemon_url'], '/') === trim(config('App')->baseURL, '/')) ? TRUE : FALSE;
 		$data['outbox_queue_path'] = $this->install_info->get_daemon_path('outbox_queue');
 		$data['outbox_queue_path_is_executable'] = is_executable($data['outbox_queue_path']);
 		$data['outbox_queue_php_path'] = $this->install_info->get_daemon_var_path('outbox_queue', 'PHP');
@@ -252,14 +279,14 @@ class Install extends CI_Controller {
 		$data['outbox_queue_daemon_path'] = $this->install_info->get_daemon_var_path('outbox_queue', 'DAEMON');
 		$data['outbox_queue_daemon_path_exists'] = $this->install_info->daemon_var_path_exists($data['outbox_queue_daemon_path']);
 		$data['outbox_queue_url'] = $this->install_info->get_daemon_url($data['outbox_queue_daemon_path']);
-		$data['outbox_queue_url_matches_config'] = (trim($data['outbox_queue_url'], '/') === trim($this->config->item('base_url'), '/')) ? TRUE : FALSE;
+		$data['outbox_queue_url_matches_config'] = (trim($data['outbox_queue_url'], '/') === trim(config('App')->baseURL, '/')) ? TRUE : FALSE;
 
 		// Gammu-smsd
 
 		// Kalkun
-		$data['config_gammu_path'] = $this->config->item('gammu_path');
-		$data['config_gammu_sms_inject'] = $this->config->item('gammu_sms_inject');
-		$data['config_gammu_config'] = $this->config->item('gammu_config');
+		$data['config_gammu_path'] = config('Kalkun')->gammu_path;
+		$data['config_gammu_sms_inject'] = config('Kalkun')->gammu_sms_inject;
+		$data['config_gammu_config'] = config('Kalkun')->gammu_config;
 
 		// encryption key
 		$data['uses_default_encryption_key'] = $this->_uses_default_encryption_key();
@@ -270,7 +297,7 @@ class Install extends CI_Controller {
 
 		$data['main'] = 'main/install/config_setup';
 		$data['idiom'] = $this->idiom;
-		$this->load->view('main/install/layout', $data);
+		return view('main/install/layout', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -286,6 +313,10 @@ class Install extends CI_Controller {
 	{
 		$error = 0;
 
+		// Clear data_cache, otherwise, the list of tables in CI3 would not be up to date.
+		// for example when checking later on if the pbk table exists.
+		$this->db->dataCache = array();
+
 		// Check for phonebook tables
 		// they have been dropped in Gammu (schema v16) but we need them for Phonebook feature
 		if ( ! $this->Kalkun_model->has_table_pbk())
@@ -300,7 +331,7 @@ class Install extends CI_Controller {
 		}
 
 
-		if ( ! $this->db->table_exists('user'))
+		if ( ! $this->db->tableExists('user'))
 		{
 			// Install
 			$error += $this->_install('');
@@ -312,12 +343,12 @@ class Install extends CI_Controller {
 		}
 
 		// Set current version of kalkun in database
-		$ret = $this->db->empty_table('kalkun');
-		$this->db->insert('kalkun', array('version' => $this->config->item('kalkun_version')));
+		$ret = $this->db->table('kalkun')->emptyTable();
+		$this->db->table('kalkun')->insert(array('version' => config('Kalkun')->kalkun_version));
 
 		// Clear data_cache, otherwise, the list of tables in CI3 would not be up to date.
 		// for example when checking later on if the pbk table exists.
-		$this->db->data_cache = array();
+		$this->db->dataCache = array();
 
 		return $error;
 	}
@@ -335,8 +366,9 @@ class Install extends CI_Controller {
 
 	function _upgrade()
 	{
-		$this->load->model('Kalkun_model');
-		$this->load->dbforge();
+		$this->Kalkun_model = model('KalkunModel');
+		$this->dbforge = \Config\Database::forge();
+
 		$error = 0;
 
 		// Update SQL schema to version 0.7
@@ -361,47 +393,49 @@ class Install extends CI_Controller {
 
 		// Update b8 table from v2 (of b8 0.5) to v3 schema (of b8 0.7)
 		$b8_db_version = NULL;
-		if ($this->db->field_exists('count', 'b8_wordlist'))
+		if ($this->db->fieldExists('count', 'b8_wordlist'))
 		{
-			$this->db->from('b8_wordlist');
-			$this->db->where('token', 'bayes*dbversion');
-			$b8_db_version = $this->db->get()->row()->count;
+			$q = $this->db->table('b8_wordlist');
+			$q->where('token', 'bayes*dbversion');
+			$b8_db_version = $q->get()->getRow()->count;
 		}
 		if ($b8_db_version === '2')
 		{
 			// Rename old table to b8_wordlist_v2
-			if ($this->dbforge->rename_table('b8_wordlist', 'b8_wordlist_v2'))
+			if ($this->dbforge->renameTable('b8_wordlist', 'b8_wordlist_v2'))
 			{
 				// Create v3 table
 				$this->_execute_kalkun_sql_file('b8_v3.sql');
 
 				// Fill v3 table with values from v2 table
-				$this->db->trans_start();
+				$this->db->transStart();
 
 				// 1. Inserting internal variables
-				$this->db->select('count');
-				$this->db->where('token', 'bayes*texts.ham');
-				$texts_ham_count = $this->db->get('b8_wordlist_v2')->row()->count;
+				$q = $this->db->table('b8_wordlist_v2');
+				$q->select('count');
+				$q->where('token', 'bayes*texts.ham');
+				$texts_ham_count = $q->get()->getRow()->count;
 
-				$this->db->select('count');
-				$this->db->where('token', 'bayes*texts.spam');
-				$texts_spam_count = $this->db->get('b8_wordlist_v2')->row()->count;
+				$q = $this->db->table('b8_wordlist_v2');
+				$q->select('count');
+				$q->where('token', 'bayes*texts.spam');
+				$texts_spam_count = $q->get()->getRow()->count;
 
 				$data = array(
 					'token' => 'b8*texts',
 					'count_ham' => $texts_ham_count,
 					'count_spam' => $texts_spam_count
 				);
-				$this->db->insert('b8_wordlist', $data);
+				$this->db->table('b8_wordlist')->insert($data);
 
 				// 2. Processing all tokens
-				$this->db->from('b8_wordlist_v2');
-				$this->db->where('token !=', 'bayes*dbversion');
-				$this->db->where('token !=', 'bayes*texts.ham');
-				$this->db->where('token !=', 'bayes*texts.spam');
-				$query = $this->db->get();
+				$q = $this->db->table('b8_wordlist_v2');
+				$q->where('token !=', 'bayes*dbversion');
+				$q->where('token !=', 'bayes*texts.ham');
+				$q->where('token !=', 'bayes*texts.spam');
+				$query = $q->get();
 
-				foreach ($query->result() as $row)
+				foreach ($query->getResult() as $row)
 				{
 					$parts = explode(' ', $row->count);
 					$ham = $parts[0];
@@ -412,10 +446,10 @@ class Install extends CI_Controller {
 						'count_ham' => $ham,
 						'count_spam' => $spam
 					);
-					$this->db->insert('b8_wordlist', $data);
+					$this->db->table('b8_wordlist')->insert($data);
 				}
 
-				$this->db->trans_complete();
+				$this->db->transComplete();
 			}
 			else
 			{
@@ -435,12 +469,12 @@ class Install extends CI_Controller {
 
 		if ($this->db_engine === 'pgsql')
 		{
-			$res = $this->db->select('column_name')
+			$res = $this->db->table('information_schema.columns')->select('column_name')
 				->select('column_default')
 				->where('table_name', 'user_settings')
 				->where('column_name', 'id_user')
-				->get('information_schema.columns');
-			if ($res->row()->column_default !== NULL)
+				->get();
+			if ($res->getRow()->column_default !== NULL)
 			{
 				$error = $this->_execute_kalkun_sql_file('upgrade_kalkun_0.8.3-part2.sql');
 				if ($error !== 0)
@@ -477,14 +511,14 @@ class Install extends CI_Controller {
 
 	function _uses_default_encryption_key()
 	{
-		$enc_key = $this->config->item('encryption_key');
+		$enc_key = config('Encryption')->key;
 
-		if ($enc_key === hex2bin('F0af18413d1c9e03A6d8d1273160f5Ed'))
+		if ($enc_key === hex2bin(''))
 		{
 			return TRUE;
 		}
 
-		if ($enc_key === 'F0af18413d1c9e03A6d8d1273160f5Ed')
+		if ($enc_key === '')
 		{
 			return TRUE;
 		}
