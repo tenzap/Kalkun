@@ -232,37 +232,37 @@ function get_minute()
 // 	}
 // }
 
-function get_database_property($driver)
-{
-	// valid and supported driver
-	$valid_driver = array('Postgre', 'MySQLi', 'SQLite3');
-
-	if ( ! in_array($driver, $valid_driver))
-	{
-		show_error("Database driver you're using is not supported", 500);
-	}
-
-	$Postgre['name'] = 'postgre';
-	$Postgre['file'] = 'pgsql';
-	$Postgre['human'] = 'PostgreSQL';
-	$Postgre['driver'] = 'pgsql';
-
-	$mysql['name'] = 'mysql';
-	$mysql['file'] = 'mysql';
-	$mysql['human'] = 'MySQL';
-	$mysql['driver'] = 'mysql';
-
-	$MySQLi['name'] = 'mysqli';
-	$MySQLi['file'] = 'mysql';
-	$MySQLi['human'] = 'MySQLi';
-	$MySQLi['driver'] = 'mysqli';
-
-	$SQLite3['name'] = 'sqlite';
-	$SQLite3['file'] = 'sqlite';
-	$SQLite3['human'] = 'SQLite3';
-	$SQLite3['driver'] = 'sqlite3';
-	return ${$driver};
-}
+// function get_database_property($driver)
+// {
+// 	// valid and supported driver
+// 	$valid_driver = array('Postgre', 'MySQLi', 'SQLite3');
+//
+// 	if ( ! in_array($driver, $valid_driver))
+// 	{
+// 		show_error("Database driver you're using is not supported", 500);
+// 	}
+//
+// 	$Postgre['name'] = 'postgre';
+// 	$Postgre['file'] = 'pgsql';
+// 	$Postgre['human'] = 'PostgreSQL';
+// 	$Postgre['driver'] = 'pgsql';
+//
+// 	$mysql['name'] = 'mysql';
+// 	$mysql['file'] = 'mysql';
+// 	$mysql['human'] = 'MySQL';
+// 	$mysql['driver'] = 'mysql';
+//
+// 	$MySQLi['name'] = 'mysqli';
+// 	$MySQLi['file'] = 'mysql';
+// 	$MySQLi['human'] = 'MySQLi';
+// 	$MySQLi['driver'] = 'mysqli';
+//
+// 	$SQLite3['name'] = 'sqlite';
+// 	$SQLite3['file'] = 'sqlite';
+// 	$SQLite3['human'] = 'SQLite3';
+// 	$SQLite3['driver'] = 'sqlite3';
+// 	return ${$driver};
+// }
 
 /**
  * Execute SQL

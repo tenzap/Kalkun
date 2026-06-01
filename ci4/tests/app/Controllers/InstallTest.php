@@ -14,8 +14,12 @@ use App\TestUtils\KalkunTestCase;
 use App\TestUtils\KalkunDatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 
+use CodeIgniter\Config\Factories;
+use App\TestUtils\MockInvalidDBEngineProps;
+
 require_once __DIR__.'/../../testutils/KalkunTestCase.php';
 require_once __DIR__.'/../../testutils/KalkunDatabaseTestTrait.php';
+require_once __DIR__.'/../../testutils/MockInvalidDBEngineProps.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
@@ -120,21 +124,13 @@ class InstallTest extends KalkunTestCase {
 	// CI4-TODO
 	public function test_requirement_check_error()
 	{
-		$this->request->setCallable(
-			function ($CI) {
-				$array = ReflectionHelper::getPrivateProperty(
-					$CI,
-					'db_prop'
-				);
-				$array['driver'] = 'invalid_value';
-				$array['human'] = 'Invalid Database Engine (for testing)';
-				ReflectionHelper::setPrivateProperty(
-					$CI,
-					'db_prop',
-					$array
-				);
-			}
-		);
+		$this->DBSetup([
+			'engine' => 'sqlite',
+		]);
+		$this->write_config_file_for_database();
+
+		$invalidDBEngineProps = new MockInvalidDBEngineProps("SQLite3");
+		Factories::injectMock('libraries', 'DBEngineProps', $invalidDBEngineProps);
 
 		$result = $this->call('GET', 'install/requirement_check');
 		$data = $result->response()->getBody();

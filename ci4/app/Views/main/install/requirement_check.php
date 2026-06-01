@@ -34,11 +34,11 @@
 
 	<tr>
 		<td colspan="3">
-			<?php echo $db_property['human']; ?> <i>(As per the database configuration file of kalkun)</i>
+			<?php echo $db_property->getHuman(); ?> <i>(As per the database configuration file of kalkun)</i>
 		</td>
 		<td class="right">
 			<?php
-			if (extension_loaded($db_property['driver']))
+			if (extension_loaded($db_property->getDriver()))
 			{
 				$db_msg = '';
 			}

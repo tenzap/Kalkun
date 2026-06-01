@@ -13,7 +13,9 @@
 namespace App\Controllers;
 
 use App\Libraries\MYController;
+use App\Libraries\DBEngineProps;
 
+use CodeIgniter\Config\Factories;
 
 /**
  * Install Class
@@ -25,7 +27,7 @@ use App\Libraries\MYController;
 class Install extends BaseController {
 
 	public $idiom = 'english';
-	private $db_prop = [];
+	private $db_prop = null;
 	private $db_engine = '';
 
 	private $db = null;
@@ -111,8 +113,8 @@ class Install extends BaseController {
 		$this->db_config = config('Database')->{$defaultGroup};
 
 		helper('kalkun');
-		$this->db_prop = get_database_property($this->db_config['DBDriver']);
-		$this->db_engine = $this->db_prop['file'];
+		$this->db_prop = Factories::libraries('DBEngineProps', [], $this->db_config['DBDriver']);
+		$this->db_engine = $this->db_prop->getFile();
 	}
 	// --------------------------------------------------------------------
 
@@ -163,6 +165,7 @@ class Install extends BaseController {
 		// By default we consider Kalkun database schema is not installed
 		$detected_db_version = '0';
 		$data['type'] = 'install';
+		$data['error'] = 0;
 
 		$data['exception'] = NULL;
 		try
@@ -179,11 +182,10 @@ class Install extends BaseController {
 		$this->Kalkun_model = model('KalkunModel');
 		// Replace the values set in constructor now that we know that the
 		// configuration of the database is correct.
-		$this->db_prop = get_database_property($this->db->getPlatform());
-		$this->db_engine = $this->db_prop['file'];
+		$this->db_prop = Factories::libraries('DBEngineProps', [], $this->db_config['DBDriver']);
+		$this->db_engine = $this->db_prop->getFile();
 		$data['db_property'] = $this->db_prop;
 
-		$data['error'] = 0;
 
 		if ($this->request->getPost('action') === 'run_db_setup')
 		{

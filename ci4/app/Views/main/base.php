@@ -53,7 +53,7 @@
 			`<?php
 				helper('kalkun_helper');
 				$db = db_connect();
-				$db_name_human = get_database_property($db->getPlatform())['human'];
+				$db_name_human = \CodeIgniter\Config\Factories::libraries('DBEngineProps', [], $db->getPlatform())->getHuman();
 				echo $db_name_human, ' ', $db->getVersion(), ' (', $db->getPlatform(), ')'; ?>`
 			<br><b>* Gammu version:</b>
 			`<?php echo  filter_data(htmlentities(strval(model('KalkunModel')->get_gammu_info('gammu_version')->getRow('Client')), ENT_QUOTES)); ?>`

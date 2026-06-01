@@ -5,7 +5,7 @@
 	<tr>
 		<td>Database engine</td>
 		<td>
-			<strong><?php echo $db_property['human']; ?></strong>
+			<strong><?php echo $db_property->getHuman(); ?></strong>
 			<br><small>As per your database configuration.</small>
 		</td>
 	</tr>
