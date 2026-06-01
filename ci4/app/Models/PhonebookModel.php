@@ -13,6 +13,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * Phonebook_model Class
@@ -25,9 +26,11 @@ use CodeIgniter\Model;
  */
 class PhonebookModel extends Model {
 
+    use KalkunPhonenumberTrait;
+
 	// --------------------------------------------------------------------
-    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
-    {
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
 		parent::__construct($db, $validation);
 	}
 	/**
