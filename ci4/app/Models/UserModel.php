@@ -68,7 +68,7 @@ class UserModel extends Model {
 				$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
 				break;
 		}
-		$this->db->order_by('realname');
+		$this->db->orderBy('realname');
 		return $this->db->get();
 	}
 
@@ -164,7 +164,7 @@ class UserModel extends Model {
 		$this->db->from('user_settings');
 		$this->db->join('user', 'user.id_user = user_settings.id_user');
 		$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
-		$this->db->order_by('realname');
+		$this->db->orderBy('realname');
 		return $this->db->get();
 	}
 }
