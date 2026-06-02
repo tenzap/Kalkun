@@ -64,7 +64,7 @@ class UserModel extends Model {
 				break;
 
 			case 'search':
-				$search_word = strtolower($this->input->post('search_name'));
+				$search_word = strtolower(service('request')->getPost('search_name'));
 				$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
 				break;
 		}
@@ -84,35 +84,35 @@ class UserModel extends Model {
 	function addUser()
 	{
 		helper('kalkun');
-		$this->db->set('realname', trim($this->input->post('realname')));
-		$this->db->set('username', trim($this->input->post('username')));
-		$this->_phone_number_validation($this->input->post('phone_number'));
-		$this->db->set('phone_number', phone_format_e164($this->input->post('phone_number')));
-		$this->db->set('level', $this->input->post('level'));
+		$this->db->set('realname', trim(service('request')->getPost('realname')));
+		$this->db->set('username', trim(service('request')->getPost('username')));
+		$this->_phone_number_validation(service('request')->getPost('phone_number'));
+		$this->db->set('phone_number', phone_format_e164(service('request')->getPost('phone_number')));
+		$this->db->set('level', service('request')->getPost('level'));
 
 		// edit mode
-		if ($this->input->post('id_user'))
+		if (service('request')->getPost('id_user'))
 		{
 			if ($this->config->item('demo_mode')
-				&& intval($this->input->post('id_user')) === 1)
+				&& intval(service('request')->getPost('id_user')) === 1)
 			{
-				if ($this->input->post('username') !== 'kalkun')
+				if (service('request')->getPost('username') !== 'kalkun')
 				{
 					// Restore username to 'kalkun'
 					$this->db->set('username', 'kalkun');
 				}
-				if ($this->input->post('level') !== 'admin')
+				if (service('request')->getPost('level') !== 'admin')
 				{
 					// Restore level to 'admin'
 					$this->db->set('level', 'admin');
 				}
 			}
-			$this->db->where('id_user', $this->input->post('id_user'));
+			$this->db->where('id_user', service('request')->getPost('id_user'));
 			$this->db->update('user');
 		}
 		else
 		{
-			$this->db->set('password', password_hash($this->input->post('password'), PASSWORD_BCRYPT));
+			$this->db->set('password', password_hash(service('request')->getPost('password'), PASSWORD_BCRYPT));
 			$this->db->insert('user');
 
 			// user_settings
