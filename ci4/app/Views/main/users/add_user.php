@@ -8,17 +8,17 @@
 		<label for="realname"><?php echo tr('Name'); ?></label>
 		<input type="text" name="realname" id="realname" value="<?php if (isset($users))
 {
-	echo htmlentities($users->row('realname'), ENT_QUOTES);
+	echo htmlentities($users->getRow('realname'), ENT_QUOTES);
 }?>" class="text ui-widget-content ui-corner-all" />
 		<label for="phone_number"><?php echo tr('Phone number'); ?></label>
 		<input type="text" name="phone_number" id="phone_number" value="<?php if (isset($users))
 {
-	echo htmlentities($users->row('phone_number'), ENT_QUOTES);
+	echo htmlentities($users->getRow('phone_number'), ENT_QUOTES);
 }?>" class="text ui-widget-content ui-corner-all" />
 		<label for="username"><?php echo tr('Username'); ?></label>
 		<input type="text" name="username" id="username" value="<?php if (isset($users))
 {
-	echo htmlentities($users->row('username'), ENT_QUOTES);
+	echo htmlentities($users->getRow('username'), ENT_QUOTES);
 }?>" class="text ui-widget-content ui-corner-all" />
 
 		<?php if ( ! isset($users)): ?>
@@ -31,13 +31,13 @@
 		<label for="level"><?php echo tr('Role'); ?></label>
 		<?php
 $level = array('admin' => tr('Administrator'), 'user' => tr('User', 'credentials'));
-$level_act = (isset($users)) ? $users->row('level') : '';
+$level_act = (isset($users)) ? $users->getRow('level') : '';
 $option = 'class="text ui-widget-content ui-corner-all" id="level"';
 echo form_dropdown('level', $level, $level_act, $option);
 ?>
 
 		<?php if (isset($users)): ?>
-		<input type="hidden" name="id_user" id="id_user" value="<?php echo $users->row('id_user');?>">
+		<input type="hidden" name="id_user" id="id_user" value="<?php echo $users->getRow('id_user');?>">
 		<?php endif;?>
 	</fieldset>
 	<?php echo form_close();?>
