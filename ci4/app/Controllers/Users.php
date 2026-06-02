@@ -70,7 +70,7 @@ class Users extends MYController {
 		}
 
 		helper('kalkun');
-		if (is_ajax())
+		if ($this->request->isAjax())
 		{
 			return view('main/users/users_list', $data);
 		}
