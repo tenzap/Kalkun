@@ -8,17 +8,27 @@
  * @license <https://spdx.org/licenses/GPL-2.0-or-later.html> GPL-2.0-or-later
  * @link https://kalkun.sourceforge.io/
  */
+namespace App\Controllers;
 
-require_once __DIR__.'/../testutils/ConfigFile.php';
-require_once __DIR__.'/../testutils/DBSetup.php';
-require_once __DIR__.'/../testutils/KalkunTestCase.php';
+use App\TestUtils\KalkunTestCase;
+use App\TestUtils\KalkunDatabaseTestTrait;
+use CodeIgniter\Test\FeatureTestTrait;
+//use CodeIgniter\Test\DatabaseTestTrait;
+use Config\Database;
+
+require_once __DIR__.'/../../testutils/KalkunTestCase.php';
+require_once __DIR__.'/../../testutils/KalkunDatabaseTestTrait.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class Users_test extends KalkunTestCase {
+class UsersTest extends KalkunTestCase {
+
+	use FeatureTestTrait;
+	use KalkunDatabaseTestTrait;
 
 	public function setUp() : void
 	{
+		parent::setUp();
 		if (file_exists(FCPATH . 'install'))
 		{
 			unlink(FCPATH . 'install');
@@ -27,19 +37,17 @@ class Users_test extends KalkunTestCase {
 
 	public static function database_Provider()
 	{
-		return DBSetup::$db_engines_to_test;
+		return self::$db_engines_to_test;
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_non_admin($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -62,16 +70,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_GET($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -94,16 +100,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_GET_no_user_in_db($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -132,16 +136,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_GET_ajax($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -164,16 +166,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtmlSnippet($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_POST_search_name_found($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -202,16 +202,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertThat($data, $this->logicalNot($this->stringContains($expected)));
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_index_POST_search_name_nomatch($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -237,16 +235,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -270,16 +266,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtmlSnippet($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_normal($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -302,16 +296,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtmlSnippet($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_edit($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -334,16 +326,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertValidHtmlSnippet($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_process_new_user($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -373,16 +363,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals('info', $data_decoded['type']);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_process_edit_user($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -418,16 +406,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals('+33699999988', $user_record->row()->phone_number);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_process_edit_user_demomode_forbid_username_change($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -442,10 +428,7 @@ class Users_test extends KalkunTestCase {
 			}
 		);
 
-		$configFile = new ConfigFile(APPPATH . 'config/testing/kalkun_settings.php');
-		$content = "<?php\n";
-		$content .= '$config[\'demo_mode\'] = TRUE;';
-		$configFile->write($content);
+		config('Kalkun')->demo_mode = TRUE;
 
 		$data = $this->request('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
@@ -467,16 +450,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_process_edit_user_demomode_forbid_level_change($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -491,10 +472,7 @@ class Users_test extends KalkunTestCase {
 			}
 		);
 
-		$configFile = new ConfigFile(APPPATH . 'config/testing/kalkun_settings.php');
-		$content = "<?php\n";
-		$content .= '$config[\'demo_mode\'] = TRUE;';
-		$configFile->write($content);
+		config('Kalkun')->demo_mode = TRUE;
 
 		$data = $this->request('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
@@ -516,16 +494,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_add_user_process_edit_user_demomode_forbid_username_level_change($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
@@ -540,10 +516,7 @@ class Users_test extends KalkunTestCase {
 			}
 		);
 
-		$configFile = new ConfigFile(APPPATH . 'config/testing/kalkun_settings.php');
-		$content = "<?php\n";
-		$content .= '$config[\'demo_mode\'] = TRUE;';
-		$configFile->write($content);
+		config('Kalkun')->demo_mode = TRUE;
 
 		$data = $this->request('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
@@ -565,16 +538,14 @@ class Users_test extends KalkunTestCase {
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	public function test_delete_user($db_engine)
 	{
-		$dbsetup = new DBSetup([
+		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$dbsetup->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
 
 		$this->request->setCallablePreConstructor(
 			function () {
