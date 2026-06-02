@@ -3,6 +3,8 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use Config\Services as AppServices;
+use Locale;
 
 /**
  * Services Configuration file.
@@ -29,4 +31,25 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+     public static function language(?string $locale = null, bool $getShared = true)
+     {
+         // Identical to vendor/codeigniter4/framework/system/Config/Services.php
+         // Except that we call \App\Libraries\Language instead of Language
+         if ($getShared) {
+             return static::getSharedInstance('language', $locale)->setLocale($locale);
+         }
+
+         if (AppServices::get('request') instanceof IncomingRequest) {
+             $requestLocale = AppServices::get('request')->getLocale();
+         } else {
+             $requestLocale = Locale::getDefault();
+         }
+
+         // Use '?:' for empty string check
+         $locale = in_array($locale, [null, '', '0'], true) ? $requestLocale : $locale;
+
+         return new \App\Libraries\Language($locale);
+     }
+
 }

@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+//defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Kalkun
@@ -11,10 +11,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link https://kalkun.sourceforge.io/
  */
 
+namespace App\Libraries;
+
+use CodeIgniter\Language\Language as MX_Lang;
+
 /**
  * Language Class
   */
-class MY_Lang extends MX_Lang {
+class Language extends MX_Lang {
 
 	// Default to 'en'
 	public $locale = 'en';
@@ -51,9 +55,9 @@ class MY_Lang extends MX_Lang {
 	 *
 	 * @return	void
 	 */
-	public function __construct()
+	public function __construct(string $locale)
 	{
-		parent::__construct();
+		parent::__construct($locale);
 		if ( ! extension_loaded('intl'))
 		{
 			log_message('error', 'please install/enable the intl extension of PHP');
@@ -74,7 +78,7 @@ class MY_Lang extends MX_Lang {
 	 *
 	 * @return	void|string[]	Array containing translations, if $return is set to TRUE
 	 */
-	public function load($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $_module = '')
+/*	public function load($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $_module = '')
 	{
 		if ($idiom !== '')
 		{
@@ -91,7 +95,7 @@ class MY_Lang extends MX_Lang {
 		$langfile .= '.php';
 
 		$found = FALSE;
-		if (file_exists(BASEPATH.'language/'.$this->idiom.'/'.$langfile))
+		if (file_exists(APPPATH.'Language/'.$this->idiom.'/'.$langfile))
 		{
 			$found = TRUE;
 		}
@@ -125,8 +129,15 @@ class MY_Lang extends MX_Lang {
 		parent::load($langfile, $requested_idiom, $return, $add_suffix, $alt_path, $_module);
 		if ( ! empty($idiom))
 		{
-			$this->locale = MY_LANG::$idiom_to_locale[$idiom];
+			$this->locale = Language::$idiom_to_locale[$idiom];
 		}
+	}*/
+	public function load(string $file, string $locale, bool $return = false)
+	{
+		// TODO continue rewriting.
+		$this->idiom = $this->locale_to_idiom($locale);
+		$this->locale = $locale;
+		return parent::load($file, $this->locale);
 	}
 
 	// --------------------------------------------------------------------
@@ -143,7 +154,7 @@ class MY_Lang extends MX_Lang {
 
 	public function line($line, $log_errors = TRUE)
 	{
-		return $this->__call('line', func_get_args());
+		return $this->__call('line',func_get_args());
 	}
 
 	/**
@@ -153,20 +164,20 @@ class MY_Lang extends MX_Lang {
 	 *
 	 * @param	string	$line		Language line key
 	 * @param	string	$context	context of the line (used to search in the nested array of the line)
-	 * @param	array	$msg_params	the arguments to pass to MessageFormatter::formatMessage
+	 * @param	array	$msg_params	the arguments to pass to \MessageFormatter::formatMessage
 	 * @return	string	Translation
 	 */
 	private function line_kalkun($line, $context = NULL, ...$msg_params)
 	{
 		if ($context === NULL)
 		{
-			if (isset($this->language[$line]))
+			if (isset($this->language[$this->locale]["kalkun_lang"][$line]))
 			{
 				if (extension_loaded('intl'))
 				{
-					$value = MessageFormatter::formatMessage(
+					$value = \MessageFormatter::formatMessage(
 						$this->locale,
-						$this->language[$line],
+						$this->language[$this->locale]["kalkun_lang"][$line],
 						$msg_params
 					);
 				}
@@ -184,13 +195,13 @@ class MY_Lang extends MX_Lang {
 		{
 			if (is_string($context))
 			{
-				if (isset($this->language[$line]) && isset($this->language[$line][$context]))
+				if (isset($this->language[$this->locale]["kalkun_lang"][$line]) && isset($this->language[$this->locale]["kalkun_lang"][$line][$context]))
 				{
 					if (extension_loaded('intl'))
 					{
-						$value = MessageFormatter::formatMessage(
+						$value = \MessageFormatter::formatMessage(
 							$this->locale,
-							$this->language[$line][$context],
+							$this->language[$this->locale]["kalkun_lang"][$line][$context],
 							$msg_params
 						);
 					}
@@ -219,7 +230,7 @@ class MY_Lang extends MX_Lang {
 		{
 			if (extension_loaded('intl'))
 			{
-				$value = MessageFormatter::formatMessage(
+				$value = \MessageFormatter::formatMessage(
 					$this->locale,
 					'🌐 '.$line,
 					$msg_params
@@ -242,7 +253,7 @@ class MY_Lang extends MX_Lang {
 		{
 			if (count($arguments) === 0)
 			{
-				return call_user_func_array('parent::line', $arguments);
+				return call_user_func_array('parent::getLine', $arguments);
 			}
 			if (count($arguments) === 1)
 			{
@@ -252,7 +263,7 @@ class MY_Lang extends MX_Lang {
 			{
 				if (is_bool($arguments[1]))
 				{
-					return call_user_func_array('parent::line', $arguments);
+					return call_user_func_array('parent::getLine', $arguments);
 				}
 				else
 				{
@@ -271,7 +282,7 @@ class MY_Lang extends MX_Lang {
 
 	public static function locale_to_idiom ($locale)
 	{
-		$idiom_to_locale_lc = array_map('strtolower', MY_Lang::$idiom_to_locale);
+		$idiom_to_locale_lc = array_map('strtolower', Language::$idiom_to_locale);
 		$idiom = array_search(strtolower($locale), $idiom_to_locale_lc);
 		if ($idiom === FALSE)
 		{
@@ -281,7 +292,7 @@ class MY_Lang extends MX_Lang {
 	}
 	static function supported_locales()
 	{
-		return array_values(MY_Lang::$idiom_to_locale);
+		return array_values(Language::$idiom_to_locale);
 	}
 
 	// https://www.codingwithjesse.com/blog/use-accept-language-header/
@@ -324,12 +335,12 @@ class MY_Lang extends MX_Lang {
 		}
 
 		$locale = NULL;
-		$supported_locales = MY_Lang::supported_locales();
-		//$supported_locales_short = array_map('MY_Lang::locale_language', $supported_locales);
+		$supported_locales = Language::supported_locales();
+		//$supported_locales_short = array_map('Language::locale_language', $supported_locales);
 		//$supported_locales_all = array_merge($supported_locales, $supported_locales_short);
 
 		// look through sorted list and use first one that matches our languages
-		foreach (MY_Lang::browser_accept_language() as $lang => $val)
+		foreach (Language::browser_accept_language() as $lang => $val)
 		{
 			if (extension_loaded('intl'))
 			{
@@ -369,7 +380,7 @@ class MY_Lang extends MX_Lang {
 	function get_idiom()
 	{
 		$locale = $this->locale_matching_browser();
-		$this->idiom = MY_Lang::locale_to_idiom($locale);
+		$this->idiom = Language::locale_to_idiom($locale);
 		return $this->idiom;
 	}
 
@@ -404,11 +415,11 @@ class MY_Lang extends MX_Lang {
 	public function kalkun_supported_languages()
 	{
 		$supported_languages = [];
-		foreach (MY_Lang::$idiom_to_locale as $key => $value)
+		foreach (Language::$idiom_to_locale as $key => $value)
 		{
 			if (extension_loaded('intl'))
 			{
-				$supported_languages[$key] = Locale::getDisplayName($value, $value);
+				$supported_languages[$key] = \Locale::getDisplayName($value, $value);
 			}
 			else
 			{
@@ -421,7 +432,7 @@ class MY_Lang extends MX_Lang {
 
 	public static function idom_to_region($idiom)
 	{
-		$locale = MY_LANG::$idiom_to_locale[$idiom];
+		$locale = Language::$idiom_to_locale[$idiom];
 		if (strlen($locale) === 2)
 		{
 			return Locale::getRegion('-'.$locale);
