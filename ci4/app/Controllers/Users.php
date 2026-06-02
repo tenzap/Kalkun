@@ -10,6 +10,9 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
 
 /**
  * Users Class
@@ -18,7 +21,7 @@
  * @subpackage	Users
  * @category	Controllers
  */
-class Users extends MY_Controller {
+class Users extends MYController {
 
 	/**
 	 * Constructor

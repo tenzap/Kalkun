@@ -10,6 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models;
+
+use CodeIgniter\Model;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * User_model Class
@@ -20,9 +24,19 @@
  * @subpackage	User
  * @category	Models
  */
-class User_model extends CI_Model {
+class UserModel extends Model {
+
+    use KalkunPhonenumberTrait;
+
+	protected $table = 'DUMMY';
+	protected $allowedFields = [];
 
 	// --------------------------------------------------------------------
+
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
+		parent::__construct($db, $validation);
+	}
 
 	/**
 	 * Get User
@@ -152,23 +166,5 @@ class User_model extends CI_Model {
 		$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
 		$this->db->order_by('realname');
 		return $this->db->get();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Check if submitted phone number is valid
-	 *
-	 * @access	public
-	 */
-	function _phone_number_validation($phone)
-	{
-		$this->load->helper('kalkun');
-		$result = is_phone_number_valid($phone);
-
-		if ($result !== TRUE)
-		{
-			show_error(tr($result), 400);
-		}
 	}
 }
