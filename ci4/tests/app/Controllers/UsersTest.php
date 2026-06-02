@@ -137,7 +137,11 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->ajaxRequest('GET', 'users/index');
+		$headers = [
+			'X-Requested-With' => 'XMLHttpRequest',
+		];
+		$result = $this->withSession($session)->withHeaders($headers)->call('GET', 'users/index');
+		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->assertThat($data, $this->logicalNot($this->stringContains($expected)));
 		$expected = '>Kalkun SMS<';
