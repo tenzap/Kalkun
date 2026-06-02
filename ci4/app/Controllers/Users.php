@@ -46,6 +46,7 @@ class Users extends MYController {
 	 */
 	function index()
 	{
+		helper('i18n');
 		$data['title'] = tr_raw('User', 'default');
 		$this->load->library('pagination');
 		$config['base_url'] = site_url().'/users/index/';
@@ -115,6 +116,7 @@ class Users extends MYController {
 	function add_user_process()
 	{
 		helper('kalkun');
+		helper('i18n');
 		$this->User_model->adduser();
 
 		if ($this->request->getPost('id_user'))
