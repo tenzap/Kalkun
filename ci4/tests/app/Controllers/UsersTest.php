@@ -56,7 +56,8 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'username',
 		];
 
-		$data = $this->request('GET', 'users/index');
+		$result = $this->withSession($session)->call('GET', 'users/index');
+		$data = $result->response()->getBody();
 		$this->assertRedirect('/', 302);
 		$expected = 'Access denied.';
 		$CI_instance = & get_instance();
@@ -80,7 +81,8 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('GET', 'users/index');
+		$result = $this->withSession($session)->call('GET', 'users/index');
+		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = '>Kalkun SMS<';
@@ -110,7 +112,8 @@ class UsersTest extends KalkunTestCase {
 			}
 		);
 
-		$data = $this->request('GET', 'users/index');
+		$result = $this->withSession($session)->call('GET', 'users/index');
+		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = '>No users in the database.<';
@@ -162,7 +165,8 @@ class UsersTest extends KalkunTestCase {
 		$realname = 'User number 1';
 		$this->request->addCallable($dbsetup->insert('user', ['realname' => $realname])->closure());
 
-		$data = $this->request('POST', 'users/index', ['search_name' => 'ser NUm']);
+		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'ser NUm']);
+		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = '>'.$realname.'<';
@@ -188,7 +192,8 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('POST', 'users/index', ['search_name' => 'nomatch']);
+		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'nomatch']);
+		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = '>User not found<';
@@ -215,12 +220,13 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('GET', 'users/add_user');
+		$result = $this->withSession($session)->call('GET', 'users/add_user');
+		$data = $result->response()->getBody();
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = 'id="realname" value=""';
 		$this->_assertStringContainsString($expected, $data);
-		//$data = $this->request('GET', 'users/add_user', ['type' => 'normal', 'param1' => '']);
+		//$result = $this->withSession($session)->call('GET', 'users/add_user', ['type' => 'normal', 'param1' => '']);
 		$this->assertValidHtmlSnippet($data);
 	}
 
@@ -240,7 +246,8 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('GET', 'users/add_user', ['type' => 'normal', 'param1' => '']);
+		$result = $this->withSession($session)->call('GET', 'users/add_user', ['type' => 'normal', 'param1' => '']);
+		$data = $result->response()->getBody();
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = 'id="realname" value=""';
@@ -264,7 +271,8 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('GET', 'users/add_user', ['type' => 'edit', 'param1' => '1']); //param1 is user_id to edit. 1=kalkun
+		$result = $this->withSession($session)->call('GET', 'users/add_user', ['type' => 'edit', 'param1' => '1']); //param1 is user_id to edit. 1=kalkun
+		$data = $result->response()->getBody();
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
 		$this->_assertStringContainsString($expected, $data);
 		$expected = 'id="realname" value="Kalkun SMS"';
@@ -288,7 +296,7 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('POST', 'users/add_user_process', [
+		$result = $this->withSession($session)->call('POST', 'users/add_user_process', [
 			'realname' => 'New user from Users_tests',
 			'username' => 'new_user',
 			'phone_number' => '+33699999988',
@@ -296,6 +304,7 @@ class UsersTest extends KalkunTestCase {
 			'password' => 'password_for_new_user',
 			//'id_user' => 'kalkun', // Only in case of edit.
 		]);
+		$data = $result->response()->getBody();
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
@@ -319,7 +328,7 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$data = $this->request('POST', 'users/add_user_process', [
+		$result = $this->withSession($session)->call('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
 			'username' => 'kalkun_edite', //limited to 12 chars
 			'phone_number' => '+33699999988',
@@ -327,6 +336,7 @@ class UsersTest extends KalkunTestCase {
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
 		]);
+		$data = $result->response()->getBody();
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
@@ -358,7 +368,7 @@ class UsersTest extends KalkunTestCase {
 
 		config('Kalkun')->demo_mode = TRUE;
 
-		$data = $this->request('POST', 'users/add_user_process', [
+		$result = $this->withSession($session)->call('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
 			'username' => 'kalkun_edite', //limited to 12 chars
 			'phone_number' => '+33699999988',
@@ -366,6 +376,7 @@ class UsersTest extends KalkunTestCase {
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
 		]);
+		$data = $result->response()->getBody();
 
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
@@ -396,7 +407,7 @@ class UsersTest extends KalkunTestCase {
 
 		config('Kalkun')->demo_mode = TRUE;
 
-		$data = $this->request('POST', 'users/add_user_process', [
+		$result = $this->withSession($session)->call('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
 			'username' => 'kalkun', //limited to 12 chars
 			'phone_number' => '+33699999988',
@@ -404,6 +415,7 @@ class UsersTest extends KalkunTestCase {
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
 		]);
+		$data = $result->response()->getBody();
 
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
@@ -434,7 +446,7 @@ class UsersTest extends KalkunTestCase {
 
 		config('Kalkun')->demo_mode = TRUE;
 
-		$data = $this->request('POST', 'users/add_user_process', [
+		$result = $this->withSession($session)->call('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
 			'username' => 'kalkun_edite', //limited to 12 chars
 			'phone_number' => '+33699999988',
@@ -442,6 +454,7 @@ class UsersTest extends KalkunTestCase {
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
 		]);
+		$data = $result->response()->getBody();
 
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
@@ -472,7 +485,8 @@ class UsersTest extends KalkunTestCase {
 
 		// TODO: launch also when there are messages in inbox, outbox & sentitems for that user, and pbk, user_folder, sms_used
 
-		$data = $this->request('POST', 'users/delete_user', ['id_user' => '1']);
+		$result = $this->withSession($session)->call('POST', 'users/delete_user', ['id_user' => '1']);
+		$data = $result->response()->getBody();
 		$this->assertEmpty($data);
 	}
 }
