@@ -1,4 +1,4 @@
-<?php $this->load->view('js_init/users/js_add_user');?>
+<?php echo view('js_init/users/js_add_user');?>
 
 <!-- User dialog -->
 <div id="dialog" class="dialog" style="display: block">
