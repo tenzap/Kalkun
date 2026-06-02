@@ -345,7 +345,7 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('User updated successfully.', $data_decoded['msg']);
 		$this->assertEquals('info', $data_decoded['type']);
 
-		$user_record = $this->CI->db->where('id_user', '1')->get('user');
+		$user_record = $this->db->table('user')->where('id_user', '1')->get();
 		$this->assertEquals('kalkun_edite', $user_record->row()->username);
 		$this->assertEquals('user', $user_record->row()->level);
 		$this->assertEquals('Kalkun SMS new realname', $user_record->row()->realname);
@@ -387,7 +387,7 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('Modification of username of "kalkun" user forbidden in demo mode. Username was restored.', $data_decoded['msg']);
 		$this->assertEquals('error', $data_decoded['type']);
 
-		$user_record = $this->CI->db->where('id_user', '1')->get('user');
+		$user_record = $this->db->table('user')->where('id_user', '1')->get();
 		$this->assertEquals('kalkun', $user_record->row()->username);
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
@@ -427,7 +427,7 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('Changing role of "kalkun" user forbidden in demo mode. Role was restored.', $data_decoded['msg']);
 		$this->assertEquals('error', $data_decoded['type']);
 
-		$user_record = $this->CI->db->where('id_user', '1')->get('user');
+		$user_record = $this->db->table('user')->where('id_user', '1')->get();
 		$this->assertEquals('kalkun', $user_record->row()->username);
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
@@ -467,7 +467,7 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('Changing role of "kalkun" user forbidden in demo mode. Role was restored.', $data_decoded['msg']);
 		$this->assertEquals('error', $data_decoded['type']);
 
-		$user_record = $this->CI->db->where('id_user', '1')->get('user');
+		$user_record = $this->db->table('user')->where('id_user', '1')->get();
 		$this->assertEquals('kalkun', $user_record->row()->username);
 		$this->assertEquals('admin', $user_record->row()->level);
 	}
