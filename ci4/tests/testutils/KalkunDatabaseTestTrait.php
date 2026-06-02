@@ -419,24 +419,24 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 
 	public static function setup_db_kalkun_testing2($testcase)
 	{
-		foreach (DBSetup::$db_engines_to_test as $db_engine)
+		foreach (self::$db_engines_to_test as $db_engine)
 		{
 			$engine = $db_engine[0];
-			if (isset(DBSetup::$current_setup[$engine])
-					&& DBSetup::$current_setup[$engine] instanceof DBSetup
-					&& DBSetup::$current_setup[$engine]->get_db_name() === 'kalkun_testing2')
+			if (isset(self::$current_setup[$engine])
+					&& self::$current_setup[$engine] instanceof DBSetup
+					&& self::$current_setup[$engine]->get_db_name() === 'kalkun_testing2')
 			{
 				continue;
 			}
 			echo 'Filling DB "kalkun_testing2" for ' . $engine . "\n";
 
-			DBSetup::$current_setup[$engine] = new DBSetup([
+			self::$current_setup[$engine] = new DBSetup([
 				'engine' => $engine,
 				'database' => 'kalkun_testing2',
 			]);
-			DBSetup::$current_setup[$engine]->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+			self::$current_setup[$engine]->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 
-			DBSetup::$current_setup[$engine]->setup_db_content();
+			self::$current_setup[$engine]->setup_db_content();
 
 			$testcase->resetInstance();
 			$reflection = new \ReflectionProperty('KalkunTestCase', 'CI');
@@ -446,7 +446,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 			}
 			$CI = $reflection->getValue($testcase);
 			$CI->load->database();
-			DBSetup::$current_setup[$engine]->execute($CI);
+			self::$current_setup[$engine]->execute($CI);
 		}
 	}
 
@@ -690,10 +690,10 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 				$trash = 0;
 				break;
 		}
-		$sender_count = (isset($params['sender_count'])) ? $params['sender_count'] : DBSetup::senders;
-		$messages_per_sender = (isset($params['messages_per_sender'])) ? $params['messages_per_sender'] : DBSetup::messages_per_sender;
-		$recipient_count = (isset($params['recipient_count'])) ? $params['recipient_count'] : DBSetup::recipients;
-		$messages_per_recipient = (isset($params['messages_per_recipient'])) ? $params['messages_per_recipient'] : DBSetup::messages_per_recipient;
+		$sender_count = (isset($params['sender_count'])) ? $params['sender_count'] : self::senders;
+		$messages_per_sender = (isset($params['messages_per_sender'])) ? $params['messages_per_sender'] : self::messages_per_sender;
+		$recipient_count = (isset($params['recipient_count'])) ? $params['recipient_count'] : self::recipients;
+		$messages_per_recipient = (isset($params['messages_per_recipient'])) ? $params['messages_per_recipient'] : self::messages_per_recipient;
 		$readed = (isset($params['is_read']) && $params['is_read']) ? 'true' : 'false';
 
 		// Insert inbox
@@ -798,12 +798,12 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 	{
 		if ( ! isset($array))
 		{
-			return DBSetup::$db_engines_to_test;
+			return self::$db_engines_to_test;
 		}
 
 		$result = [];
 
-		foreach (DBSetup::$db_engines_to_test as $db_engine_label => $db_engine)
+		foreach (self::$db_engines_to_test as $db_engine_label => $db_engine)
 		{
 			foreach ($array as $key => $value)
 			{
@@ -1114,7 +1114,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 
 		if (isset($input['TextDecoded']) && $use_standard_text === TRUE)
 		{
-			$input['TextDecoded'] = DBSetup::text_replace_placeholder($input['TextDecoded'], DBSetup::$text_mono_gsm);
+			$input['TextDecoded'] = self::text_replace_placeholder($input['TextDecoded'], self::$text_mono_gsm);
 		}
 
 		$table = 'inbox';
@@ -1170,7 +1170,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 
 		if (isset($input['TextDecoded']))
 		{
-			$text = DBSetup::text_replace_placeholder($input['TextDecoded'], self::$text_multi_unicode);
+			$text = self::text_replace_placeholder($input['TextDecoded'], self::$text_multi_unicode);
 		}
 		else
 		{
@@ -1211,7 +1211,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 
 		if (isset($input['TextDecoded']))
 		{
-			$text = DBSetup::text_replace_placeholder($input['TextDecoded'], self::$text_multi_unicode);
+			$text = self::text_replace_placeholder($input['TextDecoded'], self::$text_multi_unicode);
 		}
 		else
 		{
@@ -1257,7 +1257,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 	{
 		if (isset($input['TextDecoded']) && $use_standard_text === TRUE)
 		{
-			$input['TextDecoded'] = DBSetup::text_replace_placeholder($input['TextDecoded'], DBSetup::$text_mono_gsm);
+			$input['TextDecoded'] = self::text_replace_placeholder($input['TextDecoded'], self::$text_mono_gsm);
 		}
 
 		self::$id_outbox_sentitems_count++;
@@ -1329,14 +1329,14 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 
 		if (isset($input['TextDecoded']))
 		{
-			$text = DBSetup::text_replace_placeholder($input['TextDecoded'], self::$text_multi_gsm);
+			$text = self::text_replace_placeholder($input['TextDecoded'], self::$text_multi_gsm);
 		}
 		else
 		{
 			$text = self::$text_multi_gsm;
 		}
 
-		$parts = DBSetup::get_multi_parts($text);
+		$parts = self::get_multi_parts($text);
 
 		$UDHprefix = $this->get_udh_prefix('sentitems', (isset($input['DestinationNumber']) ? $input['DestinationNumber'] : '+33612345678'));
 
@@ -1616,7 +1616,7 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 	{
 		if (isset($input['TextDecoded']) && $use_standard_text === TRUE)
 		{
-			$input['TextDecoded'] = DBSetup::text_replace_placeholder($input['TextDecoded'], DBSetup::$text_mono_gsm);
+			$input['TextDecoded'] = self::text_replace_placeholder($input['TextDecoded'], self::$text_mono_gsm);
 		}
 
 		if ( ! isset($input['SequencePosition']) || $input['SequencePosition'] === 1)
@@ -1684,14 +1684,14 @@ $content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
 		$ID = array_key_exists('ID', $input) ? $input['ID'] : self::$id_outbox_sentitems_count + 1;
 		if (isset($input['TextDecoded']))
 		{
-			$text = DBSetup::text_replace_placeholder($input['TextDecoded'], self::$text_multi_gsm);
+			$text = self::text_replace_placeholder($input['TextDecoded'], self::$text_multi_gsm);
 		}
 		else
 		{
 			$text = self::$text_multi_gsm;
 		}
 
-		$parts = DBSetup::get_multi_parts($text);
+		$parts = self::get_multi_parts($text);
 
 		$UDHprefix = $this->get_udh_prefix('sentitems', (isset($input['DestinationNumber']) ? $input['DestinationNumber'] : '+33612345678'));
 

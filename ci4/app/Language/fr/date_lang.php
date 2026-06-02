@@ -6,7 +6,6 @@
  * @license	http://opensource.org/licenses/MIT	MIT License
  * @link	https://codeigniter.com
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
 
 $lang['date_year'] = 'Année';
 $lang['date_years'] = 'Années';
@@ -63,3 +62,5 @@ $lang['UP12'] = '(UTC +12:00) Heure Fidji, Îles Gilbert, Kamchatka, heure norma
 $lang['UP1275'] = '(UTC +12:45) Heure normale des Îles Chatham';
 $lang['UP13'] = '(UTC +13:00) Heure normale des Îles Phénix, heure Tonga';
 $lang['UP14'] = '(UTC +14:00) Heure normale des Îles Line';
+
+return $lang;

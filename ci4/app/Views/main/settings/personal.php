@@ -1,4 +1,4 @@
-<script src="<?php echo $this->config->item('js_path');?>jquery-plugin/jquery.validate.min.js"></script>
+<script src="<?php echo config('kalkun')->js_path;?>jquery-plugin/jquery.validate.min.js"></script>
 <script>
 	$(document).ready(function() {
 		// validation
@@ -34,28 +34,28 @@
 	<tr>
 		<td><?php echo tr('Name'); ?></td>
 		<td>
-			<input type="text" name="realname" value="<?php echo htmlentities($settings->row('realname'), ENT_QUOTES);?>">
+			<input type="text" name="realname" value="<?php echo htmlentities($settings->getRow('realname'), ENT_QUOTES);?>">
 		</td>
 	</tr>
 
 	<tr>
 		<td><?php echo tr('Username'); ?></td>
 		<td>
-			<input type="text" name="username" value="<?php echo htmlentities($settings->row('username'), ENT_QUOTES);?>">
+			<input type="text" name="username" value="<?php echo htmlentities($settings->getRow('username'), ENT_QUOTES);?>">
 		</td>
 	</tr>
 
 	<tr>
 		<td><?php echo tr('Telephone number'); ?></td>
 		<td>
-			<input type="text" id="phone_number" name="phone_number" value="<?php echo htmlentities($settings->row('phone_number'), ENT_QUOTES);?>">
+			<input type="text" id="phone_number" name="phone_number" value="<?php echo htmlentities($settings->getRow('phone_number'), ENT_QUOTES);?>">
 		</td>
 	</tr>
 
 	<tr>
 		<td><?php echo tr('Signature'); ?><br><small><?php echo tr('Max. 50 characters'); ?></small></td>
 		<td>
-			<?php list($sig_option, $sig) = explode(';', $settings->row('signature'));?>
+			<?php list($sig_option, $sig) = explode(';', $settings->getRow('signature'));?>
 			<input type="radio" id="signature_off" name="signatureoption" value="false" <?php if ($sig_option === 'false')
 {
 	echo 'checked="checked"';

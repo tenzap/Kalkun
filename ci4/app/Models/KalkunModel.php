@@ -29,7 +29,7 @@ class KalkunModel extends Model {
 
     use KalkunPhonenumberTrait;
 
-	protected $table = '';
+	protected $table = 'DUMMY';
 	protected $allowedFields = [];
 	protected $request;
 	protected $session;
@@ -246,7 +246,7 @@ class KalkunModel extends Model {
 	function add_folder()
 	{
 		$data = array ('name' => $this->request->getPost('folder_name'), 'id_user' => $this->request->getPost('id_user'));
-		$this->db->insert('user_folders', $data);
+		$this->builder('user_folders')->insert($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -260,9 +260,9 @@ class KalkunModel extends Model {
 	 */
 	function rename_folder()
 	{
-		$this->db->set('name', $this->request->getPost('edit_folder_name'));
-		$this->db->where('id_folder', $this->request->getPost('id_folder'));
-		$this->db->update('user_folders');
+		$this->builder('user_folders')->set('name', $this->request->getPost('edit_folder_name'))
+		->where('id_folder', $this->request->getPost('id_folder'))
+		->update();
 	}
 
 	// --------------------------------------------------------------------
@@ -279,21 +279,23 @@ class KalkunModel extends Model {
 		$id_user = $this->session->get('id_user');
 
 		// get inbox
-		$this->db->select('inbox.ID', 'id_inbox');
-		$this->db->from('inbox');
-		$this->db->join('user_inbox', 'user_inbox.id_inbox=inbox.ID');
-		$this->db->join('user_folders', 'user_folders.id_folder=inbox.id_folder');
-		$this->db->where('user_folders.id_folder', $id_folder);
-		$inbox = $this->db->get();
+		$q = $this->builder('inbox');
+		$q->select('inbox.ID', 'id_inbox');
+		$q->join('user_inbox', 'user_inbox.id_inbox=inbox.ID');
+		$q->join('user_folders', 'user_folders.id_folder=inbox.id_folder');
+		$q->where('user_folders.id_folder', $id_folder);
+		$inbox = $q->get();
 
 		// delete inbox and user_inbox
-		foreach ($inbox->result() as $tmp)
+		foreach ($inbox->getResult() as $tmp)
 		{
-			$this->db->where('ID', $tmp->id_inbox);
-			$this->db->delete('inbox');
+			$this->builder('inbox')
+			->where('ID', $tmp->id_inbox)
+			->delete();
 
-			$this->db->where('id_inbox', $tmp->id_inbox);
-			$this->db->delete('user_inbox');
+			$this->builder('user_inbox')
+			->where('id_inbox', $tmp->id_inbox)
+			->delete();
 		}
 
 		// deprecated
@@ -306,21 +308,23 @@ class KalkunModel extends Model {
 		$this->db->query($inbox);*/
 
 		// get sentitems
-		$this->db->select('sentitems.ID as id_sentitems');
-		$this->db->from('sentitems');
-		$this->db->join('user_sentitems', 'user_sentitems.id_sentitems=sentitems.ID');
-		$this->db->join('user_folders', 'user_folders.id_folder=sentitems.id_folder');
-		$this->db->where('user_folders.id_folder', $id_folder);
-		$sentitems = $this->db->get();
+		$q = $this->builder('sentitems');
+		$q->select('sentitems.ID as id_sentitems');
+		$q->join('user_sentitems', 'user_sentitems.id_sentitems=sentitems.ID');
+		$q->join('user_folders', 'user_folders.id_folder=sentitems.id_folder');
+		$q->where('user_folders.id_folder', $id_folder);
+		$sentitems = $q->get();
 
 		// delete sentitems and user_sentitems
-		foreach ($sentitems->result() as $tmp)
+		foreach ($sentitems->getResult() as $tmp)
 		{
-			$this->db->where('ID', $tmp->id_sentitems);
-			$this->db->delete('sentitems');
+			$this->builder('sentitems')
+			->where('ID', $tmp->id_sentitems)
+			->delete('sentitems');
 
-			$this->db->where('id_sentitems', $tmp->id_sentitems);
-			$this->db->delete('user_sentitems');
+			$this->builder('user_sentitems')
+			->where('id_sentitems', $tmp->id_sentitems)
+			->delete('user_sentitems');
 		}
 
 		// deprecated
@@ -332,7 +336,7 @@ class KalkunModel extends Model {
 				WHERE uf.id_folder = '".$id_folder."'";
 		$this->db->query($sentitems);*/
 
-		$this->db->delete('user_folders', array('id_folder' => $id_folder, 'id_user' => $id_user));
+		$this->builder('user_folders')->delete(array('id_folder' => $id_folder, 'id_user' => $id_user));
 	}
 
 	// --------------------------------------------------------------------
@@ -349,68 +353,74 @@ class KalkunModel extends Model {
 		switch ($option)
 		{
 			case 'general':
-				$this->db->set('language', $this->request->getPost('language'));
-				$this->db->set('paging', $this->request->getPost('paging'));
-				$this->db->set('permanent_delete', $this->request->getPost('permanent_delete'));
-				$this->db->set('delivery_report', $this->request->getPost('delivery_report'));
-				$this->db->set('conversation_sort', $this->request->getPost('conversation_sort'));
-				$this->db->set('country_code', $this->request->getPost('dial_code'));
-				$this->db->where('id_user', $this->session->get('id_user'));
-				$this->db->update('user_settings');
+				$q = $this->builder('user_settings');
+				$q->set('language', $this->request->getPost('language'));
+				$q->set('paging', $this->request->getPost('paging'));
+				$q->set('permanent_delete', $this->request->getPost('permanent_delete'));
+				$q->set('delivery_report', $this->request->getPost('delivery_report'));
+				$q->set('conversation_sort', $this->request->getPost('conversation_sort'));
+				$q->set('country_code', $this->request->getPost('dial_code'));
+				$q->where('id_user', $this->session->get('id_user'));
+				$q->update();
 				// Refresh language before we display any message.
 				// Special case for when the user changes the language on this screen
-				$this->lang->load('kalkun', $this->request->getPost('language'));
+				service('Language')->load('kalkun_lang', service('language')::$idiom_to_locale[$this->request->getPost('language')]);
 				break;
 
 			case 'personal':
-				$this->db->set('realname', $this->request->getPost('realname'));
-				if ( ! ($this->config->item('demo_mode')
+				$q = $this->builder('user');
+				$q->set('realname', $this->request->getPost('realname'));
+				if ( ! (config('kalkun')->demo_mode
 					&& intval($this->session->get('id_user')) === 1))
 				{
-					$this->db->set('username', $this->request->getPost('username'));
+					$q->set('username', $this->request->getPost('username'));
 				}
 				$this->_phone_number_validation($this->request->getPost('phone_number'));
-				$this->db->set('phone_number', $this->phone_format_e164($this->request->getPost('phone_number')));
-				$this->db->where('id_user', $this->session->get('id_user'));
-				$this->db->update('user');
+				$q->set('phone_number', $this->phone_format_e164($this->request->getPost('phone_number')));
+				$q->where('id_user', $this->session->get('id_user'));
+				$q->update();
 
+				$q = $this->builder('user_settings');
 				$sig_opt = $this->request->getPost('signatureoption');
-				$this->db->set('signature', $sig_opt.';'.$this->request->getPost('signature'));
-				$this->db->where('id_user', $this->session->get('id_user'));
-				$this->db->update('user_settings');
+				$q->set('signature', $sig_opt.';'.$this->request->getPost('signature'));
+				$q->where('id_user', $this->session->get('id_user'));
+				$q->update();
 				break;
 
 			case 'appearance':
-				$this->db->set('theme', $this->request->getPost('theme'));
-				$this->db->set('bg_image', $this->request->getPost('bg_image_option').';background.jpg');
-				$this->db->where('id_user', $this->session->get('id_user'));
-				$this->db->update('user_settings');
+				$q = $this->builder('user_settings');
+				$q->set('theme', $this->request->getPost('theme'));
+				$q->set('bg_image', $this->request->getPost('bg_image_option').';background.jpg');
+				$q->where('id_user', $this->session->get('id_user'));
+				$q->update();
 				break;
 
 			case 'password':
-				if ( ! ($this->config->item('demo_mode') && intval($this->session->get('id_user')) === 1))
+				if ( ! (config('kalkun')->demo_mode && intval($this->session->get('id_user')) === 1))
 				{
-					$this->db->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
-					$this->db->where('id_user', $this->session->get('id_user'));
-					$this->db->update('user');
+					$q = $this->builder('user');
+					$q->set('password', password_hash($this->request->getPost('new_password'), PASSWORD_BCRYPT));
+					$q->where('id_user', $this->session->get('id_user'));
+					$q->update();
 				}
 				break;
 
 			case 'filters':
 				$id_filter = $this->request->getPost('id_filter');
-				$this->db->set('from', $this->request->getPost('from'));
-				$this->db->set('has_the_words', $this->request->getPost('has_the_words'));
-				$this->db->set('id_folder', $this->request->getPost('id_folder'));
-				$this->db->set('id_user', $this->request->getPost('id_user'));
+				$q = $this->builder('user_filters');
+				$q->set('from', $this->request->getPost('from'));
+				$q->set('has_the_words', $this->request->getPost('has_the_words'));
+				$q->set('id_folder', $this->request->getPost('id_folder'));
+				$q->set('id_user', $this->request->getPost('id_user'));
 
 				if ( ! empty($id_filter))
 				{
-					$this->db->where('id_filter', $id_filter);
-					$this->db->update('user_filters');
+					$q->where('id_filter', $id_filter);
+					$q->update();
 				}
 				else
 				{
-					$this->db->insert('user_filters');
+					$q->insert();
 				}
 				break;
 		}
@@ -463,18 +473,18 @@ class KalkunModel extends Model {
 	 */
 	function check_setting($param)
 	{
-		$this->db->from('user');
+		$q = $this->builder('user');
 		switch ($param['option'])
 		{
 			case 'username':
-				$this->db->where('username', $param['username']);
+				$q->where('username', $param['username']);
 				break;
 
 			case 'phone_number':
-				$this->db->where('phone_number', $this->phone_format_e164($param['phone_number']));
+				$q->where('phone_number', $this->phone_format_e164($param['phone_number']));
 				break;
 		}
-		return $this->db->get();
+		return $q->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -548,24 +558,24 @@ class KalkunModel extends Model {
 		switch ($option)
 		{
 			case 'date':
-				$this->db->select_sum($type.'_sms_count');
-				$this->db->from('sms_used');
+				$q = $this->builder('sms_used');
+				$q->selectSum($type.'_sms_count');
 
 				if (isset($param['sms_date_start']) && isset($param['sms_date_end']))
 				{
-					$this->db->where('sms_date >=', $param['sms_date_start']);
-					$this->db->where('sms_date <=', $param['sms_date_end']);
+					$q->where('sms_date >=', $param['sms_date_start']);
+					$q->where('sms_date <=', $param['sms_date_end']);
 				}
 				else
 				{
-					$this->db->where('sms_date', $param['sms_date']);
+					$q->where('sms_date', $param['sms_date']);
 				}
 
 				if (isset($param['user_id']))
 				{
-					$this->db->where('id_user', $param['user_id']);
+					$q->where('id_user', $param['user_id']);
 				}
-				$res = $this->db->get()->row($type.'_sms_count');
+				$res = $q->get()->getRow($type.'_sms_count');
 				if ( ! $res)
 				{
 					return 0;
@@ -645,15 +655,15 @@ class KalkunModel extends Model {
 	 */
 	function get_filters($user_id = NULL)
 	{
-		$this->db->from('user_filters');
+		$q = $this->builder('user_filters');
 
 		if ( ! is_null($user_id))
 		{
-			$this->db->where('user_filters.id_user', $user_id);
+			$q->where('user_filters.id_user', $user_id);
 		}
 
-		$this->db->join('user_folders', 'user_folders.id_folder=user_filters.id_folder');
-		return $this->db->get();
+		$q->join('user_folders', 'user_folders.id_folder=user_filters.id_folder');
+		return $q->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -666,9 +676,9 @@ class KalkunModel extends Model {
 
 	function delete_filter($id_filter = NULL)
 	{
-		$this->db->from('user_filters');
-		$this->db->where('id_filter', $id_filter);
-		return $this->db->delete();
+		$q = $this->builder('user_filters');
+		$q->where('id_filter', $id_filter);
+		return $q->delete();
 	}
 
 	function has_table_plugins()

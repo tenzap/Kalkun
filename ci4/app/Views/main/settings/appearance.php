@@ -4,7 +4,7 @@
 		<td>
 			<?php
 $theme = array('blue' => 'Blue', 'dark' => 'Dark', 'green' => 'Green');
-$theme_act = $this->Kalkun_model->get_setting()->row('theme');
+$theme_act = $this->Kalkun_model->get_setting()->getRow('theme');
 echo form_dropdown('theme', $theme, $theme_act);
 ?>
 		</td>
@@ -13,7 +13,7 @@ echo form_dropdown('theme', $theme, $theme_act);
 	<tr>
 		<td><?php echo tr('Background image'); ?></td>
 		<td>
-			<?php list($bg_act_option, $bg_act) = explode(';', $settings->row('bg_image'));?>
+			<?php list($bg_act_option, $bg_act) = explode(';', $settings->getRow('bg_image'));?>
 			<input type="radio" id="bg_off" name="bg_image_option" value="false" <?php if ($bg_act_option === 'false')
 {
 	echo 'checked="checked"';

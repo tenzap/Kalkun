@@ -102,7 +102,7 @@ class KalkunTestCase extends CIUnitTestCase {
 		// v4.4 triggers an exception if there is no argument. It accepts arguments,
 		// although the profile of the function doesn't mention them. Setting the 2nd argument
 		// to TRUE will normalize white spaces and avoid the exception.
-		$method = new ReflectionMethod('Symfony\Component\DomCrawler\Crawler', 'text');
+		$method = new \ReflectionMethod('Symfony\Component\DomCrawler\Crawler', 'text');
 		$params = $method->getParameters();
 		if (count($params) === 0)
 		{

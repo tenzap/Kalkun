@@ -1,9 +1,9 @@
-<?php $this->load->view('js_init/js_filters');?>
+<?php echo view('js_init/js_filters');?>
 <div style="text-align: center">
 	<a href="javascript:void(0);" id="addnewfilter"><?php echo tr('Create a new filter');?></a>
 </div>
 
-<?php foreach ($filters->result_array() as $filter):?>
+<?php foreach ($filters->getResultArray() as $filter):?>
 <div class="two_column_container contact_list" style="display: inline-block;">
 	<div class="left_column">
 		<div id="<?php echo $filter['id_filter'];?>" class="id_filter">
@@ -23,7 +23,7 @@
 	<div class="right_column">
 		<span>
 			<a href="javascript:void(0);" class="editfilter simplelink"><?php echo tr('Edit');?></a>
-			<img src="<?php echo $this->config->item('img_path');?>circle.gif" alt="dot">
+			<img src="<?php echo config('Kalkun')->img_path;?>circle.gif" alt="dot">
 			<a href="javascript:void(0);" class="deletefilter simplelink"><?php echo tr('Delete');?></a>
 		</span>
 	</div>
@@ -33,12 +33,12 @@
 <!-- Filter Dialog -->
 <div id="filterdialog" title="<?php echo tr('Filters');?>" class="dialog">
 	<?php
-	$this->load->helper('form');
+	helper('form');
 	echo form_open('settings/save', array('class' => 'addfilterform'));
 ?>
 	<input type="hidden" name="option" value="filters">
 	<input type="hidden" name="id_filter" id="id_filter" value="">
-	<input type="hidden" name="id_user" value="<?php echo $this->session->userdata('id_user');?>">
+	<input type="hidden" name="id_user" value="<?php echo session()->get('id_user');?>">
 
 	<label for="from"><?php echo tr('From');?></label>
 	<input type="text" name="from" id="from" class="text ui-widget-content ui-corner-all">
@@ -48,7 +48,7 @@
 
 	<label for="id_folder"><?php echo tr('Move to');?></label>
 	<select name="id_folder" id="id_folder" style="width: 98%">
-		<?php foreach ($my_folders->result() as $my_folder): ?>
+		<?php foreach ($my_folders->getResult() as $my_folder): ?>
 		<option value="<?php echo $my_folder->id_folder; ?>"><?php echo htmlentities($my_folder->name, ENT_QUOTES); ?></option>
 		<?php endforeach; ?>
 	</select>

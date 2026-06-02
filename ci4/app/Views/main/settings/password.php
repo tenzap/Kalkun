@@ -1,4 +1,4 @@
-<script src="<?php echo $this->config->item('js_path');?>jquery-plugin/jquery.validate.min.js"></script>
+<script src="<?php echo config('kalkun')->js_path;?>jquery-plugin/jquery.validate.min.js"></script>
 <script>
 	$(document).ready(function() {
 		// validation

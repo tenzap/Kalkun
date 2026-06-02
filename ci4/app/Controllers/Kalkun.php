@@ -13,7 +13,7 @@
 namespace App\Controllers;
 
 use App\Libraries\MYController;
-
+use App\Libraries\KalkunPhonenumberTrait;
 /**
  * Kalkun Class
  *
@@ -23,6 +23,9 @@ use App\Libraries\MYController;
  */
 
 class Kalkun extends MYController {
+
+	use KalkunPhonenumberTrait;
+
 	/**
 	 * Constructor
 	 *
@@ -89,6 +92,7 @@ class Kalkun extends MYController {
 				break;
 		}
 
+		$this->Kalkun_model = model('KalkunModel');
 		// generate data points
 		$x = array();
 		for ($i = 0; $i <= $days; $i++)
@@ -116,9 +120,9 @@ class Kalkun extends MYController {
 			}
 
 			$param['sms_date'] = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') - $i, date('Y')));
-			if ($this->session->userdata('level') !== 'admin')
+			if (session()->get('level') !== 'admin')
 			{
-				$param['user_id'] = $this->session->userdata('id_user');
+				$param['user_id'] = session()->get('id_user');
 			}
 			$yout[$key] += $this->Kalkun_model->get_sms_used('date', $param, 'out');
 			$yin[$key] += $this->Kalkun_model->get_sms_used('date', $param, 'in');
@@ -146,8 +150,7 @@ class Kalkun extends MYController {
 			],
 		];
 
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode($result));
+		return $this->response->setJSON($result);
 	}
 
 	// --------------------------------------------------------------------
@@ -163,15 +166,16 @@ class Kalkun extends MYController {
 	 */
 	function notification()
 	{
-		$status = $this->Kalkun_model->get_gammu_info('last_activity')->row('UpdatedInDB');
-		$response['signal'] = intval($this->Kalkun_model->get_gammu_info('phone_signal')->row('Signal'));
-		$response['signal_lbl'] = tr_raw('{0}%', NULL, $this->Kalkun_model->get_gammu_info('phone_signal')->row('Signal'));
-		$response['battery'] = intval($this->Kalkun_model->get_gammu_info('phone_battery')->row('Battery'));
-		$response['battery_lbl'] = tr_raw('{0}%', NULL, $this->Kalkun_model->get_gammu_info('phone_battery')->row('Battery'));
+		$this->Kalkun_model = model('KalkunModel');
+		$status = $this->Kalkun_model->get_gammu_info('last_activity')->getRow('UpdatedInDB');
+		$response['signal'] = intval($this->Kalkun_model->get_gammu_info('phone_signal')->getRow('Signal'));
+		$response['signal_lbl'] = tr_raw('{0}%', NULL, $this->Kalkun_model->get_gammu_info('phone_signal')->getRow('Signal'));
+		$response['battery'] = intval($this->Kalkun_model->get_gammu_info('phone_battery')->getRow('Battery'));
+		$response['battery_lbl'] = tr_raw('{0}%', NULL, $this->Kalkun_model->get_gammu_info('phone_battery')->getRow('Battery'));
 		if ( ! empty($status))
 		{
-			$this->load->helper('kalkun');
-			$status = get_modem_status($status, $this->config->item('modem_tolerant'));
+			helper('kalkun');
+			$status = get_modem_status($status, config('Kalkun')->modem_tolerant);
 			if ($status === 'connect')
 			{
 				$response['status'] = 'connected';
@@ -189,15 +193,13 @@ class Kalkun extends MYController {
 			$response['status_lbl'] = tr_raw('Unknown');
 		}
 
-		$this->load->helper('kalkun');
-		if (is_ajax())
+		if ($this->request->isAjax())
 		{
-			$this->output->set_content_type('application/json');
-			$this->output->set_output(json_encode($response));
+			return $this->response->setJSON($response);
 		}
 		else
 		{
-			$this->load->view('main/notification');
+			return view('main/notification');
 		}
 	}
 
@@ -215,17 +217,16 @@ class Kalkun extends MYController {
 	{
 		$unread_count['in'] = $this->Message_model->get_messages([
 			'readed' => FALSE,
-			'uid' => $this->session->userdata('id_user'),
-		])->num_rows();
+			'uid' => session()->get('id_user'),
+		])->getNumRows();
 		$unread_count['draft'] = 0;
 		$unread_count['spam'] = $this->Message_model->get_messages([
 			'readed' => FALSE,
 			'id_folder' => '6',
-			'uid' => $this->session->userdata('id_user'),
-		])->num_rows();
+			'uid' => session()->get('id_user'),
+		])->getNumRows();
 
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode($unread_count));
+		return $this->response->setJSON($unread_count);
 	}
 
 	// --------------------------------------------------------------------
@@ -239,8 +240,9 @@ class Kalkun extends MYController {
 	 */
 	function add_folder()
 	{
+		$this->Kalkun_model = model('KalkunModel');
 		$this->Kalkun_model->add_folder();
-		redirect($this->input->post('source_url') !== NULL ? $this->input->post('source_url') : '');
+		return redirect()->to($this->request->getPost('source_url') !== NULL ? $this->request->getPost('source_url') : '');
 	}
 
 	// --------------------------------------------------------------------
@@ -254,8 +256,9 @@ class Kalkun extends MYController {
 	 */
 	function rename_folder()
 	{
+		$this->Kalkun_model = model('KalkunModel');
 		$this->Kalkun_model->rename_folder();
-		redirect(strval($this->input->post('source_url')));
+		return redirect()->to(strval($this->request->getPost('source_url')));
 	}
 
 	// --------------------------------------------------------------------
@@ -269,8 +272,9 @@ class Kalkun extends MYController {
 	 */
 	function delete_folder($id_folder = NULL)
 	{
+		$this->Kalkun_model = model('KalkunModel');
 		$this->Kalkun_model->delete_folder($id_folder);
-		redirect('/', 'refresh');
+		return redirect()->to('/');
 	}
 
 	// --------------------------------------------------------------------
@@ -288,57 +292,58 @@ class Kalkun extends MYController {
 		$valid_type = array('general', 'personal', 'appearance', 'password', 'save', 'filters');
 		if ( ! in_array($type, $valid_type))
 		{
-			show_404();
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
 		}
 
+		$this->Kalkun_model = model('KalkunModel');
 		if ($_POST && $type === 'save')
 		{
-			$option = $this->input->post('option');
+			$option = $this->request->getPost('option');
 			// check password
 			if ($option === 'password')
 			{
-				if ($this->config->item('demo_mode') && intval($this->session->userdata('id_user')) === 1)
+				if (config('Kalkun')->demo_mode && intval(session()->get('id_user')) === 1)
 				{
-					$this->session->set_flashdata('notif', tr_raw('Password modification forbidden in demo mode.'));
-					redirect('settings/'.$option);
+					session()->setFlashdata('notif', tr_raw('Password modification forbidden in demo mode.'));
+					return redirect()->to('settings/'.$option);
 				}
-				if ( ! password_verify($this->input->post('current_password'), $this->Kalkun_model->get_setting()->row('password')))
+				if ( ! password_verify($this->request->getPost('current_password'), $this->Kalkun_model->get_setting()->getRow('password')))
 				{
-					$this->session->set_flashdata('notif', tr_raw('Wrong password'));
-					redirect('settings/'.$option);
+					session()->setFlashdata('notif', tr_raw('Wrong password'));
+					return redirect()->to('settings/'.$option);
 				}
 			}
 			else
 			{
 				if ($option === 'personal')
 				{
-					if ($this->input->post('username') !== $this->session->userdata('username'))
+					if ($this->request->getPost('username') !== session()->get('username'))
 					{
-						if ($this->Kalkun_model->check_setting(array('option' => 'username', 'username' => $this->input->post('username')))->num_rows() > 0)
+						if ($this->Kalkun_model->check_setting(array('option' => 'username', 'username' => $this->request->getPost('username')))->getNumRows() > 0)
 						{
-							$this->session->set_flashdata('notif', tr_raw('Username already taken'));
-							redirect('settings/'.$option);
+							session()->setFlashdata('notif', tr_raw('Username already taken'));
+							return redirect()->to('settings/'.$option);
 						}
 					}
 				}
 			}
 			$this->Kalkun_model->update_setting($option);
-			if ($this->config->item('demo_mode')
-				&& intval($this->session->userdata('id_user')) === 1
-				&& $this->input->post('username') !== 'kalkun')
+			if (config('Kalkun')->demo_mode
+				&& intval(session()->get('id_user')) === 1
+				&& $this->request->getPost('username') !== 'kalkun')
 			{
-				$this->session->set_flashdata('notif', tr_raw('Settings saved successfully (except username for kalkun user which can\'t be changed in demo mode)'));
+				session()->setFlashdata('notif', tr_raw('Settings saved successfully (except username for kalkun user which can\'t be changed in demo mode)'));
 			}
 			else
 			{
-				$this->session->set_flashdata('notif', tr_raw('Settings saved successfully.'));
+				session()->setFlashdata('notif', tr_raw('Settings saved successfully.'));
 			}
-			redirect('settings/'.$option);
+			return redirect()->to('settings/'.$option);
 		}
 
 		if ($type === 'filters')
 		{
-			$data['filters'] = $this->Kalkun_model->get_filters($this->session->userdata('id_user'));
+			$data['filters'] = $this->Kalkun_model->get_filters(session()->get('id_user'));
 			$data['my_folders'] = $this->Kalkun_model->get_folders('all');
 		}
 
@@ -359,6 +364,7 @@ class Kalkun extends MYController {
 	 */
 	function delete_filter($id_filter = NULL)
 	{
+		$this->Kalkun_model = model('KalkunModel');
 		$this->Kalkun_model->delete_filter($id_filter);
 	}
 
@@ -373,8 +379,19 @@ class Kalkun extends MYController {
 	 */
 	function phone_number_validation()
 	{
-		$this->load->helper('kalkun');
-		$result = is_phone_number_valid($this->input->get_post('phone'), $this->input->get_post('region'));
+		$region;
+		$phone;
+		if ($this->request->is('POST'))
+		{
+			$phone = $this->request->getPost('phone');
+			$region = $this->request->getPost('region');
+		}
+		else if ($this->request->is('GET'))
+		{
+			$phone = $this->request->getGet('phone');
+			$region = $this->request->getGet('region');
+		}
+		$result = $this->is_phone_number_valid($phone, $region);
 
 		if ($result === TRUE)
 		{
@@ -385,8 +402,7 @@ class Kalkun extends MYController {
 			$result = tr_raw($result);
 		}
 
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode($result));
+		return $this->response->setJSON($result, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -400,25 +416,33 @@ class Kalkun extends MYController {
 	 */
 	function phone_number_validation_multiple()
 	{
-		$this->load->helper('kalkun');
-		$tmp_dest = explode(',', $this->input->get_post('phone'));
+		$region;
+		$phone;
+		if ($this->request->is('POST'))
+		{
+			$phone = $this->request->getPost('phone');
+			$region = $this->request->getPost('region');
+		}
+		else if ($this->request->is('GET'))
+		{
+			$phone = $this->request->getGet('phone');
+			$region = $this->request->getGet('region');
+		}
+
+		$tmp_dest = explode(',', $phone);
 		foreach ($tmp_dest as $key => $val)
 		{
-			$result = is_phone_number_valid($val, $this->input->get_post('region'));
+			$result = $this->is_phone_number_valid($val, $region);
 			if ($result !== TRUE)
 			{
-				$this->output->set_content_type('application/json');
-				$this->output->set_output(json_encode(tr_raw($result).' ('.trim($val).')'));
-				return;
+				return $this->response->setJSON(tr_raw($result).' ('.trim($val).')', TRUE);
 			}
 		}
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode('true'));
+		return $this->response->setJSON('true', TRUE);
 	}
 
 	function get_csrf_hash()
 	{
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode($this->security->get_csrf_hash()));
+		return $this->response->setJSON(csrf_hash(), TRUE);
 	}
 }

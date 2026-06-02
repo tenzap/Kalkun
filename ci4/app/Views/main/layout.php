@@ -22,7 +22,7 @@ echo doctype('html5');?>
 				<div class="clear">&nbsp;</div>
 				<div class="notification_container" style="text-align: center;"><span class="notification_area hidden"><?php echo tr('Loading');?>...</span>
 					<?php if (session()->getFlashdata('notif')): ?>
-					<span class="notification_area"><?php echo htmlentities($this->session->getFlashdata('notif'), ENT_QUOTES);?></span>
+					<span class="notification_area"><?php echo htmlentities(session()->getFlashdata('notif'), ENT_QUOTES);?></span>
 					<?php endif; ?>
 				</div>
 			</div>
