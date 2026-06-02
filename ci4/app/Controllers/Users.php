@@ -69,7 +69,7 @@ class Users extends MYController {
 			$data['users'] = $this->User_model->getUsers($param);
 		}
 
-		$this->load->helper('kalkun');
+		helper('kalkun');
 		if (is_ajax())
 		{
 			$this->load->view('main/users/users_list', $data);
@@ -91,7 +91,7 @@ class Users extends MYController {
 	 */
 	function add_user()
 	{
-		$this->load->helper('form');
+		helper('form');
 		$type = $this->input->get('type');
 		$data['tmp'] = '';
 
@@ -114,7 +114,7 @@ class Users extends MYController {
 	 */
 	function add_user_process()
 	{
-		$this->load->helper('kalkun');
+		helper('kalkun');
 		$this->User_model->adduser();
 
 		if ($this->input->post('id_user'))
