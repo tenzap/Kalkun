@@ -39,6 +39,18 @@ class IsLoggedInFilter implements FilterInterface
 			}
 			return redirect()->to('login?r_url='.urlencode(current_url().$request_uri_qry_string));
 		}
+
+		if ($request->getUri()->getSegment(1) === 'users' && $this->session->get('loggedin') === 'TRUE')
+		{
+			// check level
+			if ($this->session->get('level') !== 'admin')
+			{
+				helper('i18n');
+				$this->session->setFlashdata('notif', tr_raw('Access denied.'));
+				return redirect()->to('/');
+			}
+		}
+
 	}
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
