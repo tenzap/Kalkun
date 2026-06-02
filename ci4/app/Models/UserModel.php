@@ -89,7 +89,7 @@ class UserModel extends Model {
 		$q->set('realname', trim(service('request')->getPost('realname')));
 		$q->set('username', trim(service('request')->getPost('username')));
 		$this->_phone_number_validation(service('request')->getPost('phone_number'));
-		$q->set('phone_number', phone_format_e164(service('request')->getPost('phone_number')));
+		$q->set('phone_number', $this->phone_format_e164(service('request')->getPost('phone_number')));
 		$q->set('level', service('request')->getPost('level'));
 
 		// edit mode
