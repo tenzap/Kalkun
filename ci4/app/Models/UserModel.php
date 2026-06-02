@@ -127,7 +127,7 @@ class UserModel extends Model {
 			$q->set('delivery_report', 'default');
 			$q->set('language', 'english');
 			$q->set('conversation_sort', 'asc');
-			$q->set('id_user', $q->insertID());
+			$q->set('id_user', $this->db->insertID());
 
 			$q->insert();
 		}
