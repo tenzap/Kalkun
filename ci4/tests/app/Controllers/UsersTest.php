@@ -105,12 +105,8 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'admin',
 			'username' => 'kalkun',
 		];
-		$this->request->addCallable(
-			function ($CI) {
-				// Delete user from table to have an empty table.
-				$CI->db->where('id_user', '1')->delete('user');
-			}
-		);
+
+		$this->db->table('user')->where('id_user', '1')->delete();
 
 		$result = $this->withSession($session)->call('GET', 'users/index');
 		$data = $result->response()->getBody();
@@ -167,7 +163,7 @@ class UsersTest extends KalkunTestCase {
 
 		// insert user
 		$realname = 'User number 1';
-		$this->request->addCallable($dbsetup->insert('user', ['realname' => $realname])->closure());
+		$this->insert('user', ['realname' => $realname])->execute();
 
 		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'ser NUm']);
 		$data = $result->response()->getBody();
