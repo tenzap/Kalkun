@@ -49,18 +49,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '2';
-				$_SESSION['level'] = 'user';
-				$_SESSION['username'] = 'username';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '2',
+			'level' => 'user',
+			'username' => 'username',
+		];
 
 		$data = $this->request('GET', 'users/index');
 		$this->assertRedirect('/', 302);
@@ -79,18 +73,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('GET', 'users/index');
 		$expected = '<div id="window_title_left">Users</div>';
@@ -109,18 +97,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 		$this->request->addCallable(
 			function ($CI) {
 				// Delete user from table to have an empty table.
@@ -145,18 +127,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->ajaxRequest('GET', 'users/index');
 		$expected = '<div id="window_title_left">Users</div>';
@@ -175,18 +151,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		// insert user
 		$realname = 'User number 1';
@@ -211,18 +181,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('POST', 'users/index', ['search_name' => 'nomatch']);
 		$expected = '<div id="window_title_left">Users</div>';
@@ -244,18 +208,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('GET', 'users/add_user');
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
@@ -275,18 +233,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('GET', 'users/add_user', ['type' => 'normal', 'param1' => '']);
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
@@ -305,18 +257,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('GET', 'users/add_user', ['type' => 'edit', 'param1' => '1']); //param1 is user_id to edit. 1=kalkun
 		$expected = 'phonebook/add_user_process" id="addUser" method="post"';
@@ -335,18 +281,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('POST', 'users/add_user_process', [
 			'realname' => 'New user from Users_tests',
@@ -372,18 +312,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		$data = $this->request('POST', 'users/add_user_process', [
 			'realname' => 'Kalkun SMS new realname',
@@ -415,18 +349,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		config('Kalkun')->demo_mode = TRUE;
 
@@ -459,18 +387,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		config('Kalkun')->demo_mode = TRUE;
 
@@ -503,18 +425,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		config('Kalkun')->demo_mode = TRUE;
 
@@ -547,18 +463,12 @@ class UsersTest extends KalkunTestCase {
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
 
-		$this->request->setCallablePreConstructor(
-			function () {
-				if (session_status() === PHP_SESSION_NONE && is_cli() === FALSE)
-				{
-					session_start();
-				}
-				$_SESSION['loggedin'] = 'TRUE';
-				$_SESSION['id_user'] = '1';
-				$_SESSION['level'] = 'admin';
-				$_SESSION['username'] = 'kalkun';
-			}
-		);
+		$session = [
+			'loggedin' => 'TRUE',
+			'id_user' => '1',
+			'level' => 'admin',
+			'username' => 'kalkun',
+		];
 
 		// TODO: launch also when there are messages in inbox, outbox & sentitems for that user, and pbk, user_folder, sms_used
 
