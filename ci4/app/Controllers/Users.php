@@ -32,7 +32,7 @@ class Users extends MYController {
 	{
 		parent::__construct();
 
-		$this->load->model('User_model');
+		$this->User_model = model('UserModel');
 	}
 
 	// --------------------------------------------------------------------
