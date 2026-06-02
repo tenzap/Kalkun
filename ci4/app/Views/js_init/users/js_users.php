@@ -1,7 +1,7 @@
 <script id="js_users">
 	$(document).ready(function() {
 
-		var inbox_master = '<?php echo $this->config->item('inbox_owner_id')[0];?>';
+		var inbox_master = '<?php echo config('Kalkun')->inbox_owner_id[0];?>';
 
 		// Add/Edit Contact
 		$('.addpbkcontact, .edit_user').on('click', null, function() {

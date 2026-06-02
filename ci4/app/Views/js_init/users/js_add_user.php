@@ -1,4 +1,4 @@
-<script src="<?php echo $this->config->item('js_path');?>jquery-plugin/jquery.validate.min.js"></script>
+<script src="<?php echo config('Kalkun')js_path;?>jquery-plugin/jquery.validate.min.js"></script>
 <script id="js_add_user">
 	$(document).ready(function() {
 
