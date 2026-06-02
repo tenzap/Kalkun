@@ -346,10 +346,10 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('info', $data_decoded['type']);
 
 		$user_record = $this->db->table('user')->where('id_user', '1')->get();
-		$this->assertEquals('kalkun_edite', $user_record->row()->username);
-		$this->assertEquals('user', $user_record->row()->level);
-		$this->assertEquals('Kalkun SMS new realname', $user_record->row()->realname);
-		$this->assertEquals('+33699999988', $user_record->row()->phone_number);
+		$this->assertEquals('kalkun_edite', $user_record->getRow()->username);
+		$this->assertEquals('user', $user_record->getRow()->level);
+		$this->assertEquals('Kalkun SMS new realname', $user_record->getRow()->realname);
+		$this->assertEquals('+33699999988', $user_record->getRow()->phone_number);
 	}
 
 	#[DataProvider('database_Provider')]
@@ -388,8 +388,8 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('error', $data_decoded['type']);
 
 		$user_record = $this->db->table('user')->where('id_user', '1')->get();
-		$this->assertEquals('kalkun', $user_record->row()->username);
-		$this->assertEquals('admin', $user_record->row()->level);
+		$this->assertEquals('kalkun', $user_record->getRow()->username);
+		$this->assertEquals('admin', $user_record->getRow()->level);
 	}
 
 	#[DataProvider('database_Provider')]
@@ -428,8 +428,8 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('error', $data_decoded['type']);
 
 		$user_record = $this->db->table('user')->where('id_user', '1')->get();
-		$this->assertEquals('kalkun', $user_record->row()->username);
-		$this->assertEquals('admin', $user_record->row()->level);
+		$this->assertEquals('kalkun', $user_record->getRow()->username);
+		$this->assertEquals('admin', $user_record->getRow()->level);
 	}
 
 	#[DataProvider('database_Provider')]
@@ -468,8 +468,8 @@ class UsersTest extends KalkunTestCase {
 		$this->assertEquals('error', $data_decoded['type']);
 
 		$user_record = $this->db->table('user')->where('id_user', '1')->get();
-		$this->assertEquals('kalkun', $user_record->row()->username);
-		$this->assertEquals('admin', $user_record->row()->level);
+		$this->assertEquals('kalkun', $user_record->getRow()->username);
+		$this->assertEquals('admin', $user_record->getRow()->level);
 	}
 
 	#[DataProvider('database_Provider')]
