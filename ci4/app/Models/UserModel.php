@@ -93,7 +93,7 @@ class UserModel extends Model {
 		// edit mode
 		if (service('request')->getPost('id_user'))
 		{
-			if ($this->config->item('demo_mode')
+			if (config('Kalkun')->demo_mode
 				&& intval(service('request')->getPost('id_user')) === 1)
 			{
 				if (service('request')->getPost('username') !== 'kalkun')
