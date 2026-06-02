@@ -83,7 +83,7 @@ class UserModel extends Model {
 	 */
 	function addUser()
 	{
-		$this->load->helper('kalkun');
+		helper('kalkun');
 		$this->db->set('realname', trim($this->input->post('realname')));
 		$this->db->set('username', trim($this->input->post('username')));
 		$this->_phone_number_validation($this->input->post('phone_number'));
