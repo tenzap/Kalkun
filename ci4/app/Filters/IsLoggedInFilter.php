@@ -1,4 +1,13 @@
 <?php
+/**
+ * Kalkun
+ * An open source web based SMS Manager
+ *
+ * @copyright 2026 Fab Stz
+ * @author Fab Stz <fabstz-it@yahoo.fr>
+ * @license <https://spdx.org/licenses/GPL-2.0-or-later.html> GPL-2.0-or-later
+ * @link https://kalkun.sourceforge.io/
+ */
 
 namespace App\Filters;
 
@@ -14,16 +23,16 @@ class IsLoggedInFilter implements FilterInterface
 		// session check
 		if ($this->session->get('loggedin') === NULL)
 		{
-			if (service('request')->is('POST') && service('request')->getPost('idiom') !== NULL)
+			if ($request->is('POST') && $request->getPost('idiom') !== NULL)
 			{
-				return redirect()->to('login?l='.$this->request->getPost('idiom'));
+				return redirect()->to('login?l='.$request->getPost('idiom'));
 			}
-			if (service('request')->is('GET') && service('request')->getGet('l') !== NULL)
+			if ($request->is('GET') && $request->getGet('l') !== NULL)
 			{
-				return redirect()->to('login?l='.service('request')->getGet('l'));
+				return redirect()->to('login?l='.$request->getGet('l'));
 			}
-			$this->session->setFlashdata('bef_login_post_data', service('request')->getPost());
-				$request_uri_qry_string = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+			$this->session->setFlashdata('bef_login_post_data', $request->getPost());
+			$request_uri_qry_string = $request->getUri()->getQuery();
 			if ( ! empty($request_uri_qry_string))
 			{
 				$request_uri_qry_string = '?'.$request_uri_qry_string;

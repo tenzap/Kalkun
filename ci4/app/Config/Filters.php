@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'isLoggedInFilter' => \App\Filters\IsLoggedInFilter::class,
+        'installerFilter' => \App\Filters\InstallerFilter::class,
     ];
 
     /**
@@ -76,6 +77,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             'csrf',
             // 'invalidchars',
+            'installerFilter',
         ],
         'after' => [
             // 'honeypot',

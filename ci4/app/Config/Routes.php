@@ -7,11 +7,12 @@ use CodeIgniter\Router\RouteCollection;
  */
 #$routes->get('/', 'Home::index');
 
-$routes->get('/', 'Kalkun::getIndex');
+$routes->match(['GET', 'POST'], '/', 'Kalkun::getIndex');
 $routes->get('logout', 'Login::logout');
 $routes->match(['GET', 'POST'], 'login', 'Login::index');
 $routes->match(['GET', 'POST'], 'login/forgot_password', 'Login::forgot_password');
 $routes->match(['GET', 'POST'], 'login/password_reset', 'Login::password_reset');
+$routes->get('kalkun', 'Kalkun::getIndex');
 $routes->post('kalkun/rename_folder', 'Kalkun::rename_folder');
 $routes->post('kalkun/add_folder', 'Kalkun::add_folder');
 $routes->get('kalkun/delete_folder', 'Kalkun::delete_folder');

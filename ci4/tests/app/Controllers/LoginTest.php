@@ -59,6 +59,21 @@ class LoginTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
+	// This is used in config_setup.php when clicking on "Log in" at the bottom of the page.
+	#[DataProvider('database_Provider')]
+	public function test_login_POST_form($db_engine)
+	{
+		$this->DBSetup([
+			'engine' => $db_engine,
+		]);
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+
+		$result = $this->call('POST', '/', [ 'idiom' => 'french', csrf_token() => csrf_hash()]);
+		$data = $result->response()->getBody();
+		$result->assertRedirectTo('login?l=french');
+		$result->assertStatus(302);
+	}
+
 	#[DataProvider('database_Provider')]
 	public function test_login_POST_success($db_engine)
 	{

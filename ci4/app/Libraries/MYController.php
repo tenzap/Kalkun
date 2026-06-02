@@ -35,12 +35,6 @@ class MYController extends BaseController {
 	{
 		// CI4-TODO parent::__construct();
 
-		// installation mode
-		if (file_exists(FCPATH.'install'))
-		{
-			redirect('install');
-		}
-
 		//$this->load->database();
 		$db = db_connect();
 

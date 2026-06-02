@@ -46,6 +46,14 @@ class InstallTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
+	public function test_index_slash()
+	{
+		$result = $this->call('GET', '');
+		$data = $result->response()->getBody();
+		$result->assertRedirectTo('install');
+		$result->assertStatus(302);
+	}
+
 	// CI4-TODO
 	public function test_index_disabled()
 	{
@@ -147,9 +155,6 @@ class InstallTest extends KalkunTestCase {
 		return self::$db_engines_to_test;
 	}
 
-	/**
-	 * @dataProvider database_setup_run_db_setupProvider
-	 */
 	#[DataProvider('database_setup_run_db_setupProvider')]
 	public function test_database_setup_GET($db_engine, $config)
 	{
@@ -168,9 +173,6 @@ class InstallTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
 	#[DataProvider('database_Provider')]
 	#[RunInSeparateProcess]
 	public function test_database_setup_GET_with_db_exception($db_engine)
@@ -230,8 +232,6 @@ class InstallTest extends KalkunTestCase {
 	}
 
 	/**
-	 * @dataProvider database_setup_run_db_setupProvider
-	 *
 	 * for sqlite and other DB, this error might be displayed:
 	 *	Parse error near line 29: table user_settings has 10 columns but 9 values were supplied
 	 * This was fixed in 0.8.1 commit 04ff138ef2f83b538dd56b9ae40914227ac8806c
@@ -263,9 +263,6 @@ class InstallTest extends KalkunTestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider uses_default_encryption_keyProvider
-	 */
 	#[DataProvider('uses_default_encryption_keyProvider')]
 	public function test_uses_default_encryption_key($enc_key, $expected)
 	{

@@ -406,6 +406,24 @@ class KalkunTest extends KalkunTestCase {
 	}
 
 	#[DataProvider('database_Provider')]
+	public function test_index_not_loggedin($db_engine)
+	{
+		$this->DBSetup([
+			'engine' => $db_engine,
+		]);
+		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
+		$this->DBConnect();
+
+		$session = [];
+
+		$url = '/';
+		$result = $this->withSession($session)->call('GET', $url);
+		$expected = 'login?r_url='.urlencode(config('App')->baseURL.'index.php'.(ltrim($url,'/') ? '/'.ltrim($url,'/') : $url));
+		$result->assertRedirectTo($expected);
+		$result->assertStatus(302);
+	}
+
+	#[DataProvider('database_Provider')]
 	public function test_index($db_engine)
 	{
 		$this->DBSetup([
