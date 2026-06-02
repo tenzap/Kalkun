@@ -92,12 +92,12 @@ class Users extends MYController {
 	function add_user()
 	{
 		helper('form');
-		$type = $this->input->get('type');
+		$type = $this->request->getGet('type');
 		$data['tmp'] = '';
 
 		if ($type === 'edit')
 		{
-			$id_user = $this->input->get('param1');
+			$id_user = $this->request->getGet('param1');
 			$data['users'] = $this->User_model->getUsers(array('option' => 'by_iduser', 'id_user' => $id_user));
 		}
 		return view('main/users/add_user', $data);
@@ -117,19 +117,19 @@ class Users extends MYController {
 		helper('kalkun');
 		$this->User_model->adduser();
 
-		if ($this->input->post('id_user'))
+		if ($this->request->getPost('id_user'))
 		{
 			if ($this->config->item('demo_mode')
-				&& intval($this->input->post('id_user')) === 1)
+				&& intval($this->request->getPost('id_user')) === 1)
 			{
-				if ($this->input->post('username') !== 'kalkun')
+				if ($this->request->getPost('username') !== 'kalkun')
 				{
 					$return_msg = [
 						'type' => 'error',
 						'msg' => tr_raw('Modification of username of "kalkun" user forbidden in demo mode. Username was restored.'),
 					];
 				}
-				if ($this->input->post('level') !== 'admin')
+				if ($this->request->getPost('level') !== 'admin')
 				{
 					$return_msg = [
 						'type' => 'error',
@@ -170,7 +170,7 @@ class Users extends MYController {
 	 */
 	function delete_user()
 	{
-		$uid = $this->input->post('id_user');
+		$uid = $this->request->getPost('id_user');
 
 		// get and delete all user_outbox
 		$res = $this->Message_model->get_messages(array('uid' => $uid, 'type' => 'outbox'));
@@ -197,6 +197,6 @@ class Users extends MYController {
 		}
 
 		// delete the rest (user, user_settings, pbk, pbk_groups, user_folders, sms_used)
-		$this->User_model->delUsers($this->input->post('id_user'));
+		$this->User_model->delUsers($this->request->getPost('id_user'));
 	}
 }
