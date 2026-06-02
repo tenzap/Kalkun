@@ -47,29 +47,29 @@ class UserModel extends Model {
 	 */
 	function getUsers($param)
 	{
-		$this->db->from('user_settings');
-		$this->db->join('user', 'user.id_user = user_settings.id_user');
+		$q = $this->builder('user_settings');
+		$q->join('user', 'user.id_user = user_settings.id_user');
 		switch ($param['option'])
 		{
 			case 'all':
-				$this->db->select('*');
+				$q->select('*');
 				break;
 
 			case 'paginate':
-				$this->db->limit($param['limit'], $param['offset']);
+				$q->limit($param['limit'], $param['offset']);
 				break;
 
 			case 'by_iduser':
-				$this->db->where('user.id_user', $param['id_user']);
+				$q->where('user.id_user', $param['id_user']);
 				break;
 
 			case 'search':
 				$search_word = strtolower(service('request')->getPost('search_name'));
-				$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
+				$q->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
 				break;
 		}
-		$this->db->orderBy('realname');
-		return $this->db->get();
+		$q->orderBy('realname');
+		return $q->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -84,11 +84,13 @@ class UserModel extends Model {
 	function addUser()
 	{
 		helper('kalkun');
-		$this->db->set('realname', trim(service('request')->getPost('realname')));
-		$this->db->set('username', trim(service('request')->getPost('username')));
+
+		$q = $this->builder('user');
+		$q->set('realname', trim(service('request')->getPost('realname')));
+		$q->set('username', trim(service('request')->getPost('username')));
 		$this->_phone_number_validation(service('request')->getPost('phone_number'));
-		$this->db->set('phone_number', phone_format_e164(service('request')->getPost('phone_number')));
-		$this->db->set('level', service('request')->getPost('level'));
+		$q->set('phone_number', phone_format_e164(service('request')->getPost('phone_number')));
+		$q->set('level', service('request')->getPost('level'));
 
 		// edit mode
 		if (service('request')->getPost('id_user'))
@@ -99,34 +101,35 @@ class UserModel extends Model {
 				if (service('request')->getPost('username') !== 'kalkun')
 				{
 					// Restore username to 'kalkun'
-					$this->db->set('username', 'kalkun');
+					$q->set('username', 'kalkun');
 				}
 				if (service('request')->getPost('level') !== 'admin')
 				{
 					// Restore level to 'admin'
-					$this->db->set('level', 'admin');
+					$q->set('level', 'admin');
 				}
 			}
-			$this->db->where('id_user', service('request')->getPost('id_user'));
-			$this->db->update('user');
+			$q->where('id_user', service('request')->getPost('id_user'));
+			$q->update();
 		}
 		else
 		{
-			$this->db->set('password', password_hash(service('request')->getPost('password'), PASSWORD_BCRYPT));
-			$this->db->insert('user');
+			$q->set('password', password_hash(service('request')->getPost('password'), PASSWORD_BCRYPT));
+			$q->insert();
 
 			// user_settings
-			$this->db->set('theme', 'blue');
-			$this->db->set('signature', 'false;');
-			$this->db->set('permanent_delete', 'false');
-			$this->db->set('paging', '20');
-			$this->db->set('bg_image', 'true;background.jpg');
-			$this->db->set('delivery_report', 'default');
-			$this->db->set('language', 'english');
-			$this->db->set('conversation_sort', 'asc');
-			$this->db->set('id_user', $this->db->insert_id());
+			$q = $this->builder('user_settings');
+			$q->set('theme', 'blue');
+			$q->set('signature', 'false;');
+			$q->set('permanent_delete', 'false');
+			$q->set('paging', '20');
+			$q->set('bg_image', 'true;background.jpg');
+			$q->set('delivery_report', 'default');
+			$q->set('language', 'english');
+			$q->set('conversation_sort', 'asc');
+			$q->set('id_user', $q->insert_id());
 
-			$this->db->insert('user_settings');
+			$q->insert();
 		}
 	}
 
@@ -141,12 +144,12 @@ class UserModel extends Model {
 	 */
 	function delUsers($id_user)
 	{
-		$this->db->delete('sms_used', array('id_user' => $id_user));
-		$this->db->delete('user_folders', array('id_user' => $id_user));
-		$this->db->delete('pbk', array('id_user' => $id_user));
-		$this->db->delete('pbk_groups', array('id_user' => $id_user));
-		$this->db->delete('user_settings', array('id_user' => $id_user));
-		$this->db->delete('user', array('id_user' => $id_user));
+		$this->builder('sms_used')->delete(array('id_user' => $id_user));
+		$this->builder('user_folders')->delete(array('id_user' => $id_user));
+		$this->builder('pbk')->delete(array('id_user' => $id_user));
+		$this->builder('pbk_groups')->delete(array('id_user' => $id_user));
+		$this->builder('user_settings')->delete(array('id_user' => $id_user));
+		$this->builder('user')->delete(array('id_user' => $id_user));
 	}
 
 	// --------------------------------------------------------------------
@@ -161,10 +164,10 @@ class UserModel extends Model {
 	function search_user($realname)
 	{
 		$search_word = strtolower($realname);
-		$this->db->from('user_settings');
-		$this->db->join('user', 'user.id_user = user_settings.id_user');
-		$this->db->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
-		$this->db->orderBy('realname');
-		return $this->db->get();
+		return $this->builder('user_settings')
+			->join('user', 'user.id_user = user_settings.id_user')
+			->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word)
+			->orderBy('realname')
+			->get();
 	}
 }
