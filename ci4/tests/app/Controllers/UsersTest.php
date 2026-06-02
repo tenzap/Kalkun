@@ -61,8 +61,7 @@ class UsersTest extends KalkunTestCase {
 		$result->assertRedirectTo('');
 		$result->assertStatus(302);
 		$expected = 'Access denied.';
-		$CI_instance = & get_instance();
-		$flashdata = $CI_instance->session->flashdata('notif');
+		$flashdata = session()->getFlashdata('notif');
 		$this->assertEquals($expected, $flashdata);
 	}
 
