@@ -165,7 +165,7 @@ class UsersTest extends KalkunTestCase {
 		$realname = 'User number 1';
 		$this->insert('user', ['realname' => $realname])->execute();
 
-		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'ser NUm']);
+		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'ser NUm', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
@@ -192,7 +192,7 @@ class UsersTest extends KalkunTestCase {
 			'username' => 'kalkun',
 		];
 
-		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'nomatch']);
+		$result = $this->withSession($session)->call('POST', 'users/index', ['search_name' => 'nomatch', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$expected = '<div id="window_title_left">Users</div>';
 		$this->_assertStringContainsString($expected, $data);
@@ -303,6 +303,7 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'user',
 			'password' => 'password_for_new_user',
 			//'id_user' => 'kalkun', // Only in case of edit.
+			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -335,6 +336,7 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'user',
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
+			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
 		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -375,6 +377,7 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'admin',
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
+			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
 
@@ -414,6 +417,7 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'user',
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
+			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
 
@@ -453,6 +457,7 @@ class UsersTest extends KalkunTestCase {
 			'level' => 'user',
 			'password' => 'new_password_for_kalkun',
 			'id_user' => '1', // Only in case of edit.
+			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
 
@@ -485,7 +490,7 @@ class UsersTest extends KalkunTestCase {
 
 		// TODO: launch also when there are messages in inbox, outbox & sentitems for that user, and pbk, user_folder, sms_used
 
-		$result = $this->withSession($session)->call('POST', 'users/delete_user', ['id_user' => '1']);
+		$result = $this->withSession($session)->call('POST', 'users/delete_user', ['id_user' => '1', csrf_token() => csrf_hash()]);
 		$data = $result->response()->getBody();
 		$this->assertEmpty($data);
 	}
