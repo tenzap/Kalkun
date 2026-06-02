@@ -72,11 +72,11 @@ class Users extends MYController {
 		helper('kalkun');
 		if (is_ajax())
 		{
-			$this->load->view('main/users/users_list', $data);
+			return view('main/users/users_list', $data);
 		}
 		else
 		{
-			$this->load->view('main/layout', $data);
+			return view('main/layout', $data);
 		}
 	}
 
@@ -100,7 +100,7 @@ class Users extends MYController {
 			$id_user = $this->input->get('param1');
 			$data['users'] = $this->User_model->getUsers(array('option' => 'by_iduser', 'id_user' => $id_user));
 		}
-		$this->load->view('main/users/add_user', $data);
+		return view('main/users/add_user', $data);
 	}
 
 	// --------------------------------------------------------------------
