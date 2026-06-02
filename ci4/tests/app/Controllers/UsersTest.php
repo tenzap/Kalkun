@@ -58,7 +58,8 @@ class UsersTest extends KalkunTestCase {
 
 		$result = $this->withSession($session)->call('GET', 'users/index');
 		$data = $result->response()->getBody();
-		$this->assertRedirect('/', 302);
+		$result->assertRedirectTo('');
+		$result->assertStatus(302);
 		$expected = 'Access denied.';
 		$CI_instance = & get_instance();
 		$flashdata = $CI_instance->session->flashdata('notif');
