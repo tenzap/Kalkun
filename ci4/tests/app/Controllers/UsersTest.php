@@ -306,7 +306,7 @@ class UsersTest extends KalkunTestCase {
 			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
-		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
+		$result->assertHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
 		$this->assertEquals('User added successfully.', $data_decoded['msg']);
@@ -339,7 +339,7 @@ class UsersTest extends KalkunTestCase {
 			csrf_token() => csrf_hash(),
 		]);
 		$data = $result->response()->getBody();
-		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
+		$result->assertHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
 		$this->assertEquals('User updated successfully.', $data_decoded['msg']);
@@ -381,7 +381,7 @@ class UsersTest extends KalkunTestCase {
 		]);
 		$data = $result->response()->getBody();
 
-		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
+		$result->assertHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
 		$this->assertEquals('Modification of username of "kalkun" user forbidden in demo mode. Username was restored.', $data_decoded['msg']);
@@ -421,7 +421,7 @@ class UsersTest extends KalkunTestCase {
 		]);
 		$data = $result->response()->getBody();
 
-		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
+		$result->assertHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
 		$this->assertEquals('Changing role of "kalkun" user forbidden in demo mode. Role was restored.', $data_decoded['msg']);
@@ -461,7 +461,7 @@ class UsersTest extends KalkunTestCase {
 		]);
 		$data = $result->response()->getBody();
 
-		$this->assertResponseHeader('Content-Type', 'application/json; charset=UTF-8');
+		$result->assertHeader('Content-Type', 'application/json; charset=UTF-8');
 		$this->assertJson($data);
 		$data_decoded = json_decode($data, TRUE);
 		$this->assertEquals('Changing role of "kalkun" user forbidden in demo mode. Role was restored.', $data_decoded['msg']);

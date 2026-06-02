@@ -156,8 +156,7 @@ class Users extends MYController {
 		}
 
 		// Return status
-		$this->output->set_content_type('application/json');
-		$this->output->set_output(json_encode($return_msg));
+		return $this->response->setJSON($return_msg);
 	}
 
 	// --------------------------------------------------------------------
