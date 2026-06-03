@@ -75,7 +75,7 @@ trait KalkunDatabaseTestTrait
 
 	public function DBConnect()
 	{
-		$this->db = Database::connect($this->DBGroup);
+		$this->db = Database::connect();
 		$this->db->initialize();
 	}
 
@@ -160,7 +160,7 @@ password=' . $this->password);
 		return $text_multi_parts;
 	}
 
-	public function get_db_path()
+	public static function get_db_path($db_name)
 	{
 		$dir = sys_get_temp_dir().'/'; // With sqlite3, there are issues if the file is put in a subdir of /tmp/
 		// $dir = '/home/fabien/tmp/kalkun_testing/'; // With sqlite3, there are issues if the file is put in a subdir of /tmp/
@@ -168,7 +168,7 @@ password=' . $this->password);
 		{
 			mkdir ($dir);
 		}
-		return $dir.$this->db_name.'.sqlite3';
+		return $dir.$db_name.'.sqlite3';
 	}
 
 	public function get_db_name()
@@ -214,7 +214,7 @@ password=' . $this->password);
 				);
 				break;
 			case 'sqlite':
-				shell_exec('sqlite3 '.$this->get_db_path().' "VACUUM;"');
+				shell_exec('sqlite3 '.self::get_db_path($this->get_db_name()).' "VACUUM;"');
 				break;
 			default:
 				//$this->markTestIncomplete();
@@ -269,9 +269,9 @@ password=' . $this->password);
 				);
 				break;
 			case 'sqlite':
-				if (file_exists($this->get_db_path()))
+				if (file_exists(self::get_db_path($this->get_db_name())))
 				{
-					unlink($this->get_db_path());
+					unlink(self::get_db_path($this->get_db_name()));
 				}
 				break;
 			default:
@@ -307,7 +307,7 @@ password=' . $this->password);
 				);
 				break;
 			case 'sqlite':
-				shell_exec('sqlite3 ' . $this->get_db_path() . ' < ' . escapeshellarg($script_path));
+				shell_exec('sqlite3 ' . self::get_db_path($this->get_db_name()) . ' < ' . escapeshellarg($script_path));
 				break;
 			default:
 				$this->markTestIncomplete();
@@ -375,46 +375,6 @@ password=' . $this->password);
 		{
 			$this->run_sql_script($script_path);
 		}
-		$this->write_config_file_for_database();
-	}
-
-	public function write_config_file_for_database()
-	{
-		// Create file config/testing/database.php
-		switch ($this->get_engine())
-		{
-			case 'pgsql':
-				$content = "
-testing.database.pgsql.username = {$this->get_user()}
-testing.database.pgsql.password = {$this->get_password()}
-testing.database.pgsql.database = {$this->get_db_name()}
-";
-$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
-				break;
-			case 'mysql':
-				$content = "
-testing.database.mysql.username = {$this->get_user()}
-testing.database.mysql.password = {$this->get_password()}
-testing.database.mysql.database = {$this->get_db_name()}
-";
-$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
-				break;
-			case 'sqlite':
-				$content = "
-testing.database.sqlite.username =
-testing.database.sqlite.password =
-testing.database.sqlite.database = {$this->get_db_path()}
-";
-$content2 = "<?php \$TESTING_DB_ENGINE = '{$this->get_engine()}';";
-				break;
-			default:
-				break;
-		}
-
-		$this->configFile = new ConfigFile(APPPATH . 'Config/Boot/testing_database.env');
-		$this->configFile->write($content);
-		$this->configFile2 = new ConfigFile(APPPATH . 'Config/Boot/testing_database.php');
-		$this->configFile2->write($content2);
 	}
 
 	public static function setup_db_kalkun_testing2($testcase)

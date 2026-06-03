@@ -39,11 +39,11 @@ class LoginTest extends KalkunTestCase {
 		return self::$db_engines_to_test;
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_login_GET_form($db_engine)
+
+	public function test_login_GET_form()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 
@@ -60,11 +60,11 @@ class LoginTest extends KalkunTestCase {
 	}
 
 	// This is used in config_setup.php when clicking on "Log in" at the bottom of the page.
-	#[DataProvider('database_Provider')]
-	public function test_login_POST_form($db_engine)
+
+	public function test_login_POST_form()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 
@@ -74,11 +74,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_login_POST_success($db_engine)
+	public function test_login_POST_success()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -89,11 +88,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_login_POST_failure($db_engine)
+	public function test_login_POST_failure()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -103,11 +101,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertSessionHas('errorlogin', 'Username or password are incorrect.');
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_logout($db_engine)
+	public function test_logout()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -128,11 +125,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_forgot_password_GET_form($db_engine)
+	public function test_forgot_password_GET_form()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -144,11 +140,10 @@ class LoginTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_forgot_password_POST_username($db_engine)
+	public function test_forgot_password_POST_username()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -159,11 +154,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertSessionHas('errorlogin', $expected);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_forgot_password_POST_phone($db_engine)
+	public function test_forgot_password_POST_phone()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -176,11 +170,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertSessionHas('errorlogin', $expected);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_POST_valid_token_new_password($db_engine)
+	public function test_password_reset_POST_valid_token_new_password()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -197,11 +190,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertSessionHas('errorlogin', $expected);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_GET_form_valid_token($db_engine)
+	public function test_password_reset_GET_form_valid_token()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -216,11 +208,10 @@ class LoginTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_GET_form_expired_token($db_engine)
+	public function test_password_reset_GET_form_expired_token()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -238,11 +229,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_GET_form_invalid_token($db_engine)
+	public function test_password_reset_GET_form_invalid_token()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -254,11 +244,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_POST_invalid_token_new_password($db_engine)
+	public function test_password_reset_POST_invalid_token_new_password()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -270,11 +259,10 @@ class LoginTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_password_reset_POST_form_invalid_token($db_engine)
+	public function test_password_reset_POST_form_invalid_token()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();

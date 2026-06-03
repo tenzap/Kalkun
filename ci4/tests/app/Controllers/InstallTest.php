@@ -115,7 +115,6 @@ class InstallTest extends KalkunTestCase {
 		$this->DBSetup([
 			'engine' => $db_engine,
 		]);
-		$this->write_config_file_for_database();
 
 		$result = $this->call('GET', 'install/requirement_check');
 		$data = $result->response()->getBody();
@@ -135,7 +134,6 @@ class InstallTest extends KalkunTestCase {
 		$this->DBSetup([
 			'engine' => 'sqlite',
 		]);
-		$this->write_config_file_for_database();
 
 		$invalidDBEngineProps = new MockInvalidDBEngineProps("SQLite3");
 		Factories::injectMock('libraries', 'DBEngineProps', $invalidDBEngineProps);
@@ -183,7 +181,6 @@ class InstallTest extends KalkunTestCase {
 			'database' => $db,
 			'engine' => $db_engine
 		]);
-		$this->write_config_file_for_database();
 		//$this->DBConnect(); // Don't call this here so that we can see that DB connection fails in "Install" controller. Otherwise, it would fail here.
 
 		if ($db_engine === 'sqlite')

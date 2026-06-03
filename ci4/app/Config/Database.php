@@ -3,7 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Database\Config;
-use CodeIgniter\Config\DotEnv;
+use Tests\Support\Config\DatabaseForTestsRegistrar;
 
 /**
  * Database Configuration
@@ -163,7 +163,7 @@ class Database extends Config
      *
      * @var array<string, mixed>
      */
-    public array $tests_disabled = [
+    public array $tests = [
         'DSN'         => '',
         'hostname'    => '127.0.0.1',
         'username'    => '',
@@ -267,6 +267,10 @@ class Database extends Config
         ],
     ];
 
+    public static $registrars = [
+        DatabaseForTestsRegistrar::class,
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -275,30 +279,7 @@ class Database extends Config
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
-            (new DotEnv(__DIR__.'/Boot/', 'testing_database.env'))->load();
-            $engines = ['pgsql', 'mysql', 'sqlite'];
-            foreach ($engines as $engine)
-            {
-                $group = 'tests_'.$engine;
-                $this->{$group}['username'] = $_ENV['testing.database.'.$engine.'.username'] ?? '';
-                $this->{$group}['password'] = $_ENV['testing.database.'.$engine.'.password'] ?? '';
-                $this->{$group}['database'] = $_ENV['testing.database.'.$engine.'.database'] ?? '';
-            }
-
-            // Fallback
-            if (file_exists(__DIR__.'/Boot/testing_database.php'))
-            {
-                require(__DIR__.'/Boot/testing_database.php');
-                $this->defaultGroup = 'tests_'.$TESTING_DB_ENGINE;
-            }
-            else
-            {
-                $this->defaultGroup = 'tests_';
-            }
-            if (! str_starts_with($this->defaultGroup, 'tests_'))
-            {
-                die($this->defaultGroup);
-            }
+            $this->defaultGroup = 'tests';
         }
     }
 }
