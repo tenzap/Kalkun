@@ -20,6 +20,7 @@ require_once __DIR__.'/../../testutils/KalkunTestCase.php';
 require_once __DIR__.'/../../testutils/KalkunDatabaseTestTrait.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 class UsersTest extends KalkunTestCase {
 
@@ -205,6 +206,7 @@ class UsersTest extends KalkunTestCase {
 	}
 
 	#[DataProvider('database_Provider')]
+	#[RunInSeparateProcess]
 	public function test_add_user($db_engine)
 	{
 		$this->DBSetup([
@@ -231,6 +233,7 @@ class UsersTest extends KalkunTestCase {
 	}
 
 	#[DataProvider('database_Provider')]
+	#[RunInSeparateProcess]
 	public function test_add_user_normal($db_engine)
 	{
 		$this->DBSetup([
