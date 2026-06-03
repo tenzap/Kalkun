@@ -68,11 +68,6 @@ trait KalkunDatabaseTestTrait
 		}
 	}
 
-	public function setDBGroup(string $engine)
-	{
-		$this->DBGroup='tests_'.$engine;
-	}
-
 	public function DBConnect()
 	{
 		$this->db = Database::connect();
@@ -98,8 +93,6 @@ password=' . $this->password);
 			default:
 				break;
 		}
-
-		$this->setDBGroup($this->get_engine());
 
 		// Reset counter between each instance of DBSetup.
 		self::$id_inbox_count = 0;
