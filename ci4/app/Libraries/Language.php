@@ -37,7 +37,7 @@ class Language extends MX_Lang {
 		'french' => 'fr',
 		'german' => 'de',
 		'hungarian' => 'hu',
-		'indonesian' => 'in',
+		'indonesian' => 'id',
 		'italian' => 'it',
 		'norwegian' => 'no',
 		'polish' => 'pl',
