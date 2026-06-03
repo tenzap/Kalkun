@@ -120,8 +120,26 @@ class App extends BaseConfig
      *
      * @var list<string>
      */
-    public array $supportedLocales = ['en'];
-
+    public array $supportedLocales = [
+        'en',
+        'pt-BR', // 'portuguese-brazilian'
+        'cs', // 'czech'
+        'da', // 'danish' NOT IN CI4
+        'nl', // 'dutch'
+        'fi', // 'finnish' NOT IN CI4
+        'fr', // 'french'
+        'de', // 'german'
+        'hu', // 'hungarian'
+        'id', // 'indonesian' NOT IN CI4
+        'it', // 'italian'
+        'no', // 'norwegian'
+        'pl', // 'polish'
+        'pt', // 'portuguese'
+        'ru', // 'russian'
+        'sk', // 'slovak'
+        'es', // 'spanish'
+        'tr', // 'turkish'
+    ];
     /**
      * --------------------------------------------------------------------------
      * Application Timezone
