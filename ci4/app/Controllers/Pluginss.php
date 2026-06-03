@@ -10,6 +10,9 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
 
 /**
  * Pluginss Class
@@ -18,7 +21,7 @@
  * @subpackage	Plugin
  * @category	Controllers
  */
-class Pluginss extends MY_Controller {
+class Pluginss extends MYController {
 
 	/**
 	 * Constructor

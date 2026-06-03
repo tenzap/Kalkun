@@ -9,6 +9,10 @@
  * @link		https://kalkun.sourceforge.io/
  */
 
+namespace App\Models;
+
+use CodeIgniter\Model;
+
 require_once('Plugins_model.php');
 /**
  * Plugins_kalkun_model Class
@@ -19,11 +23,14 @@ require_once('Plugins_model.php');
  * @subpackage	Plugin
  * @category	Models
  */
-class Plugins_kalkun_model extends Plugins_model {
+class PluginsKalkunModel extends PluginsModel {
 
-	function __construct()
+	protected $table = 'DUMMY';
+	protected $allowedFields = [];
+
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 	}
 
 	/**

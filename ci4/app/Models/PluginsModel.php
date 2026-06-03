@@ -33,7 +33,9 @@
  * @since	Version 1.0.0
  * @filesource
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+namespace App\Models;
+
+use CodeIgniter\Model;
 
 /**
  * CI3 Plugin System Abstract Class
@@ -42,7 +44,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		Justin Hyland www.justinhyland.com
  * @link        https://github.com/jhyland87/CI3_Plugin_System
  */
-class Plugins_model extends CI_Model {
+class PluginsModel extends Model {
+
+	protected $table = 'DUMMY';
+	protected $allowedFields = [];
 
     /**
      * @var CI_Controller|object Codeigniter instance (get_instance())
@@ -53,10 +58,10 @@ class Plugins_model extends CI_Model {
 
     // ------------------------------------------------------------------------
 
-    function __construct()
-    {
-        parent::__construct();
-		
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+	{
+		parent::__construct($db, $validation);
+
         if (get_called_class() === 'Plugins_model')
         {
             die('Direct use of '.get_called_class().' class is not allowed. Use Plugins_kalkun_model instead.');

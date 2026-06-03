@@ -10,6 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * Messages Class
@@ -18,7 +22,9 @@
  * @subpackage	Messages
  * @category	Controllers
  */
-class Messages extends MY_Controller {
+class Messages extends MYController {
+
+	use KalkunPhonenumberTrait;
 
 	/**
 	 * Constructor
@@ -1590,24 +1596,6 @@ class Messages extends MY_Controller {
 		else
 		{
 			$this->Spam_model->report_spam($params);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Check if submitted phone number is valid
-	 *
-	 * @access	public
-	 */
-	function _phone_number_validation($phone)
-	{
-		$this->load->helper('kalkun');
-		$result = is_phone_number_valid($phone);
-
-		if ($result !== TRUE)
-		{
-			show_error(tr($result), 400);
 		}
 	}
 }

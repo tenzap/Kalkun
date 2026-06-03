@@ -10,6 +10,10 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
+use App\Libraries\KalkunPhonenumberTrait;
 
 /**
  * Phonebook Class
@@ -18,7 +22,9 @@
  * @subpackage	Phonebook
  * @category	Controllers
  */
-class Phonebook extends MY_Controller {
+class Phonebook extends MYController {
+
+	use KalkunPhonenumberTrait;
 
 	/**
 	 * Constructor
@@ -401,24 +407,6 @@ class Phonebook extends MY_Controller {
 		// Return status
 		$this->output->set_content_type('application/json');
 		$this->output->set_output(json_encode($return_msg));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Check if submitted phone number is valid
-	 *
-	 * @access	public
-	 */
-	function _phone_number_validation($phone)
-	{
-		$this->load->helper('kalkun');
-		$result = is_phone_number_valid($phone);
-
-		if ($result !== TRUE)
-		{
-			show_error(tr($result), 400);
-		}
 	}
 
 	// --------------------------------------------------------------------

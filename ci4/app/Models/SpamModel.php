@@ -10,6 +10,13 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Models;
+
+use CodeIgniter\Config\Factories;
+use CodeIgniter\Model;
+
+use App\Libraries\DBEngineProps;
+
 require_once(dirname(__FILE__) .'/../libraries/b8/b8.php');
 
 
@@ -22,7 +29,10 @@ require_once(dirname(__FILE__) .'/../libraries/b8/b8.php');
  * @subpackage	Spam_model
  * @category	Models
  */
-class Spam_model extends CI_Model {
+class SpamModel extends Model {
+
+	protected $table = 'DUMMY';
+	protected $allowedFields = [];
 
 	public $classifier;
 	public $ratingcutoff = 0.7;
@@ -33,15 +43,15 @@ class Spam_model extends CI_Model {
 	 *
 	 * @access	public
 	 */
-	function __construct()
+	public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
 	{
-		parent::__construct();
+		parent::__construct($db, $validation);
 
 		// get database engine
 		$this->load->database();
 		$this->load->helper('kalkun');
 		$db_engine = $this->db->platform();
-		$db_driver = get_database_property($db_engine)['name'];
+		$db_driver = Factories::libraries('DBEngineProps', [], $db_engine)->getName();
 
 		switch ($db_driver)
 		{

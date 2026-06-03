@@ -10,6 +10,9 @@
  */
 
 // ------------------------------------------------------------------------
+namespace App\Controllers;
+
+use App\Libraries\MYController;
 
 /**
  * Daemon Class
@@ -18,7 +21,7 @@
  * @subpackage	Daemon
  * @category	Controllers
  */
-class Daemon extends MY_Controller {
+class Daemon extends MYController {
 
 	/**
 	 * Constructor
