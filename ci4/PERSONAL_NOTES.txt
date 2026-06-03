@@ -1,4 +1,7 @@
 Need to copy /env to /.env and modify in /.env
+Set at least
+   CI_ENVIRONMENT = development
+   app.baseURL = 'http://localhost/kalkun-git/ci4/public'
 
 Need to enable mod_rewrite with `a2enmod rewrite`
 
@@ -6,3 +9,8 @@ Change permissions of /writable/cache  to 777
 Same for the subfolders of /writable : otherwise debugbar won't work, logs etc...
 
 App is reachable at http://localhost/kalkun-git/ci4/public/#
+
+
+TODO: Remplace like("LOWER..." by like() with 5th parameter (for case insensitive like)
+-    ->like('LOWER('.$this->db->protectIdentifiers('realname').')', $search_word)
++    ->like('realname', $search_word, 'both', null, TRUE)
