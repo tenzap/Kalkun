@@ -28,11 +28,11 @@ class Language extends MX_Lang {
 	private $jquery_datepicker_regional;
 
 	public static $idiom_to_locale = [
+		'english' => 'en',
 		'portuguese-brazilian' => 'pt_BR',
 		'czech' => 'cs',
 		'danish' => 'da',
 		'dutch' => 'nl',
-		'english' => 'en',
 		'finnish' => 'fi',
 		'french' => 'fr',
 		'german' => 'de',
