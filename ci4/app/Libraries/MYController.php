@@ -26,6 +26,10 @@ use App\Controllers\BaseController;
  */
 class MYController extends BaseController {
 
+	protected $Kalkun_model = null;
+	protected $Message_model = null;
+	protected $User_model = null;
+
 	/**
 	 * Constructor
 	 *
