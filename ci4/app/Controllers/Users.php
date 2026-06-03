@@ -48,17 +48,15 @@ class Users extends MYController {
 	{
 		helper('i18n');
 		$data['title'] = tr_raw('User', 'default');
-		$this->load->library('pagination');
-		$config['base_url'] = site_url().'/users/index/';
-		$config['total_rows'] = $this->User_model->getUsers(array('option' => 'all'))->num_rows();
-		$config['per_page'] = $this->Kalkun_model->get_setting()->row('paging');
-		$config['cur_tag_open'] = '<span class="current_page">';
-		$config['cur_tag_close'] = '</span>';
-		$config['uri_segment'] = 3;
 
-		$this->pagination->initialize($config);
-		$data['pagination_links'] = $this->pagination->create_links();
-		$param = array('option' => 'paginate', 'limit' => $config['per_page'], 'offset' => $this->uri->segment(3, 0));
+		$pager = service('pager');
+		$page = (int) ($this->request->getGet('page') ?? 1);
+		$per_page = $this->Kalkun_model->get_setting()->getRow('paging');
+		$offset = ($page - 1) * $per_page;
+		$total = $this->User_model->getUsers(array('option' => 'all'))->getNumRows();
+		$data['pagination_links'] = $pager->makeLinks($page, $per_page, $total, 'kalkun_simple');
+
+		$param = array('option' => 'paginate', 'limit' => $per_page, 'offset' => $offset);
 
 		$data['main'] = 'main/users/index';
 		if ($_POST)
