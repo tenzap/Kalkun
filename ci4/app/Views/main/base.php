@@ -61,7 +61,7 @@
 			`<?php echo  filter_data(htmlentities(model('KalkunModel')->get_gammu_info('db_version')->getRow('Version'), ENT_QUOTES)); ?>`
 			<br><b>* Browser:</b>
 			`<?php
-					echo htmlentities($agent->getBrowser(), ENT_QUOTES), ' ', htmlentities($agent->getVersion(), ENT_QUOTES) ; ?>`
+					echo htmlentities(service('request')->getUserAgent()->getBrowser(), ENT_QUOTES), ' ', htmlentities(service('request')->getUserAgent()->getVersion(), ENT_QUOTES) ; ?>`
 			<br><b>* Plugins:</b>
 			`<?php
 					//CI4-TODO $this->load->library('Plugins_lib_kalkun');
