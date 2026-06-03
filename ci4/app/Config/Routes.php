@@ -39,8 +39,8 @@ $routes->match(['GET', 'POST'], 'install', 'Install::index');
 
 $routes->match(['GET', 'POST'], 'users', 'Users::index');
 $routes->match(['GET', 'POST'], 'users/index', 'Users::index');
-$routes->match(['GET', 'POST'], 'users/add_user', 'Users::add_user');
-$routes->match(['GET', 'POST'], 'users/add_user_process', 'Users::add_user_process');
-$routes->match(['GET', 'POST'], 'users/delete_user', 'Users::delete_user');
+$routes->get('users/add_user', 'Users::add_user');
+$routes->post('users/add_user_process', 'Users::add_user_process');
+$routes->post('users/delete_user', 'Users::delete_user');
 
 #$route['plugin/(.+)'] = '$1'; // CI4-TODO
