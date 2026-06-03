@@ -41,14 +41,10 @@ class KalkunTest extends KalkunTestCase {
 		return self::$db_engines_to_test;
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_add_folder_POST_no_source_url($db_engine)
+	public function test_add_folder_POST_no_source_url()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -66,14 +62,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_add_folder_POST_with_source_url($db_engine)
+	public function test_add_folder_POST_with_source_url()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -92,14 +84,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_delete_filter_ajaxGET($db_engine)
+	public function test_delete_filter_ajaxGET()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -121,14 +109,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEmpty($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_delete_filter_ajaxGET_none($db_engine)
+	public function test_delete_filter_ajaxGET_none()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -148,14 +132,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEmpty($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_delete_folder_GET_none($db_engine)
+	public function test_delete_folder_GET_none()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -179,14 +159,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_delete_folder_GET($db_engine)
+	public function test_delete_folder_GET()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -211,14 +187,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_csrf_hash($db_engine)
+	public function test_get_csrf_hash()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -236,14 +208,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_none($db_engine)
+	public function test_get_statistic_GET_none()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -264,14 +232,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_days($db_engine)
+	public function test_get_statistic_GET_days()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -292,14 +256,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_weeks($db_engine)
+	public function test_get_statistic_GET_weeks()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -320,14 +280,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_months($db_engine)
+	public function test_get_statistic_GET_months()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -348,14 +304,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_invalid($db_engine)
+	public function test_get_statistic_GET_invalid()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -377,14 +329,10 @@ class KalkunTest extends KalkunTestCase {
 		// Should return same value as 'days'
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_get_statistic_GET_days_nonadmin($db_engine)
+	public function test_get_statistic_GET_days_nonadmin()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -405,11 +353,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertJson($data);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_index_not_loggedin($db_engine)
+	public function test_index_not_loggedin()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -423,11 +370,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_index($db_engine)
+	public function test_index()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -447,14 +393,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_index_outgoing_disabled($db_engine)
+	public function test_index_outgoing_disabled()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -474,14 +416,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->_assertStringContainsString($expected, $data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_notification($db_engine)
+	public function test_notification()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -500,14 +438,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtmlSnippet($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_notification_ajax($db_engine)
+	public function test_notification_ajax()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -536,22 +470,19 @@ class KalkunTest extends KalkunTestCase {
 
 	public static function phone_number_validation_Provider()
 	{
-		return self::prepend_db_engine([
+		return [
 			'get_valid_number' => ['GET', '+33612345678', 'FR', TRUE],
 			'get_invalid_number' => ['GET', '0612345678', '', FALSE],
 			'post_valid_number' => ['POST', '+33612345678', 'FR', TRUE],
 			'post_invalid_number' => ['POST', '0612345678', '', FALSE],
-		]);
+		];
 	}
 
-	/**
-	 * @dataProvider phone_number_validation_Provider
-	 */
 	#[DataProvider('phone_number_validation_Provider')]
-	public function test_phone_number_validation($db_engine, $method, $phone, $region, $expected)
+	public function test_phone_number_validation($method, $phone, $region, $expected)
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -586,24 +517,21 @@ class KalkunTest extends KalkunTestCase {
 
 	public static function phone_number_validation_multiple_Provider()
 	{
-		return self::prepend_db_engine([
+		return [
 			'get_valid_number' => ['GET', '+33612345678, +33623456789', 'FR', TRUE],
 			'get_valid_number2' => ['GET', '+33612345678, 0623456789', 'FR', TRUE],
 			'get_invalid_number' => ['GET', '0612345678, 0623456789', '', FALSE],
 			'post_valid_number' => ['POST', '+33612345678, +33623456789', 'FR', TRUE],
 			'post_valid_number2' => ['POST', '+33612345678, 0623456789', 'FR', TRUE],
 			'post_invalid_number' => ['POST', '0612345678, 0623456789', '', FALSE],
-		]);
+		];
 	}
 
-	/**
-	 * @dataProvider phone_number_validation_multiple_Provider
-	 */
 	#[DataProvider('phone_number_validation_multiple_Provider')]
-	public function test_phone_number_validation_multiple($db_engine, $method, $phone, $region, $expected)
+	public function test_phone_number_validation_multiple($method, $phone, $region, $expected)
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -636,14 +564,10 @@ class KalkunTest extends KalkunTestCase {
 		}
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_rename_folder_POST($db_engine)
+	public function test_rename_folder_POST()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -662,14 +586,10 @@ class KalkunTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_invalid($db_engine)
+	public function test_settings_invalid()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -688,14 +608,10 @@ class KalkunTest extends KalkunTestCase {
 		//$this->assertResponseCode(404);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_none($db_engine)
+	public function test_settings_none()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -714,14 +630,10 @@ class KalkunTest extends KalkunTestCase {
 		//$this->assertResponseCode(404);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_general($db_engine)
+	public function test_settings_general()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -740,14 +652,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_personal($db_engine)
+	public function test_settings_personal()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -766,14 +674,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_appearance($db_engine)
+	public function test_settings_appearance()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -792,14 +696,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_password($db_engine)
+	public function test_settings_password()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -818,14 +718,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_general($db_engine)
+	public function test_settings_save_general()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -856,14 +752,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_personal($db_engine)
+	public function test_settings_save_personal()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -893,14 +785,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_personal_change_kalkun_username($db_engine)
+	public function test_settings_save_personal_change_kalkun_username()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -930,14 +818,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_personal_change_kalkun_username_demo_mode($db_engine)
+	public function test_settings_save_personal_change_kalkun_username_demo_mode()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -969,14 +853,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_personal_change_to_existing_username($db_engine)
+	public function test_settings_save_personal_change_to_existing_username()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1007,14 +887,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_appearance($db_engine)
+	public function test_settings_save_appearance()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1042,14 +918,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_password($db_engine)
+	public function test_settings_save_password()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1078,14 +950,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_password_wrong_current_password($db_engine)
+	public function test_settings_save_password_wrong_current_password()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1114,14 +982,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_password_demo_mode($db_engine)
+	public function test_settings_save_password_demo_mode()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1152,14 +1016,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_filters_insert($db_engine)
+	public function test_settings_save_filters_insert()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1190,14 +1050,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals($expected, $flashdata);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_save_filters_update($db_engine)
+	public function test_settings_save_filters_update()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1240,14 +1096,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertEquals('keyword', $result->getRow()->has_the_words);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_settings_filters($db_engine)
+	public function test_settings_filters()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
@@ -1266,14 +1118,10 @@ class KalkunTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	/**
-	 * @dataProvider database_Provider
-	 */
-	#[DataProvider('database_Provider')]
-	public function test_unread_count($db_engine)
+	public function test_unread_count()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB')
 		]);
 		$this->setup_config('gammu_no_pbk_kalkun_fresh_install_manual_sql_injection');
 		$this->DBConnect();
