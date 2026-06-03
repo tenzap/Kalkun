@@ -109,11 +109,10 @@ class InstallTest extends KalkunTestCase {
 		chmod($dir, $modeint);
 	}
 
-	#[DataProvider('database_Provider')]
-	public function test_requirement_check($db_engine)
+	public function test_requirement_check()
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 
 		$result = $this->call('GET', 'install/requirement_check');
@@ -154,10 +153,10 @@ class InstallTest extends KalkunTestCase {
 	}
 
 	#[DataProvider('database_setup_run_db_setupProvider')]
-	public function test_database_setup_GET($db_engine, $config)
+	public function test_database_setup_GET($config)
 	{
 		$this->DBSetup([
-			'engine' => $db_engine,
+			'engine' => env('DB'),
 		]);
 		$this->setup_config($config);
 		$this->DBConnect();
@@ -171,23 +170,23 @@ class InstallTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
-	#[DataProvider('database_Provider')]
-	#[RunInSeparateProcess]
-	public function test_database_setup_GET_with_db_exception($db_engine)
+	//#[RunInSeparateProcess]
+	public function test_database_setup_GET_with_db_exception()
 	{
-		$db = 'kalkun_testing_missing_db';
-
+		if (! str_ends_with(env('DB'), '_invalid'))
+		{
+			$this->markTestSkipped('This test requires an invalid db configuration. Run with DB=pgsql_invalid.');
+		}
 		$this->DBSetup([
-			'database' => $db,
-			'engine' => $db_engine
+			'engine' => env('DB')
 		]);
 		//$this->DBConnect(); // Don't call this here so that we can see that DB connection fails in "Install" controller. Otherwise, it would fail here.
 
-		if ($db_engine === 'sqlite')
+		if (env('DB') === 'sqlite_invalid')
 		{
 			$this->markTestIncomplete('FIXME: haven\'t found yet how to catch error opening sqlite file.');
 
-			$dir = dirname($this->db($db_engine, $db));
+			$dir = dirname($this->db(env('DB'), $db));
 
 			// Store original mode to restore it later on.
 			$mode = substr(sprintf('%o', fileperms($dir)), -4);
@@ -200,7 +199,7 @@ class InstallTest extends KalkunTestCase {
 		$result = $this->call('GET', 'install/database_setup');
 		$data = $result->response()->getBody();
 
-		if ($db_engine === 'sqlite')
+		if (env('DB') === 'sqlite_invalid')
 		{
 			// restore original mode.
 			chmod($dir, $modeint);
@@ -216,7 +215,7 @@ class InstallTest extends KalkunTestCase {
 
 	public static function database_setup_run_db_setupProvider()
 	{
-		return self::prepend_db_engine([
+		return [
 			'gammu with pbk, fresh kalkun' => ['gammu_pbk_kalkun_fresh_install_by_installer'],
 			'gammu with pbk, update kalkun 0.6' => ['gammu_pbk_kalkun_upgrade_from_0.6'],
 			'gammu with pbk, update kalkun 0.7' => ['gammu_pbk_kalkun_upgrade_from_0.7'],
@@ -225,7 +224,7 @@ class InstallTest extends KalkunTestCase {
 			'gammu without pbk, fresh kalkun' => ['gammu_no_pbk_kalkun_fresh_install_by_installer'],
 			'gammu without pbk, update kalkun 0.8.0' => ['gammu_no_pbk_kalkun_upgrade_from_0.8.0'],
 			'gammu without pbk, update kalkun 0.8.3' => ['gammu_no_pbk_kalkun_upgrade_from_0.8.3'],
-		]);
+		];
 	}
 
 	/**
@@ -237,10 +236,10 @@ class InstallTest extends KalkunTestCase {
 	 * Otherwise, escaping for the DB query would fail in some cases (when switching DB engine).
 	 */
 	#[DataProvider('database_setup_run_db_setupProvider')]
-	public function test_database_setup_POST_run_db_setup($db_engine, $config)
+	public function test_database_setup_POST_run_db_setup($config)
 	{
 		$this->DBSetup([
-			'engine' => $db_engine
+			'engine' => env('DB')
 		]);
 		$this->setup_config($config);
 		$this->DBConnect();
