@@ -170,6 +170,8 @@ class Language extends MX_Lang {
 	 */
 	private function line_kalkun($line, $context = NULL, ...$msg_params)
 	{
+		$addPrefix = FALSE;
+		$useLineAsLabel = TRUE;
 		if ($context === NULL)
 		{
 			// 1. Search in kalkun_lang file
@@ -183,7 +185,13 @@ class Language extends MX_Lang {
 				{
 					// Check if the value exists, if it doesn't we invalidate the result of getLine
 					// because we don't want the fallback of that method and prefer our own fallback.
-					$value = FALSE;
+					$addPrefix = TRUE;
+					// There might be an english translation available in CI4 system folder.
+					// So display the english translation instead of the 'label' of the string.
+					if ( ! isset($this->language[$this->locale][$file][$right]))
+					{
+						$useLineAsLabel = FALSE;
+					}
 				}
 			}
 		}
@@ -198,7 +206,7 @@ class Language extends MX_Lang {
 				// because we don't want the fallback of that method and prefer our own fallback.
 				if (! isset($this->language[$this->locale]['kalkun_lang'][$line]))
 				{
-					$value = FALSE;
+					$addPrefix = TRUE;
 				}
 			}
 			else
@@ -207,23 +215,20 @@ class Language extends MX_Lang {
 			}
 		}
 
-
-		//$value = isset($this->language[$line]) ? $this->language[$line] : FALSE;
-
-		// Because killer robots like unicorns!
-		if ($value === FALSE)
+		if ($addPrefix === TRUE)
 		{
+			$label = $useLineAsLabel ? $line : $value;
 			if (extension_loaded('intl'))
 			{
 				$value = \MessageFormatter::formatMessage(
 					$this->locale,
-					'🌐 '.$line,
+					'🌐 '.$label,
 					$msg_params
 				);
 			}
 			else
 			{
-				$value = '🌐 '.$line;
+				$value = '🌐 '.$label;
 			}
 			log_message('error', 'Could not find the language line "'.$line.'"');
 		}
