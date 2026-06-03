@@ -15,6 +15,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use App\Libraries\KalkunPhonenumberTrait;
+use App\Libraries\Language;
 
 /**
  * Kalkun_model Class
@@ -364,7 +365,8 @@ class KalkunModel extends Model {
 				$q->update();
 				// Refresh language before we display any message.
 				// Special case for when the user changes the language on this screen
-				service('Language')->load('kalkun_lang', service('language')::$idiom_to_locale[$this->request->getPost('language')]);
+				$locale = Language::$idiom_to_locale[$this->request->getPost('language')];
+				service('Language')->setLocale($locale)->load('kalkun_lang');
 				break;
 
 			case 'personal':

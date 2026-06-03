@@ -53,8 +53,9 @@ class MYController extends BaseController {
 			// language
 			helper('i18n');
 			$lang = $this->Kalkun_model->get_setting()->getRow('language') ?? 'english';
-			service('language')->load('kalkun_lang', service('language')::$idiom_to_locale[$lang]);
-			service('language')->load('date_lang', service('language')::$idiom_to_locale[$lang]);
+			$locale = Language::$idiom_to_locale[$lang];
+			service('language', $locale)->load('kalkun_lang');
+			service('language', $locale)->load('date_lang');
 			// $this->lang->load('kalkun', $lang);
 			// $this->lang->load('date', $lang);
 

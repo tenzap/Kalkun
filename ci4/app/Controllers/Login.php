@@ -12,6 +12,8 @@
 // ------------------------------------------------------------------------
 namespace App\Controllers;
 
+use App\Libraries\Language;
+
 /**
  * Login Class
  *
@@ -46,11 +48,13 @@ class Login extends BaseController {
 			}
 			else
 			{
-				$this->idiom = service('language')->get_idiom();
+				// Use browser requested language
+				$locale = service('negotiator')->language(Language::supported_locales());
+				$this->idiom = Language::locale_to_idiom($locale);
 			}
 		}
-		//service('language')->setLocale(service('language')::$idiom_to_locale[$this->idiom]);
-		service('language')->load('kalkun_lang', service('language')::$idiom_to_locale[$this->idiom]);
+		$locale = Language::$idiom_to_locale[$this->idiom];
+		service('language', $locale)->load('kalkun_lang');
 		$this->session = session();
 		$this->Kalkun_model = model('KalkunModel');
 	}

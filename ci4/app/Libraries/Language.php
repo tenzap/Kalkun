@@ -62,6 +62,7 @@ class Language extends MX_Lang {
 		{
 			log_message('error', 'please install/enable the intl extension of PHP');
 		}
+		$this->idiom = self::locale_to_idiom($locale);
 	}
 
 	// --------------------------------------------------------------------
@@ -132,12 +133,11 @@ class Language extends MX_Lang {
 			$this->locale = Language::$idiom_to_locale[$idiom];
 		}
 	}*/
-	public function load(string $file, string $locale, bool $return = false)
+	public function load(string $file, string $locale = '', bool $return = false)
 	{
 		// TODO continue rewriting.
-		$this->idiom = $this->locale_to_idiom($locale);
-		$this->locale = $locale;
-		return parent::load($file, $this->locale);
+		//$this->locale = $locale;
+		return parent::load($file, $this->locale, $return);
 	}
 
 	// --------------------------------------------------------------------

@@ -12,6 +12,7 @@
 // ------------------------------------------------------------------------
 namespace App\Controllers;
 
+use App\Libraries\Language;
 use App\Libraries\MYController;
 use App\Libraries\DBEngineProps;
 
@@ -47,7 +48,9 @@ class Install extends BaseController {
 		}
 		else
 		{
-			$this->idiom = service('language')->get_idiom();
+			// Use browser requested language
+			$locale = service('negotiator')->language(Language::supported_locales());
+			$this->idiom = Language::locale_to_idiom($locale);
 		}
 
 		// $i18n = new MY_Lang();
@@ -59,7 +62,8 @@ class Install extends BaseController {
 		// {
 		// 	$this->idiom = $i18n->get_idiom();
 		// }
-		service('language')->load('kalkun_lang', service('language')::$idiom_to_locale[$this->idiom]);
+		$locale = Language::$idiom_to_locale[$this->idiom];
+		service('language', $locale)->load('kalkun_lang');
 
 		if ( ! file_exists(FCPATH.'install'))
 		{

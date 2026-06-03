@@ -14,6 +14,7 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\Language;
 
 class IsLoggedInFilter implements FilterInterface
 {
@@ -45,13 +46,13 @@ class IsLoggedInFilter implements FilterInterface
 			// check level
 			if ($this->session->get('level') !== 'admin')
 			{
-				$this->Kalkun_model = model('KalkunModel');
+				$Kalkun_model = model('KalkunModel');
 
 				// language
 				helper('i18n');
-				$lang = $this->Kalkun_model->get_setting()->getRow('language') ?? 'english';
-				service('language')->load('kalkun_lang', service('language')::$idiom_to_locale[$lang]);
-				service('language')->load('date_lang', service('language')::$idiom_to_locale[$lang]);
+				$lang = $Kalkun_model->get_setting()->getRow('language') ?? 'english';
+				$locale = Language::$idiom_to_locale[$lang];
+				service('language', $locale)->load('kalkun_lang');
 
 				$this->session->setFlashdata('notif', tr_raw('Access denied.'));
 				return redirect()->to('/');
