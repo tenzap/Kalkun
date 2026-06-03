@@ -65,7 +65,7 @@ class UserModel extends Model {
 
 			case 'search':
 				$search_word = strtolower(service('request')->getPost('search_name'));
-				$q->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word);
+				$q->like('LOWER('.$this->db->protectIdentifiers('realname').')', $search_word);
 				break;
 		}
 		$q->orderBy('realname');
@@ -166,7 +166,7 @@ class UserModel extends Model {
 		$search_word = strtolower($realname);
 		return $this->builder('user_settings')
 			->join('user', 'user.id_user = user_settings.id_user')
-			->like('LOWER('.$this->db->protect_identifiers('realname').')', $search_word)
+			->like('LOWER('.$this->db->protectIdentifiers('realname').')', $search_word)
 			->orderBy('realname')
 			->get();
 	}
