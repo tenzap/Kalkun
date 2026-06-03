@@ -1,5 +1,5 @@
 <?php echo view('js_init/users/js_users');
-if ($users->num_rows() === 0):
+if ($users->getNumRows() === 0):
 	if ($_POST)
 	{
 		echo '<p><i>'.tr('User not found').'</i></p>';
@@ -10,7 +10,7 @@ if ($users->num_rows() === 0):
 	}
 else: ?>
 <table>
-	<?php foreach ($users->result() as $tmp): ?>
+	<?php foreach ($users->getResult() as $tmp): ?>
 	<tr id="<?php echo $tmp->id_user;?>">
 		<td>
 			<div class="two_column_container contact_list hover_show">
