@@ -51,6 +51,7 @@ class Kalkun extends MYController {
 		$this->Phonebook_model = model('PhonebookModel');
 		$data['main'] = 'main/dashboard/home';
 		$data['title'] = 'Dashboard';
+		$data['agent'] = $this->request->getUserAgent();
 		if (config('Kalkun')->disable_outgoing)
 		{
 			$data['alerts'][] = tr_raw('Outgoing SMS disabled. Contact system administrator.');
@@ -349,6 +350,7 @@ class Kalkun extends MYController {
 		$data['main'] = 'main/settings/setting';
 		$data['settings'] = $this->Kalkun_model->get_setting();
 		$data['type'] = 'main/settings/'.$type;
+		$data['agent'] = $this->request->getUserAgent();
 
 		return view('main/layout', $data);
 	}
