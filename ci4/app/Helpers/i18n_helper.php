@@ -22,7 +22,7 @@
  * @param type $params
  * @return type
  */
-function tr($label, $context = NULL, ...$params)
+function tr($label, ?string $context = NULL, ...$params)
 {
 	return htmlentities(call_user_func_array(array(service('language'), 'line'), func_get_args()), ENT_QUOTES);
 }
@@ -37,7 +37,7 @@ function tr($label, $context = NULL, ...$params)
  * @param type $params
  * @return type
  */
-function tr_raw($label, $context = NULL, ...$params)
+function tr_raw($label, ?string $context = NULL, ...$params)
 {
 	return call_user_func_array(array(service('language'), 'line'), func_get_args());
 }
@@ -54,7 +54,7 @@ function tr_raw($label, $context = NULL, ...$params)
  * @param type $params
  * @return type
  */
-function tr_addcslashes($chars_to_escape, $label, $context = NULL, ...$params)
+function tr_addcslashes($chars_to_escape, $label, ?string $context = NULL, ...$params)
 {
 	$args = array_slice(func_get_args(), 1);
 	$label = call_user_func_array(array(service('language'), 'line'), $args);
@@ -71,7 +71,7 @@ function tr_addcslashes($chars_to_escape, $label, $context = NULL, ...$params)
  * @param type $params
  * @return type
  */
-function tr_js($label, $context = NULL, ...$params)
+function tr_js($label, ?string $context = NULL, ...$params)
 {
 	$label = call_user_func_array(array(service('language'), 'line'), func_get_args());
 	helper('kalkun');

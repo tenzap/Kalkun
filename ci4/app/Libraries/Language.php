@@ -57,11 +57,11 @@ class Language extends MX_Lang {
 	 */
 	public function __construct(string $locale)
 	{
-		parent::__construct($locale);
 		if ( ! extension_loaded('intl'))
 		{
 			log_message('error', 'please install/enable the intl extension of PHP');
 		}
+		parent::__construct($locale);
 		$this->idiom = self::locale_to_idiom($locale);
 	}
 
@@ -137,7 +137,8 @@ class Language extends MX_Lang {
 	{
 		// TODO continue rewriting.
 		//$this->locale = $locale;
-		return parent::load($file, $this->locale, $return);
+		// return parent::load($file, $this->locale, $return);
+		return parent::load($file, $locale, $return);
 	}
 
 	// --------------------------------------------------------------------
@@ -171,47 +172,31 @@ class Language extends MX_Lang {
 	{
 		if ($context === NULL)
 		{
-			if (isset($this->language[$this->locale]["kalkun_lang"][$line]))
+			// 1. Search in kalkun_lang file
+			$value = parent::getLine('kalkun_lang.'.$line, $msg_params);
+			if ( ! isset($this->language[$this->locale]['kalkun_lang'][$line]))
 			{
-				if (extension_loaded('intl'))
+				// 2. Otherwise, try without kalkun_lang prefix.
+				[$file, $right] = array_pad(explode('.', $line, 2), -2, ""); //use array_pad in case there is no '.'
+				$value = parent::getLine($line, $msg_params);
+				if ( ! isset($this->language[$this->locale][$file][$right]))
 				{
-					$value = \MessageFormatter::formatMessage(
-						$this->locale,
-						$this->language[$this->locale]["kalkun_lang"][$line],
-						$msg_params
-					);
+					// Check if the value exists, if it doesn't we invalidate the result of getLine
+					// because we don't want the fallback of that method and prefer our own fallback.
+					$value = FALSE;
 				}
-				else
-				{
-					$value = parent::line($line);
-				}
-			}
-			else
-			{
-				$value = FALSE;
 			}
 		}
 		else
 		{
 			if (is_string($context))
 			{
-				if (isset($this->language[$this->locale]["kalkun_lang"][$line]) && isset($this->language[$this->locale]["kalkun_lang"][$line][$context]))
-				{
-					if (extension_loaded('intl'))
-					{
-						$value = \MessageFormatter::formatMessage(
-							$this->locale,
-							$this->language[$this->locale]["kalkun_lang"][$line][$context],
-							$msg_params
-						);
-					}
-					else
-					{
-						$value = parent::line($line);
-						$value = $value[$context];
-					}
-				}
-				else
+				// 1. Search in kalkun_lang file
+				$value = parent::getLine('kalkun_lang.'.$line, $msg_params)[$context];
+				// 2. The notion of "Context" only exists
+				// Check if the value exists, if it doesn't we invalidate the result of getLine
+				// because we don't want the fallback of that method and prefer our own fallback.
+				if (! isset($this->language[$this->locale]['kalkun_lang'][$line]))
 				{
 					$value = FALSE;
 				}
@@ -253,15 +238,21 @@ class Language extends MX_Lang {
 		{
 			if (count($arguments) === 0)
 			{
+				// This should normally not happen. getLine requires at least one argument.
 				return call_user_func_array('parent::getLine', $arguments);
 			}
 			if (count($arguments) === 1)
 			{
+				// The case where this is a label that is not from kalkun_lang file
+				// is handled in the line_kalkun method.
 				return call_user_func_array(array($this, 'line_kalkun'), $arguments);
 			}
 			if (count($arguments) === 2)
 			{
-				if (is_bool($arguments[1]))
+				// when invoked though 'lang() which invokes CI4's system getLine, 2nd parameter is an array
+				// when invoked though 'tr()...', 2nd parameter is either NULL or a string
+				// So, when using tr(), it means we want to get the translation from kalkun_lang.php
+				if (is_array($arguments[1]))
 				{
 					return call_user_func_array('parent::getLine', $arguments);
 				}
