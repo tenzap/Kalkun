@@ -114,8 +114,6 @@ class Login extends BaseController {
 	 */
 	public function forgot_password()
 	{
-		$this->Message_model = model('MessageModel');
-
 		if ($this->request->is('POST') && empty($this->request->getPost('change_language')))
 		{
 			$token = model('KalkunModel')->forgot_password();
@@ -133,7 +131,7 @@ class Login extends BaseController {
 				$data['message'] = tr_raw('To reset your Kalkun password please visit {0}', NULL, site_url('login/password_reset?token='.$token['token']).'&l='.$this->idiom);
 				$data['delivery_report'] = 'default';
 				$data['uid'] = 1;
-				$this->Message_model->send_messages($data);
+				model('MessageModel')->send_messages($data);
 			}
 			if (empty($this->session->setFlashdata('errorlogin')))
 			{
