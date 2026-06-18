@@ -28,6 +28,7 @@ use CodeIgniter\Config\Factories;
 class Install extends BaseController {
 
 	public $idiom = 'english';
+	private $db_config = null;
 	private $db_prop = null;
 	private $db_engine = '';
 
