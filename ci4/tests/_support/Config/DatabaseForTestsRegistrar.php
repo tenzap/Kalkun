@@ -19,6 +19,8 @@ require_once __DIR__.'/../../testutils/KalkunDatabaseTestTrait.php';
 
 class DatabaseForTestsRegistrar
 {
+    use KalkunDatabaseTestTrait;
+
     protected static array $dbConfig = [
         "pgsql" => [
             'DSN'        => '',
@@ -170,7 +172,7 @@ class DatabaseForTestsRegistrar
 
     public static function Database(): array
     {
-        self::$dbConfig['sqlite']['database'] = KalkunDatabaseTestTrait::get_db_path(DBVars::DATABASE);
+        self::$dbConfig['sqlite']['database'] = self::get_db_path(DBVars::DATABASE);
 
         $config = [];
 
