@@ -13,7 +13,7 @@ namespace App\TestUtils;
 
 use CodeIgniter\Test\CIUnitTestCase;
 
-require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor-test_deps/autoload.php';
 require_once __DIR__.'/../testutils/Html4Validator.php';
 require_once __DIR__.'/../testutils/Html5Validator.php';
 

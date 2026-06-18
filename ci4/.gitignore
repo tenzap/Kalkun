@@ -85,6 +85,7 @@ php_errors.log
 # Composer
 #-------------------------
 vendor/
+vendor-test_deps/
 
 #-------------------------
 # IDE / Development Files

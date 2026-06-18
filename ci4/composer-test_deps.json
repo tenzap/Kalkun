@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "symfony/dom-crawler": ">=7.4",
+        "symfony/css-selector": ">=7.4"
+    },
+    "config": {
+        "vendor-dir": "vendor-test_deps"
+    }
+}
