@@ -44,8 +44,6 @@ class MYController extends BaseController {
 
 		if ($login)
 		{
-			$this->session = session();
-
 			// session/login check is done in \App\Filters\IsLoggedInFilter
 
 			$this->Kalkun_model = model('KalkunModel');
@@ -68,7 +66,7 @@ class MYController extends BaseController {
 	{
 		$this->User_model = model('UserModel');
 		$this->Message_model = model('MessageModel');
-		$uid = $this->session->get('id_user');
+		$uid = session()->get('id_user');
 
 		$outbox = $this->Message_model->get_user_outbox($uid);
 		foreach ($outbox->getResult() as $tmp)
