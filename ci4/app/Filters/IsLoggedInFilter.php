@@ -20,9 +20,9 @@ class IsLoggedInFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-		$this->session = session();
+		$session = session();
 		// session check
-		if ($this->session->get('loggedin') === NULL)
+		if ($session->get('loggedin') === NULL)
 		{
 			if ($request->is('POST') && $request->getPost('idiom') !== NULL)
 			{
@@ -32,7 +32,7 @@ class IsLoggedInFilter implements FilterInterface
 			{
 				return redirect()->to('login?l='.$request->getGet('l'));
 			}
-			$this->session->setFlashdata('bef_login_post_data', $request->getPost());
+			$session->setFlashdata('bef_login_post_data', $request->getPost());
 			$request_uri_qry_string = $request->getUri()->getQuery();
 			if ( ! empty($request_uri_qry_string))
 			{
@@ -41,10 +41,10 @@ class IsLoggedInFilter implements FilterInterface
 			return redirect()->to('login?r_url='.urlencode(current_url().$request_uri_qry_string));
 		}
 
-		if ($request->getUri()->getSegment(1) === 'users' && $this->session->get('loggedin') === 'TRUE')
+		if ($request->getUri()->getSegment(1) === 'users' && $session->get('loggedin') === 'TRUE')
 		{
 			// check level
-			if ($this->session->get('level') !== 'admin')
+			if ($session->get('level') !== 'admin')
 			{
 				$Kalkun_model = model('KalkunModel');
 
@@ -54,7 +54,7 @@ class IsLoggedInFilter implements FilterInterface
 				$locale = Language::$idiom_to_locale[$lang];
 				service('language', $locale)->load('kalkun_lang');
 
-				$this->session->setFlashdata('notif', tr_raw('Access denied.'));
+				$session->setFlashdata('notif', tr_raw('Access denied.'));
 				return redirect()->to('/');
 			}
 		}
