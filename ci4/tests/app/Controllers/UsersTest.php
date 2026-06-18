@@ -89,6 +89,7 @@ class UsersTest extends KalkunTestCase {
 		$this->assertValidHtml($data);
 	}
 
+	#[RunInSeparateProcess]
 	public function test_index_GET_no_user_in_db()
 	{
 		$this->DBSetup([
