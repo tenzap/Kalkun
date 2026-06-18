@@ -64,7 +64,7 @@ class UserModel extends Model {
 				break;
 
 			case 'search':
-				$search_word = strtolower(service('request')->getPost('search_name'));
+				$search_word = strtolower(service('request')->getPost('search_name') ?? '');
 				$q->like('realname', $search_word, 'both', null, TRUE);
 				break;
 		}
