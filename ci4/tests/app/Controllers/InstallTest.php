@@ -54,7 +54,6 @@ class InstallTest extends KalkunTestCase {
 		$result->assertStatus(302);
 	}
 
-	// CI4-TODO
 	public function test_index_disabled()
 	{
 		if (file_exists(FCPATH . 'install'))
@@ -62,14 +61,14 @@ class InstallTest extends KalkunTestCase {
 			unlink(FCPATH . 'install');
 		}
 
+		$this->expectException(\App\Exceptions\KalkunException::class);
+		$this->_expectExceptionMessageMatches("/Installation has been disabled by the administrator./");
+
 		$result = $this->call('GET', 'install');
 		$data = $result->response()->getBody();
-		$expected = 'Installation has been disabled by the administrator.';
 
-		$this->assertResponseCode(403);
-		$this->_assertStringContainsString($expected, $data);
-
-		$this->assertValidHtmlSnippet($data);
+		// CI4-TODO
+		//$this->assertValidHtmlSnippet($data);
 	}
 
 	public function test_config_setup_GET()
