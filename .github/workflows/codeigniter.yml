@@ -121,6 +121,13 @@ jobs:
         run: cd ci4 && HTML=5 DB=pgsql vendor/bin/phpunit --coverage-text --display-deprecations
       - name: Test with phpunit on mysql
         run: cd ci4 && HTML=5 DB=mysql vendor/bin/phpunit --coverage-text --display-deprecations
+      - name: Run test 'test_database_setup_GET_with_db_exception'
+        run: |
+          cd ci4
+          for engine in pgsql mysql sqlite; do
+            echo "Testing with engine '$engine'"
+            HTML=5 DB=${engine}_invalid vendor/bin/phpunit --no-coverage --display-deprecations --filter InstallTest::test_database_setup_GET_with_db_exception
+          done
   check-code:
     if: false
     strategy:
