@@ -4,7 +4,7 @@
 		<td>
 			<?php
 $theme = array('blue' => 'Blue', 'dark' => 'Dark', 'green' => 'Green');
-$theme_act = $this->Kalkun_model->get_setting()->getRow('theme');
+$theme_act = model('KalkunModel')->get_setting()->getRow('theme');
 echo form_dropdown('theme', $theme, $theme_act);
 ?>
 		</td>
