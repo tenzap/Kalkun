@@ -48,7 +48,6 @@ class Kalkun extends MYController {
 	public function getIndex()
 	{
 		helper('i18n');
-		$this->Phonebook_model = model('PhonebookModel');
 		$data['main'] = 'main/dashboard/home';
 		$data['title'] = 'Dashboard';
 		if (config('Kalkun')->disable_outgoing)
