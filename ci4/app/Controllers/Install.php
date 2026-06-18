@@ -374,7 +374,7 @@ class Install extends BaseController {
 	function _upgrade()
 	{
 		$kalkunModel = model('KalkunModel');
-		$this->dbforge = \Config\Database::forge();
+		$dbforge = \Config\Database::forge();
 
 		$error = 0;
 
@@ -409,7 +409,7 @@ class Install extends BaseController {
 		if ($b8_db_version === '2')
 		{
 			// Rename old table to b8_wordlist_v2
-			if ($this->dbforge->renameTable('b8_wordlist', 'b8_wordlist_v2'))
+			if ($dbforge->renameTable('b8_wordlist', 'b8_wordlist_v2'))
 			{
 				// Create v3 table
 				$this->_execute_kalkun_sql_file('b8_v3.sql');
