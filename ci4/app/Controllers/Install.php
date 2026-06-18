@@ -251,7 +251,7 @@ class Install extends BaseController {
 	function config_setup()
 	{
 		helper(array('form'));
-		$this->install_info = new \App\Libraries\InstallInfo();
+		$installInfo = new \App\Libraries\InstallInfo();
 
 		// install file
 		if (file_exists(FCPATH.'install') && is_writable(dirname(FCPATH.'install')))
@@ -270,22 +270,22 @@ class Install extends BaseController {
 
 
 		// Daemon & Oubox queue scripts
-		$data['is_windows'] = $this->install_info->is_windows();
-		$data['daemon_path'] = $this->install_info->get_daemon_path('daemon');
+		$data['is_windows'] = $installInfo->is_windows();
+		$data['daemon_path'] = $installInfo->get_daemon_path('daemon');
 		$data['daemon_path_is_executable'] = is_executable($data['daemon_path']);
-		$data['daemon_php_path'] = $this->install_info->get_daemon_var_path('daemon', 'PHP');
-		$data['daemon_php_path_exists'] = $this->install_info->daemon_var_path_exists($data['daemon_php_path']);
-		$data['daemon_daemon_path'] = $this->install_info->get_daemon_var_path('daemon', 'DAEMON');
-		$data['daemon_daemon_path_exists'] = $this->install_info->daemon_var_path_exists($data['daemon_daemon_path']);
-		$data['daemon_url'] = $this->install_info->get_daemon_url($data['daemon_daemon_path']);
+		$data['daemon_php_path'] = $installInfo->get_daemon_var_path('daemon', 'PHP');
+		$data['daemon_php_path_exists'] = $installInfo->daemon_var_path_exists($data['daemon_php_path']);
+		$data['daemon_daemon_path'] = $installInfo->get_daemon_var_path('daemon', 'DAEMON');
+		$data['daemon_daemon_path_exists'] = $installInfo->daemon_var_path_exists($data['daemon_daemon_path']);
+		$data['daemon_url'] = $installInfo->get_daemon_url($data['daemon_daemon_path']);
 		$data['daemon_url_matches_config'] = (trim($data['daemon_url'], '/') === trim(config('App')->baseURL, '/')) ? TRUE : FALSE;
-		$data['outbox_queue_path'] = $this->install_info->get_daemon_path('outbox_queue');
+		$data['outbox_queue_path'] = $installInfo->get_daemon_path('outbox_queue');
 		$data['outbox_queue_path_is_executable'] = is_executable($data['outbox_queue_path']);
-		$data['outbox_queue_php_path'] = $this->install_info->get_daemon_var_path('outbox_queue', 'PHP');
-		$data['outbox_queue_php_path_exists'] = $this->install_info->daemon_var_path_exists($data['outbox_queue_php_path']);
-		$data['outbox_queue_daemon_path'] = $this->install_info->get_daemon_var_path('outbox_queue', 'DAEMON');
-		$data['outbox_queue_daemon_path_exists'] = $this->install_info->daemon_var_path_exists($data['outbox_queue_daemon_path']);
-		$data['outbox_queue_url'] = $this->install_info->get_daemon_url($data['outbox_queue_daemon_path']);
+		$data['outbox_queue_php_path'] = $installInfo->get_daemon_var_path('outbox_queue', 'PHP');
+		$data['outbox_queue_php_path_exists'] = $installInfo->daemon_var_path_exists($data['outbox_queue_php_path']);
+		$data['outbox_queue_daemon_path'] = $installInfo->get_daemon_var_path('outbox_queue', 'DAEMON');
+		$data['outbox_queue_daemon_path_exists'] = $installInfo->daemon_var_path_exists($data['outbox_queue_daemon_path']);
+		$data['outbox_queue_url'] = $installInfo->get_daemon_url($data['outbox_queue_daemon_path']);
 		$data['outbox_queue_url_matches_config'] = (trim($data['outbox_queue_url'], '/') === trim(config('App')->baseURL, '/')) ? TRUE : FALSE;
 
 		// Gammu-smsd
@@ -299,8 +299,8 @@ class Install extends BaseController {
 		$data['uses_default_encryption_key'] = $this->_uses_default_encryption_key();
 
 		// htaccess for CI_ENV
-		$data['htaccess_location'] = $this->install_info->get_htaccess_CI_ENV_path();
-		$data['CI_ENV'] = $this->install_info->get_CI_ENV();
+		$data['htaccess_location'] = $installInfo->get_htaccess_CI_ENV_path();
+		$data['CI_ENV'] = $installInfo->get_CI_ENV();
 
 		$data['main'] = 'main/install/config_setup';
 		$data['idiom'] = $this->idiom;
