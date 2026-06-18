@@ -116,7 +116,7 @@ jobs:
       # - name: Install/Update ci-phpunit-test
       #   run: ./utils/prepare_tests_for_phpunit.sh
       - name: Test with phpunit
-        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor/bin/phpunit --coverage-text; done
+        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor-phpunit/bin/phpunit --coverage-text --display-deprecations; done
   check-code:
     if: false
     strategy:
