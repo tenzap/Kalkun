@@ -174,7 +174,7 @@ class InstallTest extends KalkunTestCase {
 	#[WithoutErrorHandler] # Required because with pgsql_invalid, it would return the warning coming from pg_connect()
 	public function test_database_setup_GET_with_db_exception()
 	{
-		if (! str_ends_with(env('DB'), '_invalid'))
+		if (! str_ends_with(env('DB', ''), '_invalid'))
 		{
 			$this->markTestSkipped('This test requires an invalid db configuration. Run with DB=pgsql_invalid.');
 		}
