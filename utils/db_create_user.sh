@@ -3,7 +3,7 @@
 set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TESTSDIR="$(realpath "${SCRIPT_DIR}/../tests/")"
+TESTSDIR="$(realpath "${SCRIPT_DIR}/../ci4/tests/")"
 
 USERNAME="$(php -f "${TESTSDIR}/testutils/DBVars.php" -- username)"
 PASSWORD="$(php -f "${TESTSDIR}/testutils/DBVars.php" -- password)"

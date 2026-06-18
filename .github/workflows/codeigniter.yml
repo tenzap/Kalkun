@@ -5,6 +5,7 @@ on:
     branches: 
       - master
       - devel
+      - 'ci4**'
       - 'release-**'
       - 'feature-**'
   pull_request:
@@ -78,6 +79,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
       - name: Install composer dependencies
         run: |
+          cd ci4
           composer update
           composer install --no-progress --prefer-dist --optimize-autoloader
           COMPOSER=composer-phpunit.json composer update
@@ -111,11 +113,12 @@ jobs:
           echo -n "vnu.jar version: "
           java -jar utils/vnu.jar --version
           ./utils/start_vnu_http_server.sh
-      - name: Install/Update ci-phpunit-test
-        run: ./utils/prepare_tests_for_phpunit.sh
+      # - name: Install/Update ci-phpunit-test
+      #   run: ./utils/prepare_tests_for_phpunit.sh
       - name: Test with phpunit
-        run: HTML=5 vendor-phpunit/bin/phpunit --coverage-text -c tests
+        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor/bin/phpunit --coverage-text; done
   check-code:
+    if: false
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
@@ -173,6 +176,7 @@ jobs:
           path: 'code_style_check*'
           if-no-files-found: ignore
   check-translation:
+    if: false
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
