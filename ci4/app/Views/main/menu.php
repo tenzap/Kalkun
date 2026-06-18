@@ -9,8 +9,7 @@
 					<?php echo anchor('messages/folder/inbox', tr('Inbox'));?>
 					<span class="unread_inbox_notif">
 						<?php
-	$this->Message_model = model('MessageModel');
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'uid' => session()->get('id_user')))->getNumRows();
+	$tmp_unread = model('MessageModel')->get_messages(array('readed' => FALSE, 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
@@ -26,7 +25,7 @@
 				<li><?php echo anchor('messages/my_folder/inbox/6', tr('Spam')); ?>
 					<span class="unread_spam_notif">
 						<?php
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => '6', 'uid' => session()->get('id_user')))->getNumRows();
+	$tmp_unread = model('MessageModel')->get_messages(array('readed' => FALSE, 'id_folder' => '6', 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
@@ -48,7 +47,7 @@
 				<?php foreach (model('KalkunModel')->get_folders('all')->getResult() as $folder):?>
 				<li>
 					<?php echo anchor('messages/my_folder/inbox/'.$folder->id_folder, htmlentities($folder->name, ENT_QUOTES));
-	$tmp_unread = $this->Message_model->get_messages(array('readed' => FALSE, 'id_folder' => $folder->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
+	$tmp_unread = model('MessageModel')->get_messages(array('readed' => FALSE, 'id_folder' => $folder->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
 	if ($tmp_unread > 0)
 	{
 		echo ' ('.$tmp_unread.')';
