@@ -23,6 +23,7 @@ require_once __DIR__.'/../../testutils/MockInvalidDBEngineProps.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 class InstallTest extends KalkunTestCase {
 
@@ -170,6 +171,7 @@ class InstallTest extends KalkunTestCase {
 	}
 
 	//#[RunInSeparateProcess]
+	#[WithoutErrorHandler] # Required because with pgsql_invalid, it would return the warning coming from pg_connect()
 	public function test_database_setup_GET_with_db_exception()
 	{
 		if (! str_ends_with(env('DB'), '_invalid'))
