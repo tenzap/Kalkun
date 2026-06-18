@@ -57,7 +57,6 @@ class Login extends BaseController {
 		$locale = Language::$idiom_to_locale[$this->idiom];
 		service('language', $locale)->load('kalkun_lang');
 		$this->session = session();
-		$this->Kalkun_model = model('KalkunModel');
 	}
 
 	// --------------------------------------------------------------------
@@ -79,7 +78,7 @@ class Login extends BaseController {
 		);
 		if ($this->request->is('post') && empty($this->request->getPost('change_language')))
 		{
-			return $this->Kalkun_model->login();
+			return model('KalkunModel')->login();
 		}
 
 		$data['idiom'] = $this->idiom;
@@ -119,7 +118,7 @@ class Login extends BaseController {
 
 		if ($this->request->is('POST') && empty($this->request->getPost('change_language')))
 		{
-			$token = $this->Kalkun_model->forgot_password();
+			$token = model('KalkunModel')->forgot_password();
 
 			if ( ! $token)
 			{
@@ -172,7 +171,7 @@ class Login extends BaseController {
 			$password_submitted = empty($this->request->getPost('change_language'));
 		}
 
-		$user_token = $this->Kalkun_model->valid_token($token);
+		$user_token = model('KalkunModel')->valid_token($token);
 
 		if ($user_token === FALSE)
 		{
@@ -183,8 +182,8 @@ class Login extends BaseController {
 		{
 			if ($password_submitted)
 			{
-				$this->Kalkun_model->update_password($user_token['id_user']);
-				$this->Kalkun_model->delete_token($user_token['id_user']);
+				model('KalkunModel')->update_password($user_token['id_user']);
+				model('KalkunModel')->delete_token($user_token['id_user']);
 				$this->session->setFlashdata('errorlogin', tr_raw('Password changed successfully.'));
 				return redirect()->to('login?l='.$this->idiom);
 			}
