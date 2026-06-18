@@ -1,16 +1,34 @@
 Need to copy /env to /.env and modify in /.env
-Set at least
+
+Set at least (trailing slash is required on baseURL)
    CI_ENVIRONMENT = development
-   app.baseURL = 'http://localhost/kalkun-git/ci4/public'
+   app.baseURL = 'http://localhost/kalkun-git/ci4/public/'
 
-Need to enable mod_rewrite with `a2enmod rewrite`
+Set DB credentials and config in '.env'. For example, for postresql
 
-Change permissions of /writable/cache  to 777
-Same for the subfolders of /writable : otherwise debugbar won't work, logs etc...
+database.default.hostname = localhost
+database.default.database = database
+database.default.username = username
+database.default.password = password
+database.default.schema = public
+database.default.DBDriver = Postgre
+database.default.DBPrefix =
+database.default.port = 5432
+database.default.charset = utf8
+
+
+Need to enable mod_rewrite with
+
+   a2enmod rewrite
+
+
+Change permissions of 'writable/*/' to 777, otherwise debugbar won't work, logs etc...
+
+   chmod ugo+w writable/*/
 
 App is reachable at http://localhost/kalkun-git/ci4/public/#
 
 
-TODO: Remplace like("LOWER..." by like() with 5th parameter (for case insensitive like)
+TODO: Replace like("LOWER..." by like() with 5th parameter (for case insensitive like)
 -    ->like('LOWER('.$this->db->protectIdentifiers('realname').')', $search_word)
 +    ->like('realname', $search_word, 'both', null, TRUE)
