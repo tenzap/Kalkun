@@ -82,8 +82,8 @@ jobs:
           cd ci4
           composer update
           composer install --no-progress --prefer-dist --optimize-autoloader
-          COMPOSER=composer-phpunit.json composer update
-          COMPOSER=composer-phpunit.json composer install --no-progress --prefer-dist --optimize-autoloader
+          # COMPOSER=composer-phpunit.json composer update
+          # COMPOSER=composer-phpunit.json composer install --no-progress --prefer-dist --optimize-autoloader
           COMPOSER=composer-test_deps.json composer update
           COMPOSER=composer-test_deps.json composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Install system dependencies
@@ -116,7 +116,7 @@ jobs:
       # - name: Install/Update ci-phpunit-test
       #   run: ./utils/prepare_tests_for_phpunit.sh
       - name: Test with phpunit
-        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor-phpunit/bin/phpunit --coverage-text --display-deprecations; done
+        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor/bin/phpunit --coverage-text --display-deprecations; done
   check-code:
     if: false
     strategy:
