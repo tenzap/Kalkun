@@ -100,8 +100,7 @@ class GammuModel extends Model {
 							->set('id_user', $data['uid'])
 							->insert('user_outbox');
 				}
-				$this->Kalkun_model = model('KalkunModel');
-				$this->Kalkun_model->add_sms_used($this->session->userdata('id_user'));
+				model('KalkunModel')->add_sms_used($this->session->userdata('id_user'));
 				$f_ret = array('status' => tr_raw('Message queued.'));
 			}
 		}
@@ -157,7 +156,6 @@ class GammuModel extends Model {
 			// Check message's length
 			$messagelength = $this->_get_message_length($data['message'], $coding);
 
-			$this->Kalkun_model = model('KalkunModel');
 			// Multipart message
 			if ($messagelength > $standar_length)
 			{
@@ -187,20 +185,20 @@ class GammuModel extends Model {
 				$data['part'] = $part;
 				$outboxid = $this->_send_message_route($data);
 
-				$this->Kalkun_model->add_sms_used($data['uid']);	// FIXME
+				model('KalkunModel')->add_sms_used($data['uid']);	// FIXME
 
 				// insert the rest part to Outbox Multipart
 				for ($i = 1; $i < count($tmpmsg); $i++)
 				{
 					$this->_send_message_multipart($outboxid, $tmpmsg[$i], $i, $part, $coding, $data['class'], $UDH);
-					$this->Kalkun_model->add_sms_used($data['uid']);
+					model('KalkunModel')->add_sms_used($data['uid']);
 				}
 			}
 			else
 			{
 				$data['option'] = 'single';
 				$this->_send_message_route($data);
-				$this->Kalkun_model->add_sms_used($data['uid']); // FIXME
+				model('KalkunModel')->add_sms_used($data['uid']); // FIXME
 			}
 			return array('status' => 'Message queued.');
 		}
@@ -296,8 +294,7 @@ class GammuModel extends Model {
 			}
 		}
 
-		$this->Kalkun_model = model('KalkunModel');
-		$sort_option = $this->Kalkun_model->get_setting()->row('conversation_sort');
+		$sort_option = model('KalkunModel')->get_setting()->row('conversation_sort');
 
 		// Inbox
 		$options['type'] = 'inbox';
