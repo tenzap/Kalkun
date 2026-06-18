@@ -265,8 +265,8 @@ class InstallTest extends KalkunTestCase {
 	{
 		config('Encryption')->key = $enc_key;
 
-		$this->install = new Install;
-		$data = $this->install->_uses_default_encryption_key();
+		$install = new Install;
+		$data = $install->_uses_default_encryption_key();
 		$this->assertEquals($expected, $data);
 	}
 
