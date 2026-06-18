@@ -184,7 +184,7 @@ class Install extends BaseController {
 			return view('main/install/layout', $data);
 		}
 
-		$this->Kalkun_model = model('KalkunModel');
+		$kalkunModel = model('KalkunModel');
 		// Replace the values set in constructor now that we know that the
 		// configuration of the database is correct.
 		$this->db_prop = Factories::libraries('DBEngineProps', [], $this->db_config['DBDriver']);
@@ -199,36 +199,36 @@ class Install extends BaseController {
 
 		$data['database_driver'] = $this->db->getPlatform();
 		$data['has_smsd_database'] = $this->db->tableExists('gammu') ? TRUE : FALSE;
-		$data['has_table_pbk'] = $this->Kalkun_model->has_table_pbk() ? TRUE : FALSE;
+		$data['has_table_pbk'] = $kalkunModel->has_table_pbk() ? TRUE : FALSE;
 		$data['has_gammu_database'] = $this->db->tableExists('user') ? TRUE : FALSE;
 
 		// Now check if it is installed, and which version it is.
 		// plugins table appeared in 0.4
-		if ($this->Kalkun_model->has_table_plugins())
+		if ($kalkunModel->has_table_plugins())
 		{
 			$detected_db_version = '0.4';
 			$data['type'] = 'upgrade_not_supported';
 		}
 		// user_forgot_password table appeared in 0.6
-		if ($this->Kalkun_model->has_table_user_forgot_password())
+		if ($kalkunModel->has_table_user_forgot_password())
 		{
 			$detected_db_version = '0.6';
 			$data['type'] = 'upgrade';
 		}
 		// user_filters table appeared in 0.7
-		if ($this->Kalkun_model->has_table_user_filters())
+		if ($kalkunModel->has_table_user_filters())
 		{
 			$detected_db_version = '0.7';
 			$data['type'] = 'upgrade';
 		}
 		// ci_sessions table appeared in 0.8
-		if ($this->Kalkun_model->has_table_ci_sessions())
+		if ($kalkunModel->has_table_ci_sessions())
 		{
 			$detected_db_version = '0.8.0';
 			$data['type'] = 'upgrade';
 		}
 		// plugins_table_has_status_column appeared in 0.8.3
-		if ($this->Kalkun_model->plugins_table_has_status_column())
+		if ($kalkunModel->plugins_table_has_status_column())
 		{
 			$detected_db_version = '0.8.3';
 			$data['type'] = 'up_to_date';
@@ -326,13 +326,13 @@ class Install extends BaseController {
 
 		// Check for phonebook tables
 		// they have been dropped in Gammu (schema v16) but we need them for Phonebook feature
-		if ( ! $this->Kalkun_model->has_table_pbk())
+		if ( ! $kalkunModel->has_table_pbk())
 		{
 			$error += $this->_install_pbk_tables();
 		}
 
 		// Add kalkun's specific fields to pbk table.
-		if ( ! $this->Kalkun_model->has_table_pbk_with_kalkun_fields())
+		if ( ! $kalkunModel->has_table_pbk_with_kalkun_fields())
 		{
 			$error += $this->_add_kalkun_fields_to_pbk_tables();
 		}
@@ -373,13 +373,13 @@ class Install extends BaseController {
 
 	function _upgrade()
 	{
-		$this->Kalkun_model = model('KalkunModel');
+		$kalkunModel = model('KalkunModel');
 		$this->dbforge = \Config\Database::forge();
 
 		$error = 0;
 
 		// Update SQL schema to version 0.7
-		if ( ! $this->Kalkun_model->has_table_user_filters())
+		if ( ! $kalkunModel->has_table_user_filters())
 		{
 			$error = $this->_execute_kalkun_sql_file('upgrade_kalkun_0.7.sql');
 			if ($error !== 0)
@@ -389,7 +389,7 @@ class Install extends BaseController {
 		}
 
 		// Update SQL schema to version 0.8
-		if ( ! $this->Kalkun_model->has_table_ci_sessions())
+		if ( ! $kalkunModel->has_table_ci_sessions())
 		{
 			$error = $this->_execute_kalkun_sql_file('upgrade_kalkun_0.8.sql');
 			if ($error !== 0)
@@ -465,7 +465,7 @@ class Install extends BaseController {
 		}
 
 		// Update SQL schema to version 0.8.3
-		if ( ! $this->Kalkun_model->plugins_table_has_status_column())
+		if ( ! $kalkunModel->plugins_table_has_status_column())
 		{
 			$error = $this->_execute_kalkun_sql_file('upgrade_kalkun_0.8.3.sql');
 			if ($error !== 0)
