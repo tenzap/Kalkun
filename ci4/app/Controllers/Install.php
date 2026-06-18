@@ -319,6 +319,7 @@ class Install extends BaseController {
 	function _run_db_setup()
 	{
 		$error = 0;
+		$kalkunModel = model('KalkunModel');
 
 		// Clear data_cache, otherwise, the list of tables in CI3 would not be up to date.
 		// for example when checking later on if the pbk table exists.
