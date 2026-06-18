@@ -81,12 +81,11 @@
 
 <?php
 $uid = session()->get('id_user');
-$this->Message_model = model('MessageModel');
-$inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'uid' => $uid))->getNumRows();
-$outbox = $this->Message_model->get_messages(array('type' => 'outbox', 'uid' => $uid))->getNumRows();
-$sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'uid' => $uid))->getNumRows();
-$trash_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
-$trash_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
+$inbox = model('MessageModel')->get_messages(array('type' => 'inbox', 'uid' => $uid))->getNumRows();
+$outbox = model('MessageModel')->get_messages(array('type' => 'outbox', 'uid' => $uid))->getNumRows();
+$sentitems = model('MessageModel')->get_messages(array('type' => 'sentitems', 'uid' => $uid))->getNumRows();
+$trash_inbox = model('MessageModel')->get_messages(array('type' => 'inbox', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
+$trash_sentitems = model('MessageModel')->get_messages(array('type' => 'sentitems', 'id_folder' => '5', 'uid' => $uid))->getNumRows();
 $trash = $trash_inbox + $trash_sentitems;
 ?>
 
@@ -101,10 +100,9 @@ $trash = $trash_inbox + $trash_sentitems;
 <div style="float: left; width: 250px;">
 	<h1><?php echo tr('My folders');?>: </h1>
 	<?php
-$this->Kalkun_model = model('KalkunModel');
-foreach ($this->Kalkun_model->get_folders('all')->getResult() as $val):
-$folder_count_inbox = $this->Message_model->get_messages(array('type' => 'inbox', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
-$folder_count_sentitems = $this->Message_model->get_messages(array('type' => 'sentitems', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
+foreach (model('KalkunModel')->get_folders('all')->getResult() as $val):
+$folder_count_inbox = model('MessageModel')->get_messages(array('type' => 'inbox', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
+$folder_count_sentitems = model('MessageModel')->get_messages(array('type' => 'sentitems', 'id_folder' => $val->id_folder, 'uid' => session()->get('id_user')))->getNumRows();
 $folder_count = $folder_count_inbox + $folder_count_sentitems;
 echo '<p><span>'.htmlentities($val->name, ENT_QUOTES).': </span>'.$folder_count.'</p>';
 endforeach;
@@ -113,12 +111,11 @@ endforeach;
 
 <div style="float: left; width: 200px;">
 	<h1><?php echo tr('Phonebook');
-	$this->Phonebook_model = model('PhonebookModel');
 ?>: </h1>
 	<p><span><?php echo tr('Contact');?>: </span>
-		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'all'))->getNumRows();?></p>
+		<?php echo  model('PhonebookModel')->get_phonebook(array('option' => 'all'))->getNumRows();?></p>
 	<p><span><?php echo tr('Groups');?>: </span>
-		<?php echo  $this->Phonebook_model->get_phonebook(array('option' => 'group'))->getNumRows();?></p>
+		<?php echo  model('PhonebookModel')->get_phonebook(array('option' => 'group'))->getNumRows();?></p>
 </div>
 
 <div style="clear: both;">&nbsp;</div>
