@@ -30,8 +30,7 @@ trait KalkunPhonenumberTrait {
 		// If user is logged in, get the region from the settings
 		if (isset($this->session) && $this->session->get('loggedin') === 'TRUE')
 		{
-			$this->Kalkun_model = model('KalkunModel');
-			$region = $this->Kalkun_model->get_setting()->getRow('country_code');
+			$region = model('KalkunModel')->get_setting()->getRow('country_code');
 		}
 		// region as function parameter has higher precedence
 		$region = ($input_region !== NULL) ? $input_region : $region;
@@ -53,10 +52,9 @@ trait KalkunPhonenumberTrait {
 	*/
 	function phone_format_human($phone, $input_region = NULL)
 	{
-		$this->Kalkun_model = model('KalkunModel');
 		try
 		{
-			$region = (! empty($input_region)) ? $input_region : $this->Kalkun_model->get_setting()->getRow('country_code');
+			$region = (! empty($input_region)) ? $input_region : model('KalkunModel')->get_setting()->getRow('country_code');
 
 			$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
 			$phoneNumberObject = $phoneNumberUtil->parse($phone, $region);
@@ -90,12 +88,11 @@ trait KalkunPhonenumberTrait {
 	{
 		$result = 'false'; // Default to "false"
 
-		$this->Kalkun_model = model('KalkunModel');
 		try
 		{
 			// Check if is possible number
 			$phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-			$region = (! empty($input_region)) ? $input_region : $this->Kalkun_model->get_setting()->getRow('country_code');
+			$region = (! empty($input_region)) ? $input_region : model('KalkunModel')->get_setting()->getRow('country_code');
 			$phoneNumberObject = $phoneNumberUtil->parse($phone, $region);
 			$is_possible = $phoneNumberUtil->isPossibleNumber($phoneNumberObject);
 
