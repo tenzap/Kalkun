@@ -24,6 +24,7 @@ use App\Libraries\Language;
 class Login extends BaseController {
 
 	public $idiom = 'english';
+	private $session = null;
 
 	/**
 	 * Constructor
