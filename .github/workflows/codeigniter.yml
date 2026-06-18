@@ -115,8 +115,12 @@ jobs:
           ./utils/start_vnu_http_server.sh
       # - name: Install/Update ci-phpunit-test
       #   run: ./utils/prepare_tests_for_phpunit.sh
-      - name: Test with phpunit
-        run: cd ci4 && for engine in sqlite pgsql mysql; do HTML=5 DB=$engine vendor/bin/phpunit --coverage-text --display-deprecations; done
+      - name: Test with phpunit on sqlite
+        run: cd ci4 && HTML=5 DB=sqlite vendor/bin/phpunit --coverage-text --display-deprecations
+      - name: Test with phpunit on pgsql
+        run: cd ci4 && HTML=5 DB=pgsql vendor/bin/phpunit --coverage-text --display-deprecations
+      - name: Test with phpunit on mysql
+        run: cd ci4 && HTML=5 DB=mysql vendor/bin/phpunit --coverage-text --display-deprecations
   check-code:
     if: false
     strategy:
