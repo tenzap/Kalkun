@@ -4,8 +4,7 @@
 		<td>
 			<?php
 $lang = service('Language')->kalkun_supported_languages();
-$this->Kalkun_model = model('KalkunModel');
-$lang_act = $this->Kalkun_model->get_setting()->getRow('language');
+$lang_act = model('KalkunModel')->get_setting()->getRow('language');
 echo form_dropdown('language', $lang, $lang_act);
 ?>
 		</td>
@@ -30,7 +29,7 @@ foreach ($country_calling_codes as $region => $label)
 {
 	$country_calling_codes[$region] = htmlentities($label, ENT_QUOTES);
 }
-$dial_code_act = $this->Kalkun_model->get_setting()->getRow('country_code');
+$dial_code_act = model('KalkunModel')->get_setting()->getRow('country_code');
 echo form_dropdown('dial_code', $country_calling_codes, $dial_code_act);
 ?>
 		</td>
@@ -41,7 +40,7 @@ echo form_dropdown('dial_code', $country_calling_codes, $dial_code_act);
 		<td>
 			<?php
 $conv = array('asc' => tr('Ascending'), 'desc' => tr('Descending'));
-$conv_act = $this->Kalkun_model->get_setting()->getRow('conversation_sort');
+$conv_act = model('KalkunModel')->get_setting()->getRow('conversation_sort');
 echo form_dropdown('conversation_sort', $conv, $conv_act);
 ?>
 		</td>
@@ -52,7 +51,7 @@ echo form_dropdown('conversation_sort', $conv, $conv_act);
 		<td>
 			<?php
 $paging = array('10' => '10', '15' => '15', '20' => '20', '25' => '25');
-$paging_act = $this->Kalkun_model->get_setting()->getRow('paging');
+$paging_act = model('KalkunModel')->get_setting()->getRow('paging');
 echo form_dropdown('paging', $paging, $paging_act);
 ?>
 			<small>&nbsp;&nbsp;<?php echo tr('Used for paging in message and phonebook'); ?></small>
@@ -62,7 +61,7 @@ echo form_dropdown('paging', $paging, $paging_act);
 	<tr>
 		<td><?php echo tr('Permanent delete'); ?></td>
 		<td>
-			<?php $permanent_act = $this->Kalkun_model->get_setting()->getRow('permanent_delete');?>
+			<?php $permanent_act = model('KalkunModel')->get_setting()->getRow('permanent_delete');?>
 			<input type="radio" id="permanent_delete_false" name="permanent_delete" value="false" <?php if ($permanent_act === 'false')
 {
 	echo 'checked="checked"';
@@ -81,7 +80,7 @@ echo form_dropdown('paging', $paging, $paging_act);
 		<td>
 			<?php
 $report = array('default' => tr('Default'), 'yes' => tr('Yes'), 'no' => tr('No'));
-$report_act = $this->Kalkun_model->get_setting()->getRow('delivery_report');
+$report_act = model('KalkunModel')->get_setting()->getRow('delivery_report');
 echo form_dropdown('delivery_report', $report, $report_act);
 ?>
 		</td>
