@@ -35,6 +35,9 @@ jobs:
           # For backportpackage
           sudo apt-get install -y ubuntu-dev-tools
 
+          # Use dput-ng (trying to workaround https://answers.launchpad.net/launchpad/+question/824525)
+          sudo apt-get install -y dput-ng
+
           cd ~
       - name: Import GPG key & related stuff
         env:
