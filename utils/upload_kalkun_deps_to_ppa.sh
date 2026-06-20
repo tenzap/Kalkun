@@ -395,7 +395,7 @@ for suite in "${distribs[@]}"; do
   ls "$workdir_bpp"/*_source.changes
   cat -n "$workdir_bpp"/*_source.changes
   gpg --verbose --verify "$workdir_bpp"/*_source.changes
-  dput --debug -c "$DPUT_CF" "${DPUT_UPLOAD_SERVER}" "$workdir_bpp"/*_source.changes
+  dput --debug --debug -c "$DPUT_CF" "${DPUT_UPLOAD_SERVER}" "$workdir_bpp"/*_source.changes
 
 done
 set +x
