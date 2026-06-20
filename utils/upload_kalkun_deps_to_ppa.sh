@@ -391,6 +391,10 @@ for suite in "${distribs[@]}"; do
     exit 1
   fi
 
+  echo "Content of $workdir_bpp/"*_source.changes
+  ls "$workdir_bpp"/*_source.changes
+  cat -n "$workdir_bpp"/*_source.changes
+  gpg --verbose --verify "$workdir_bpp"/*_source.changes
   dput --debug -c "$DPUT_CF" "${DPUT_UPLOAD_SERVER}" "$workdir_bpp"/*_source.changes
 
 done
