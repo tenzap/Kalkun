@@ -391,7 +391,7 @@ for suite in "${distribs[@]}"; do
     exit 1
   fi
 
-  dput -c "$DPUT_CF" "${DPUT_UPLOAD_SERVER}" "$workdir_bpp"/*_source.changes
+  dput --debug -c "$DPUT_CF" "${DPUT_UPLOAD_SERVER}" "$workdir_bpp"/*_source.changes
 
 done
 set +x
