@@ -5,7 +5,7 @@ on:
       - master
       - devel
       - 'release-**'
-      - 'feature-008-debian'
+      - 'feature-008-debian*'
     tags:
       - 'v*'
 jobs:
@@ -34,6 +34,9 @@ jobs:
 
           # For backportpackage
           sudo apt-get install -y ubuntu-dev-tools
+
+          # For ts
+          sudo apt-get install -y moreutils
 
           cd ~
       - name: Import GPG key & related stuff
@@ -112,14 +115,14 @@ jobs:
           REPOS_TO_BUILD+=("https://salsa.debian.org/js-team/node-jquery-validation")
 
           for repo in "${REPOS_TO_BUILD[@]}"; do
-            ./utils/upload_kalkun_deps_to_ppa.sh -r "$repo" -d "$(ubuntu-distro-info --supported)" -h "${DPUT_UPLOAD_SERVER}"
+            ./utils/upload_kalkun_deps_to_ppa.sh -r "$repo" -d "$(ubuntu-distro-info --supported)" -h "${DPUT_UPLOAD_SERVER}" | ts "%.s %Y-%m-%dT%H:%M:%.S%z"
           done
 
       - name: Build kalkun
         run: |
           set -x
 
-          ./utils/upload_kalkun_deps_to_ppa.sh -r "kalkun" -d "$(ubuntu-distro-info --supported)" -h "${DPUT_UPLOAD_SERVER}"
+          ./utils/upload_kalkun_deps_to_ppa.sh -r "kalkun" -d "$(ubuntu-distro-info --supported)" -h "${DPUT_UPLOAD_SERVER}" | ts "%.s %Y-%m-%dT%H:%M:%.S%z"
 
       - name: Copy source & binary packages, and dependencies
         if: always()
