@@ -2,19 +2,19 @@
 fqdn = ppa.launchpad.net
 method = sftp
 incoming = ~%LAUNCHPAD_USER_NAME%/ubuntu/kalkun-snapshots
-login = anonymous
+login = bastif
 allow_unsigned_uploads = 0
 
 [kalkun-releases]
 fqdn = ppa.launchpad.net
 method = sftp
 incoming = ~%LAUNCHPAD_USER_NAME%/ubuntu/kalkun-releases
-login = anonymous
+login = bastif
 allow_unsigned_uploads = 0
 
 [kalkun-build-deps]
 fqdn = ppa.launchpad.net
 method = sftp
 incoming = ~%LAUNCHPAD_USER_NAME%/ubuntu/kalkun-build-deps
-login = anonymous
+login = bastif
 allow_unsigned_uploads = 0
