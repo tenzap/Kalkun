@@ -42,6 +42,7 @@ GRANT ALL ON *.* TO '$USERNAME'@'localhost' WITH GRANT OPTION;"
       if mysqld --version | grep -ivq MariaDB && dpkg --compare-versions "$MYSQLD_VERSION" gt 8.4~ ; then
         # Since Mysql 8.4, parameter changed from default-authentication-plugin to mysql_native_password
         sudo sh -c 'echo "mysql_native_password=ON" >> /etc/mysql/conf.d/authentication.cnf'
+        sudo sh -c 'echo "authentication_policy=*:mysql_native_password" >> /etc/mysql/conf.d/authentication.cnf'
       else
         sudo sh -c 'echo "default-authentication-plugin=mysql_native_password" >> /etc/mysql/conf.d/authentication.cnf'
       fi
